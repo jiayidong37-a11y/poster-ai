@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>电商海报 AI 绘图工作台</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --border: #2a2d3a;
+    --accent: #6c5ce7;
+    --accent-hover: #7e6ff0;
+    --text: #e4e4e7;
+    --text-dim: #8b8d97;
+    --success: #00b894;
+    --error: #ff6b6b;
+    --warning: #fdcb6e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+
+  /* ====== 登录验证遮罩 ====== */
+  .auth-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--bg);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .auth-overlay.hidden { display: none; }
+  .auth-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px 36px;
+    width: 380px;
+    max-width: 90vw;
+    text-align: center;
+  }
+  .auth-card .auth-icon { font-size: 48px; margin-bottom: 16px; }
+  .auth-card .auth-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  .auth-card .auth-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+  .auth-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 15px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+    letter-spacing: 2px;
+  }
+  .auth-input:focus { border-color: var(--accent); }
+  .auth-input::placeholder { letter-spacing: 0; color: var(--text-dim); }
+  .auth-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 14px;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .auth-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(108,92,231,0.3); }
+  .auth-error {
+    color: var(--error);
+    font-size: 13px;
+    margin-top: 10px;
+    min-height: 20px;
+  }
+  .auth-logout {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    z-index: 100;
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-dim);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .auth-logout:hover { border-color: var(--error); color: var(--error); }
+
+  /* API Key 区域 */
+  .api-key-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .api-key-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+  }
+  .api-key-header span {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dim);
+  }
+  .api-key-header .toggle-icon {
+    transition: transform 0.2s;
+    color: var(--text-dim);
+  }
+  .api-key-header .toggle-icon.open { transform: rotate(180deg); }
+  .api-key-body {
+    margin-top: 12px;
+    display: none;
+  }
+  .api-key-body.show { display: block; }
+  .api-key-input-wrap {
+    display: flex;
+    gap: 8px;
+  }
+  .api-key-input-wrap input {
+    flex: 1;
+    padding: 10px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .api-key-input-wrap input:focus { border-color: var(--accent); }
+  .api-key-input-wrap button {
+    padding: 10px 18px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .api-key-input-wrap button:hover { background: var(--accent-hover); }
+  .key-status {
+    margin-top: 8px;
+    font-size: 12px;
+  }
+  .key-status.ok { color: var(--success); }
+  .key-status.empty { color: var(--warning); }
+
+  /* 主面板 */
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .panel-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-title::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  /* 表单元素 */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+  }
+  select, input[type="number"] {
+    padding: 10px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    appearance: auto;
+  }
+  select:focus, input[type="number"]:focus { border-color: var(--accent); }
+  textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: var(--text-dim); }
+
+  /* 图片上传区 */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 28px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .upload-zone:hover { border-color: var(--accent); background: rgba(108,92,231,0.04); }
+  .upload-zone.has-image { border-color: var(--success); border-style: solid; padding: 12px; display: none; }
+  .upload-zone input[type="file"] { display: none; }
+  .upload-icon { font-size: 32px; opacity: 0.5; }
+  .upload-text { font-size: 13px; color: var(--text-dim); }
+  .upload-hint { font-size: 12px; color: var(--text-dim); opacity: 0.6; }
+  .preview-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .preview-item {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .preview-item img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  .preview-item .remove-img {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 22px;
+    height: 22px;
+    background: rgba(255,107,107,0.9);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    z-index: 2;
+  }
+  .preview-item .remove-img:hover { background: var(--error); }
+  .preview-item .img-index {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  /* 强度滑块 */
+  .strength-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .strength-wrap input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    outline: none;
+  }
+  .strength-wrap input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .strength-wrap input[type="range"]::-webkit-slider-thumb:hover { background: var(--accent-hover); }
+  .strength-val {
+    font-size: 14px;
+    font-weight: 600;
+    min-width: 40px;
+    text-align: center;
+    color: var(--accent);
+  }
+
+  /* 生成按钮 */
+  .generate-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .generate-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(108,92,231,0.3); }
+  .generate-btn:active { transform: translateY(0); }
+  .generate-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  .generate-btn.loading .spinner { display: block; }
+  .generate-btn.loading .btn-text { display: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* 进度条 */
+  .progress-bar-wrap {
+    width: 100%;
+    margin-top: 12px;
+    display: none;
+  }
+  .progress-bar-wrap.show { display: block; }
+  .progress-bar-bg {
+    width: 100%;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #6c5ce7, #a29bfe);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+  .progress-text {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 6px;
+    text-align: center;
+  }
+
+  /* 结果区 */
+  .result-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    display: none;
+  }
+  .result-section.show { display: block; }
+  .result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .result-title {
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-title::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: var(--success);
+    border-radius: 2px;
+  }
+  .result-actions { display: flex; gap: 8px; }
+  .result-actions button {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .result-actions button:hover { border-color: var(--accent); color: var(--accent); }
+  .result-image-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg);
+    text-align: center;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .result-image-wrap img {
+    max-width: 100%;
+    display: block;
+    border-radius: 10px;
+  }
+
+  /* 错误提示 */
+  .error-box {
+    background: rgba(255,107,107,0.08);
+    border: 1px solid rgba(255,107,107,0.3);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 16px;
+    display: none;
+  }
+  .error-box.show { display: block; }
+  .error-box .error-title {
+    color: var(--error);
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .error-box .error-msg {
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.6;
+    word-break: break-all;
+    white-space: pre-wrap;
+  }
+
+  /* 模式标签 */
+  .mode-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .mode-badge.txt2img { background: rgba(108,92,231,0.15); color: var(--accent); }
+  .mode-badge.img2img { background: rgba(0,184,148,0.15); color: var(--success); }
+
+  /* 底部提示 */
+  .footer-note {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 12px;
+    color: var(--text-dim);
+    opacity: 0.5;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 12px; }
+    .form-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 22px; }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+</style>
+</head>
+<body>
+<!-- 登录验证遮罩层 -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-card">
+    <div class="auth-icon">🔐</div>
+    <div class="auth-title" id="authTitle">身份验证</div>
+    <div class="auth-desc" id="authDesc">首次使用请设置访问密码，后续每次打开需验证</div>
+    <input type="password" class="auth-input" id="authInput" placeholder="请输入密码" onkeydown="if(event.key==='Enter') authSubmit()" />
+    <button class="auth-btn" onclick="authSubmit()">验 证</button>
+    <div class="auth-error" id="authError"></div>
+  </div>
+</div>
+
+<!-- 退出登录按钮 -->
+<button class="auth-logout" id="logoutBtn" style="display:none" onclick="logout()">退出登录</button>
+
+<div class="container" id="mainContent" style="display:none">
+  <h1>🎨 电商海报 AI 绘图工作台</h1>
+  <p class="subtitle">对接 APIMart · 支持文生图 / 图生图 · 异步任务模式</p>
+
+  <!-- API Key -->
+  <div class="api-key-section">
+    <div class="api-key-header" onclick="toggleKeySection()">
+      <span>🔑 API 密钥配置</span>
+      <span class="toggle-icon" id="keyToggleIcon">▼</span>
+    </div>
+    <div class="api-key-body" id="keyBody">
+      <div class="api-key-input-wrap">
+        <input type="password" id="apiKeyInput" placeholder="粘贴你的 APIMart Key（sk-xxx...）" />
+        <button onclick="saveKey()">保存密钥</button>
+      </div>
+      <div class="key-status" id="keyStatus"></div>
+
+      <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);">
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 8px;">
+          <input type="checkbox" id="useProxyCheck" onchange="toggleProxyInput()" style="width:16px;height:16px;accent-color:var(--accent);" />
+          <span style="font-size:13px;color:var(--text);">使用 CORS 代理（解决跨域问题）</span>
+        </label>
+        <div id="proxyInputWrap" style="display:none;">
+          <input type="text" id="proxyInput" placeholder="代理地址，如 https://corsproxy.io/?" style="width:100%;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;outline:none;" />
+          <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">提示：可填入公开代理如 https://corsproxy.io/? 或自建代理地址</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 参数面板 -->
+  <div class="panel">
+    <div class="panel-title">生成参数</div>
+    <div class="form-grid">
+      <!-- 模型选择 -->
+      <div class="form-group">
+        <label>📦 模型</label>
+        <select id="modelSelect">
+          <option value="seedream-v5-pro">Seedream 5.0 Pro</option>
+          <option value="nano-banana-image-pro-api">Nano Banana 2 Pro</option>
+          <option value="gpt-image-2">GPT-Image 2.0</option>
+        </select>
+      </div>
+      <!-- 尺寸选择 -->
+      <div class="form-group">
+        <label>📐 海报尺寸</label>
+        <select id="sizeSelect">
+          <option value="16:9">16:9（横版海报）</option>
+          <option value="1:1">1:1（正方形）</option>
+          <option value="9:16">9:16（竖版海报）</option>
+          <option value="4:3">4:3（横版）</option>
+          <option value="3:4">3:4（竖版）</option>
+          <option value="3:2">3:2（横版）</option>
+          <option value="2:3">2:3（竖版）</option>
+        </select>
+      </div>
+      <!-- 提示词 -->
+      <div class="form-group full">
+        <label>✏️ 正向提示词（英文海报描述）</label>
+        <textarea id="promptInput" placeholder="例如：A professional e-commerce product poster featuring a car fan, studio lighting, clean white background, modern minimalist style, high resolution, commercial photography..."></textarea>
+      </div>
+      <!-- 图片上传 -->
+      <div class="form-group full">
+        <label>🖼️ 参考图（上传产品原图 → 图生图；不上传 → 文生图，支持多张）</label>
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+          <input type="file" id="fileInput" accept="image/*" multiple onchange="handleImageUpload(event)" />
+          <div id="uploadPlaceholder">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">点击或拖拽上传产品原图（可多选）</div>
+            <div class="upload-hint">支持 JPG / PNG / WebP，每张建议不超过 10MB</div>
+          </div>
+        </div>
+        <div id="previewGrid" style="display:none; flex-wrap:wrap; gap:10px; margin-top:12px;"></div>
+        <div id="imageCount" style="font-size:12px; color:var(--text-dim); margin-top:6px; display:none;"></div>
+      </div>
+    </div>
+
+    <button class="generate-btn" id="generateBtn" onclick="generate()">
+      <div class="spinner"></div>
+      <span class="btn-text">🚀 开始生成</span>
+    </button>
+
+    <!-- 进度条 -->
+    <div class="progress-bar-wrap" id="progressWrap">
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-text" id="progressText">提交任务中...</div>
+    </div>
+  </div>
+
+  <!-- 错误展示 -->
+  <div class="error-box" id="errorBox">
+    <div class="error-title">⚠️ 生成失败</div>
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
+
+  <!-- 结果展示 -->
+  <div class="result-section" id="resultSection">
+    <div class="result-header">
+      <div class="result-title">生成结果 <span class="mode-badge" id="modeBadge"></span></div>
+      <div class="result-actions">
+        <button onclick="downloadImage()">💾 下载图片</button>
+        <button onclick="openInNewTab()">🔗 新窗口打开</button>
+      </div>
+    </div>
+    <div class="result-image-wrap">
+      <img id="resultImage" />
+    </div>
+  </div>
+
+  <div class="footer-note">Powered by APIMart · 本地运行，密钥仅存储于浏览器</div>
+</div>
+
+<script>
+  // ====== 密码验证 ======
+  async function sha256(message) {
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  function isFirstTime() {
+    return !localStorage.getItem('auth_hash');
+  }
+
+  async function authSubmit() {
+    const input = document.getElementById('authInput');
+    const errEl = document.getElementById('authError');
+    const val = input.value.trim();
+    if (!val) { errEl.textContent = '请输入密码'; input.focus(); return; }
+    if (isFirstTime()) {
+      if (val.length < 4) { errEl.textContent = '密码至少 4 位'; return; }
+      const hash = await sha256(val);
+      localStorage.setItem('auth_hash', hash);
+      unlockApp();
+    } else {
+      const hash = await sha256(val);
+      if (hash === localStorage.getItem('auth_hash')) {
+        unlockApp();
+      } else {
+        errEl.textContent = '密码错误，请重试';
+        input.value = '';
+        input.focus();
+        const card = document.querySelector('.auth-card');
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = 'shake 0.4s ease';
+      }
+    }
+  }
+
+  function unlockApp() {
+    document.getElementById('authOverlay').classList.add('hidden');
+    document.getElementById('mainContent').style.display = 'block';
+    document.getElementById('logoutBtn').style.display = 'block';
+    sessionStorage.setItem('authed', '1');
+  }
+
+  function logout() {
+    sessionStorage.removeItem('authed');
+    document.getElementById('authOverlay').classList.remove('hidden');
+    document.getElementById('mainContent').style.display = 'none';
+    document.getElementById('logoutBtn').style.display = 'none';
+    document.getElementById('authInput').value = '';
+    document.getElementById('authError').textContent = '';
+    updateAuthUI();
+  }
+
+  function updateAuthUI() {
+    if (isFirstTime()) {
+      document.getElementById('authTitle').textContent = '首次设置';
+      document.getElementById('authDesc').textContent = '请设置一个访问密码（至少4位），后续每次打开都需要输入';
+      document.getElementById('authInput').placeholder = '设置密码';
+    } else {
+      document.getElementById('authTitle').textContent = '身份验证';
+      document.getElementById('authDesc').textContent = '请输入密码以继续使用';
+      document.getElementById('authInput').placeholder = '请输入密码';
+    }
+  }
+
+  (function initAuth() {
+    // 直接显示主内容，跳过密码验证
+    document.getElementById('authOverlay').classList.add('hidden');
+    document.getElementById('mainContent').style.display = 'block';
+  })();
+
+  // ====== 状态 ======
+  let uploadedImages = []; // 数组，每项 { dataUrl, name }
+  let currentResultUrl = null;
+
+  // ====== CORS 代理 ======
+  function toggleProxyInput() {
+    const wrap = document.getElementById('proxyInputWrap');
+    wrap.style.display = document.getElementById('useProxyCheck').checked ? 'block' : 'none';
+  }
+
+  function getProxyPrefix() {
+    if (!document.getElementById('useProxyCheck').checked) return '';
+    return document.getElementById('proxyInput').value.trim().replace(/\/+$/, '') + '/';
+  }
+
+  function loadProxyConfig() {
+    const saved = localStorage.getItem('proxy_config');
+    if (saved) {
+      try {
+        const cfg = JSON.parse(saved);
+        if (cfg.enabled) {
+          document.getElementById('useProxyCheck').checked = true;
+          document.getElementById('proxyInput').value = cfg.proxy || '';
+          toggleProxyInput();
+        }
+      } catch(e) {}
+    }
+  }
+
+  function saveProxyConfig() {
+    const cfg = {
+      enabled: document.getElementById('useProxyCheck').checked,
+      proxy: document.getElementById('proxyInput').value.trim()
+    };
+    localStorage.setItem('proxy_config', JSON.stringify(cfg));
+  }
+
+  // ====== API Key ======
+  function toggleKeySection() {
+    const body = document.getElementById('keyBody');
+    const icon = document.getElementById('keyToggleIcon');
+    body.classList.toggle('show');
+    icon.classList.toggle('open');
+  }
+
+  function saveKey() {
+    const val = document.getElementById('apiKeyInput').value.trim();
+    if (!val) { showKeyStatus('请输入有效的 API Key', 'empty'); return; }
+    localStorage.setItem('apimart_key', val);
+    showKeyStatus('✅ 密钥已保存到本地浏览器', 'ok');
+  }
+
+  function showKeyStatus(msg, cls) {
+    const el = document.getElementById('keyStatus');
+    el.textContent = msg;
+    el.className = 'key-status ' + cls;
+  }
+
+  function loadKey() {
+    const saved = localStorage.getItem('apimart_key');
+    if (saved) {
+      document.getElementById('apiKeyInput').value = saved;
+      showKeyStatus('✅ 已加载本地保存的密钥', 'ok');
+    } else {
+      showKeyStatus('⚠️ 尚未配置密钥，请先填入你的 APIMart Key', 'empty');
+      document.getElementById('keyBody').classList.add('show');
+      document.getElementById('keyToggleIcon').classList.add('open');
+    }
+  }
+
+  // ====== 图片上传（多图） ======
+  function handleImageUpload(e) {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    let pending = files.length;
+    files.forEach((file, idx) => {
+      if (file.size > 10 * 1024 * 1024) {
+        alert(`「${file.name}」超过 10MB，已跳过`);
+        pending--;
+        if (pending === 0) renderPreviews();
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        uploadedImages.push({ dataUrl: ev.target.result, name: file.name });
+        pending--;
+        if (pending === 0) renderPreviews();
+      };
+      reader.readAsDataURL(file);
+    });
+    // 清空 input 以便再次选择相同文件
+    e.target.value = '';
+  }
+
+  function renderPreviews() {
+    const grid = document.getElementById('previewGrid');
+    const countEl = document.getElementById('imageCount');
+    const zone = document.getElementById('uploadZone');
+    const placeholder = document.getElementById('uploadPlaceholder');
+
+    grid.innerHTML = '';
+    if (uploadedImages.length === 0) {
+      grid.style.display = 'none';
+      countEl.style.display = 'none';
+      zone.style.display = '';
+      zone.classList.remove('has-image');
+      return;
+    }
+
+    uploadedImages.forEach((img, idx) => {
+      const item = document.createElement('div');
+      item.className = 'preview-item';
+      item.innerHTML = `
+        <img src="${img.dataUrl}" title="${img.name}" />
+        <button class="remove-img" onclick="removeImage(${idx})" title="移除">×</button>
+        <span class="img-index">${idx + 1}/${uploadedImages.length}</span>
+      `;
+      grid.appendChild(item);
+    });
+    grid.style.display = 'flex';
+    countEl.style.display = 'block';
+    countEl.textContent = `已添加 ${uploadedImages.length} 张参考图`;
+    zone.style.display = 'none';
+    zone.classList.add('has-image');
+
+    // 在预览区底部显示"继续添加"按钮
+    const addMore = document.createElement('div');
+    addMore.className = 'preview-item';
+    addMore.style.border = '2px dashed var(--border)';
+    addMore.style.cursor = 'pointer';
+    addMore.style.flexDirection = 'column';
+    addMore.style.gap = '4px';
+    addMore.innerHTML = `<span style="font-size:24px;opacity:0.5;">+</span><span style="font-size:11px;color:var(--text-dim);">继续添加</span>`;
+    addMore.onclick = () => document.getElementById('fileInput').click();
+    grid.appendChild(addMore);
+  }
+
+  function removeImage(idx) {
+    uploadedImages.splice(idx, 1);
+    renderPreviews();
+  }
+
+  // 拖拽支持
+  const uploadZone = document.getElementById('uploadZone');
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.style.borderColor = '#6c5ce7'; });
+  uploadZone.addEventListener('dragleave', e => { e.preventDefault(); uploadZone.style.borderColor = ''; });
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZone.style.borderColor = '';
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+    if (files.length) {
+      handleImageUpload({ target: { files: files }, preventDefault: ()=>{} });
+    }
+  });
+
+  // ====== 工具函数 ======
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  function updateProgress(pct, text) {
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = text;
+  }
+
+  // ====== 提交任务 ======
+  async function submitTask(apiKey, body) {
+    const proxy = getProxyPrefix();
+    const url = proxy + 'https://api.apimart.ai/v1/images/generations';
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey
+      },
+      body: JSON.stringify(body)
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      const errMsg = data.error?.message || data.message || JSON.stringify(data);
+      throw new Error('提交失败 (' + resp.status + '): ' + errMsg);
+    }
+
+    // APIMart 异步响应: { code: 200, data: [{ status: "submitted", task_id: "..." }] }
+    if (data.code === 200 && data.data && data.data[0] && data.data[0].task_id) {
+      return data.data[0].task_id;
+    }
+
+    // 兼容 OpenAI 同步格式（如果某些模型直接返回结果）
+    if (data.data && data.data[0] && (data.data[0].url || data.data[0].b64_json)) {
+      return { sync: true, url: data.data[0].url || ('data:image/png;base64,' + data.data[0].b64_json) };
+    }
+
+    throw new Error('未知响应格式: ' + JSON.stringify(data));
+  }
+
+  // ====== 轮询任务 ======
+  async function pollTask(apiKey, taskId) {
+    const proxy = getProxyPrefix();
+    const url = proxy + 'https://api.apimart.ai/v1/tasks/' + taskId;
+    const resp = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + apiKey
+      }
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      const errMsg = data.error?.message || data.message || JSON.stringify(data);
+      throw new Error('查询失败 (' + resp.status + '): ' + errMsg);
+    }
+
+    // 兼容两种响应格式
+    // 格式1: { code: 200, data: { status: "completed", result: { images: [{ url: [...] }] } } }
+    // 格式2: { code: 200, data: [{ status: "completed", result: { images: [...] } }] }
+    let taskData = data.data;
+    if (Array.isArray(taskData)) taskData = taskData[0];
+
+    const status = taskData?.status || 'unknown';
+    const progress = taskData?.progress || 0;
+
+    if (status === 'completed') {
+      // 提取图片 URL
+      let imageUrl = null;
+      const result = taskData.result;
+      if (result && result.images && result.images[0]) {
+        const img = result.images[0];
+        if (img.url) {
+          imageUrl = Array.isArray(img.url) ? img.url[0] : img.url;
+        } else if (img.b64_json) {
+          imageUrl = 'data:image/png;base64,' + img.b64_json;
+        }
+      }
+      // 兼容 OpenAI 格式
+      if (!imageUrl && taskData.url) {
+        imageUrl = taskData.url;
+      }
+      if (!imageUrl && Array.isArray(data.data) && data.data[0]?.url) {
+        imageUrl = data.data[0].url;
+      }
+      if (!imageUrl) {
+        throw new Error('任务完成但未找到图片链接: ' + JSON.stringify(data));
+      }
+      return { status: 'completed', imageUrl, progress: 100 };
+    }
+
+    if (status === 'failed') {
+      const errMsg = taskData.error?.message || taskData.error || '任务失败';
+      throw new Error('生成失败: ' + errMsg);
+    }
+
+    return { status, progress };
+  }
+
+  // ====== 生成（主流程） ======
+  async function generate() {
+    // 校验
+    const apiKey = localStorage.getItem('apimart_key');
+    if (!apiKey) {
+      alert('请先在顶部配置 API 密钥');
+      document.getElementById('keyBody').classList.add('show');
+      document.getElementById('keyToggleIcon').classList.add('open');
+      return;
+    }
+    const prompt = document.getElementById('promptInput').value.trim();
+    if (!prompt) {
+      alert('请输入正向提示词');
+      document.getElementById('promptInput').focus();
+      return;
+    }
+
+    const model = document.getElementById('modelSelect').value;
+    const size = document.getElementById('sizeSelect').value;
+    const isImg2Img = uploadedImages.length > 0;
+
+    // 保存代理配置
+    saveProxyConfig();
+
+    // 构建请求体
+    const body = { model, prompt, size, n: 1 };
+    if (isImg2Img) {
+      body.image_urls = uploadedImages.map(img => img.dataUrl);  // 所有参考图 data URI
+    }
+
+    // GPT-Image-2 额外参数
+    if (model === 'gpt-image-2') {
+      body.resolution = '2k';
+    }
+
+    // UI 状态
+    const btn = document.getElementById('generateBtn');
+    const btnText = btn.querySelector('.btn-text');
+    btn.classList.add('loading');
+    btn.disabled = true;
+    document.getElementById('errorBox').classList.remove('show');
+    document.getElementById('resultSection').classList.remove('show');
+    document.getElementById('progressWrap').classList.add('show');
+    updateProgress(5, '正在提交任务...');
+
+    try {
+      // 步骤1: 提交任务
+      const submitResult = await submitTask(apiKey, body);
+
+      // 如果是同步返回（直接拿到图片 URL）
+      if (submitResult.sync) {
+        updateProgress(100, '生成完成！');
+        showResult(submitResult.url, isImg2Img);
+        return;
+      }
+
+      const taskId = submitResult;
+      updateProgress(10, '任务已提交，等待生成中...');
+
+      // 步骤2: 轮询结果
+      const MAX_POLLS = 120;  // 最多轮询 120 次（约 4 分钟，间隔 2 秒）
+      let imageUrl = null;
+
+      for (let i = 0; i < MAX_POLLS; i++) {
+        await sleep(2000);  // 每 2 秒轮询一次
+
+        const result = await pollTask(apiKey, taskId);
+
+        if (result.status === 'completed') {
+          imageUrl = result.imageUrl;
+          updateProgress(100, '生成完成！');
+          break;
+        }
+
+        // 更新进度
+        const pct = Math.min(10 + (result.progress || 0) * 0.85, 95);
+        const elapsed = (i + 1) * 2;
+        updateProgress(pct, `生成中... (${elapsed}s) 状态: ${result.status}`);
+      }
+
+      if (!imageUrl) {
+        throw new Error('任务超时，请稍后重试。任务ID: ' + taskId);
+      }
+
+      showResult(imageUrl, isImg2Img);
+
+    } catch (err) {
+      document.getElementById('errorMsg').textContent = err.message || String(err);
+      document.getElementById('errorBox').classList.add('show');
+      document.getElementById('errorBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } finally {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+      setTimeout(() => {
+        document.getElementById('progressWrap').classList.remove('show');
+      }, 2000);
+    }
+  }
+
+  // ====== 展示结果 ======
+  function showResult(imageUrl, isImg2Img) {
+    currentResultUrl = imageUrl;
+    document.getElementById('resultImage').src = imageUrl;
+    const badge = document.getElementById('modeBadge');
+    badge.textContent = isImg2Img ? '图生图' : '文生图';
+    badge.className = 'mode-badge ' + (isImg2Img ? 'img2img' : 'txt2img');
+    document.getElementById('resultSection').classList.add('show');
+    document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // ====== 结果操作 ======
+  function downloadImage() {
+    if (!currentResultUrl) return;
+    const a = document.createElement('a');
+    a.href = currentResultUrl;
+    a.download = 'poster_' + Date.now() + '.png';
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  function openInNewTab() {
+    if (!currentResultUrl) return;
+    window.open(currentResultUrl, '_blank');
+  }
+
+  // ====== 初始化 ======
+  loadKey();
+  loadProxyConfig();
+</script>
+</body>
+</html>
