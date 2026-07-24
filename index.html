@@ -432,6 +432,7 @@ function initAccounts() {
 }
 
 function hashPassword(pwd) {
+  // Simple hash for demo
   let hash = 0;
   const str = pwd + '_poster_ai_salt';
   for (let i = 0; i < str.length; i++) {
@@ -474,15 +475,18 @@ function showApp() {
   document.getElementById('mainApp').style.display = 'block';
   document.getElementById('userInfo').textContent = `👤 ${currentUser.username}`;
   document.getElementById('adminBtn').style.display = currentUser.role === 'admin' ? '' : 'none';
+  // Load API key
   const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
   const acc = accounts.find(a => a.username === currentUser.username);
   if (acc && acc.apiKey) {
     document.getElementById('apiKeyInput').value = acc.apiKey;
   }
+  // Load custom prompt
   const cp = localStorage.getItem('poster_ai_custom_prompts') || '';
   if (cp) document.getElementById('customPromptText').value = cp;
 }
 
+// ============ Admin ============
 function openAdmin() {
   document.getElementById('adminOverlay').classList.remove('hidden');
   renderAccountTable();
@@ -539,6 +543,7 @@ function saveCustomPrompt() {
   alert('模板已保存');
 }
 
+// ============ Image Upload ============
 function setupPasteHandlers() {
   document.addEventListener('paste', (e) => {
     const items = e.clipboardData?.items;
@@ -547,6 +552,7 @@ function setupPasteHandlers() {
       if (item.type.startsWith('image/')) {
         e.preventDefault();
         const file = item.getAsFile();
+        // Determine target: if focus is near ref zone, add to ref; else product
         const activeEl = document.activeElement;
         const nearRef = activeEl && (activeEl.closest('#refZone') || activeEl.closest('#refPreview'));
         if (nearRef) {
@@ -639,6 +645,7 @@ function removeRef(idx) {
   }
 }
 
+// ============ Chip Selection ============
 function selectChip(el, group) {
   const parent = el.parentElement;
   parent.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
@@ -651,12 +658,14 @@ function selectChip(el, group) {
   updatePreview();
 }
 
+// ============ Collapse ============
 function toggleCollapse(el) {
   el.classList.toggle('collapsed');
   const content = el.nextElementSibling;
   content.classList.toggle('collapsed');
 }
 
+// ============ API Key ============
 function saveApiKey() {
   const key = document.getElementById('apiKeyInput').value.trim();
   const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
@@ -673,7 +682,9 @@ function getApiKey() {
   const acc = accounts.find(a => a.username === currentUser.username);
   return acc?.apiKey || document.getElementById('apiKeyInput').value.trim();
 }
-  function buildPrompt() {
+
+// ============ Prompt Building ============
+function buildPrompt() {
   const name = document.getElementById('productName').value.trim();
   const selling = document.getElementById('productSelling').value.trim();
   const region = document.getElementById('targetRegion').value;
@@ -947,358 +958,174 @@ function onGenerate() {
 
   doGenerate();
 }
-  async function doGenerate() {
-  // Check API Key
+
+async function doGenerate() {
   const apiKey = getApiKey();
   if (!apiKey) return setStatus('请先设置 API Key', 'error');
 
-  // Read form
-  const name = document.getElementById('productName').value.trim();
-  const model = document.getElementById('modelSelect').value;
+  const prompt = buildPrompt();
+  const model = document.getElementById('aiModel').value;
   const size = document.getElementById('imageSize').value;
-  const quality = document.getElementById('imageQuality').value;
+  const count = parseInt(document.getElementById('imageCount').value);
 
-  // Build prompt
-  const finalPrompt = buildPrompt();
-  if (!finalPrompt) return setStatus('请先填写产品信息', 'error');
-
-  setStatus('提交生成任务...', 'info');
-  document.getElementById('generateBtn').disabled = true;
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ 生成中...';
+  setStatus('正在提交任务...', 'info');
 
   try {
-    // Submit task
-    const payload = {
+    // Build image_urls array (all product images + all ref images)
+    const imageUrls = [...productImages, ...refImages];
+
+    const body = {
       model: model,
-      prompt: finalPrompt,
-      n: 1,
-      size: size
+      prompt: prompt,
+      size: size,
+      n: count,
+      image_urls: imageUrls
     };
-    if (quality === 'hd') payload.quality = 'hd';
 
-    // Add reference images
-    if (productImages.length > 0) {
-      payload.image_urls = [...productImages];
-    }
-    if (refImages.length > 0) {
-      payload.image_urls = (payload.image_urls || []).concat(refImages);
-    }
-
-    let response = await fetchWithProxy('https://api.apimart.ai/v1/images/generations', {
+    // Submit task
+    const proxies = getProxyUrl();
+    const submitResp = await fetchWithProxy('https://api.apimart.ai/v1/images/generations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + apiKey
       },
-      body: JSON.stringify(payload)
-    });
+      body: JSON.stringify(body)
+    }, proxies);
 
-    if (response.status === 401) {
-      document.getElementById('apiStatus').textContent = '❌';
-      return setStatus('❌ API Key 无效，请检查', 'error');
-    }
-    if (!response.ok) {
-      const errText = await response.text();
-      return setStatus(`❌ 提交失败 (${response.status})，错误代码：${errText.substring(0,200)}`, 'error');
+    const submitData = await submitResp.json();
+
+    if (submitData.code !== 200 || !submitData.data || !submitData.data[0]?.task_id) {
+      throw new Error(`提交失败: HTTP ${submitResp.status} - ${JSON.stringify(submitData)}`);
     }
 
-    const data = await response.json();
-    const taskId = data.task_id;
-    if (!taskId) return setStatus('❌ 未返回任务ID，响应：' + JSON.stringify(data).substring(0,200), 'error');
+    const taskId = submitData.data[0].task_id;
+    setStatus(`任务已提交 (${taskId.slice(0, 8)}...)，等待生成...`, 'info');
 
-    setStatus(`✅ 已提交，任务ID：${taskId}，等待生成...`, 'success');
-    pollTask(taskId, apiKey);
+    // Poll for result
+    const result = await pollTask(taskId, apiKey);
+    displayResults(result);
+    setStatus('✅ 生成完成！', 'success');
+    qualityScore = null; // Reset for next generation
+
   } catch (err) {
-    document.getElementById('generateBtn').disabled = false;
-    setStatus('❌ 提交失败：' + err.message + '，所有代理均不可用，请检查网络连接', 'error');
+    setStatus('❌ 生成失败: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🚀 生成图片';
   }
 }
 
-async function pollTask(taskId, apiKey) {
-  const startTime = Date.now();
-  const maxTime = 5 * 60 * 1000;
-
-  const poll = async () => {
-    if (Date.now() - startTime > maxTime) {
-      document.getElementById('generateBtn').disabled = false;
-      return setStatus('❌ 超时（5分钟），请手动查询任务ID：' + taskId, 'error');
-    }
-
-    try {
-      let response = await fetchWithProxy(`https://api.apimart.ai/v1/tasks/${taskId}`, {
-        headers: { 'Authorization': 'Bearer ' + apiKey }
-      });
-      const data = await response.json();
-
-      if (!response.ok) {
-        document.getElementById('generateBtn').disabled = false;
-        return setStatus(`❌ 查询失败 (${response.status})，任务ID：${taskId}`, 'error');
-      }
-
-      const status = data.status || data.state || '';
-
-      if (status === 'completed' || status === 'success') {
-        // Find the result URL
-        let url = '';
-        if (data.output && data.output.images && data.output.images.length > 0) {
-          url = data.output.images[0].url || data.output.images[0];
-        } else if (data.data && data.data.length > 0) {
-          url = data.data[0].url;
-        } else if (data.result && data.result.url) {
-          url = data.result.url;
-        } else if (typeof data.output === 'string') {
-          url = data.output;
-        }
-
-        if (!url) return setStatus('❌ 任务完成但未找到图片URL，请检查任务详情。任务ID：' + taskId, 'error');
-
-        displayResult(url, taskId);
-        document.getElementById('generateBtn').disabled = false;
-        return;
-      }
-
-      if (status === 'failed' || status === 'error') {
-        document.getElementById('generateBtn').disabled = false;
-        return setStatus(`❌ 生成失败。任务ID：${taskId}，错误信息：${data.error || data.message || '未知'}`, 'error');
-      }
-
-      // Still processing
-      setStatus(`⏳ ${status === 'processing' ? '处理中' : status || '排队中'}...任务ID：${taskId}`, 'info');
-      setTimeout(poll, 3000);
-    } catch (err) {
-      document.getElementById('generateBtn').disabled = false;
-      setStatus('❌ 查询失败：' + err.message, 'error');
-    }
-  };
-
-  poll();
-}
-
-function displayResult(url, taskId) {
-  const container = document.getElementById('resultImageContainer');
-  container.innerHTML = `
-    <img src="${url}" alt="生成结果" style="width:100%;border-radius:8px;cursor:pointer" onclick="window.open(this.src)">
-    <div style="margin-top:8px;display:flex;gap:8px">
-      <a href="${url}" download="poster_${taskId}.png" class="btn btn-success" style="text-decoration:none;font-size:12px">⬇️ 下载</a>
-      <span style="font-size:11px;color:var(--text2);line-height:32px">任务ID：${taskId}</span>
-    </div>
-  `;
-  document.getElementById('resultArea').classList.remove('hidden');
-  document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
-  setStatus('✅ 生成完成！点击图片可放大查看', 'success');
-}
-
-function setStatus(msg, type) {
-  const el = document.getElementById('statusMessage');
-  el.textContent = msg;
-  el.className = 'status-message ' + (type || 'info');
-}
-
-// ============ Proxy Functions ============
-async function fetchWithProxy(url, options) {
-  const proxyList = [
+function getProxyUrl() {
+  // Multiple CORS proxies with automatic failover
+  const allProxies = [
     'https://corsproxy.io/?',
     'https://api.allorigins.win/raw?url=',
     'https://corsproxy.org/?',
     'https://thingproxy.freeboard.io/fetch/',
-    '' // Direct as last resort
+    ''  // Direct (no proxy) as last resort
   ];
+  
+  // Check user preference
+  const userPref = document.getElementById('proxySelect')?.value || 'auto';
+  if (userPref === 'auto') return allProxies;
+  return [userPref];
+}
 
-  // Use selected proxy if set
-  const selectedProxy = localStorage.getItem('proxy_config') || '';
-  if (selectedProxy && selectedProxy !== 'auto') {
-    const targetUrl = selectedProxy === 'direct' ? url : selectedProxy + url;
-    const resp = await fetch(targetUrl, options);
-    if (resp.ok) return resp;
-    throw new Error(`Selected proxy failed: ${resp.status}`);
-  }
-
-  // Auto mode: try each proxy
-  for (const proxy of proxyList) {
+async function fetchWithProxy(url, options, proxies) {
+  for (let i = 0; i < proxies.length; i++) {
     try {
-      const targetUrl = proxy ? proxy + url : url;
-      const resp = await fetch(targetUrl, options);
-      if (resp.ok || resp.status === 401) return resp; // 401 = valid response, bad key
+      const proxy = proxies[i];
+      const proxyUrl = proxy ? (proxy + encodeURIComponent(url)) : url;
+      const resp = await fetch(proxyUrl, { ...options, signal: AbortSignal.timeout(15000) });
+      if (resp.ok) return resp;
+      // If proxy returns error, try next
     } catch (e) {
       continue; // Try next proxy
     }
   }
-  throw new Error('All proxies failed');
+  throw new Error('所有代理均失败，请检查网络或API Key');
+}
+
+async function pollTask(taskId, apiKey, maxAttempts = 60) {
+  const proxies = getProxyUrl();
+  for (let i = 0; i < maxAttempts; i++) {
+    await sleep(3000);
+    try {
+      const resp = await fetchWithProxy(`https://api.apimart.ai/v1/tasks/${taskId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + apiKey
+        }
+      }, proxies);
+      const data = await resp.json();
+
+      if (data.code === 200 && data.data) {
+        const status = data.data.status;
+        if (status === 'completed') {
+          return data.data.result;
+        } else if (status === 'failed') {
+          throw new Error(`任务失败: ${data.data.error || '未知错误'}`);
+        }
+        setStatus(`生成中... (${i + 1}/${maxAttempts})`, 'info');
+      }
+    } catch (e) {
+      if (e.message.includes('任务失败')) throw e;
+      // Network error, continue polling
+    }
+  }
+  throw new Error('超时：任务未在规定时间内完成');
+}
+
+function displayResults(result) {
+  const area = document.getElementById('resultArea');
+  const container = document.getElementById('resultImages');
+  area.style.display = 'block';
+
+  if (result && result.images && result.images.length > 0) {
+    container.innerHTML = result.images.map(img =>
+      `<img src="${img.url}" onclick="window.open('${img.url}','_blank')" title="点击查看大图">`
+    ).join('');
+  } else {
+    container.innerHTML = '<p style="color:var(--text2)">未获取到图片结果</p>';
+  }
+}
+
+// ============ Utils ============
+function setStatus(msg, type) {
+  const bar = document.getElementById('statusBar');
+  bar.textContent = msg;
+  bar.className = 'status-bar ' + type;
 }
 
 async function testProxy() {
-  const select = document.getElementById('proxySelect');
-  const value = select.value;
-  const btn = document.getElementById('testProxyBtn');
-  const result = document.getElementById('proxyTestResult');
-
-  btn.disabled = true;
-  btn.textContent = '测试中...';
-  result.textContent = '';
-
-  const testUrl = 'https://api.apimart.ai/v1/tasks/test';
-  const proxyUrl = value === 'auto' ? '' : (value === 'direct' ? testUrl : value + testUrl);
-
-  try {
-    const resp = await fetch(proxyUrl, { headers: { 'Authorization': 'Bearer test' } });
-    result.textContent = `✅ 连接成功！状态码：${resp.status}`;
-    result.style.color = 'var(--success)';
-    if (value === 'auto') {
-      localStorage.removeItem('proxy_config');
-    } else {
-      localStorage.setItem('proxy_config', value);
+  const statusEl = document.getElementById('proxyStatus');
+  statusEl.textContent = '测试中...';
+  statusEl.style.color = 'var(--text2)';
+  const proxies = getProxyUrl();
+  for (let i = 0; i < proxies.length; i++) {
+    try {
+      const proxy = proxies[i];
+      const proxyUrl = proxy ? (proxy + encodeURIComponent('https://api.apimart.ai/v1/tasks/test')) : 'https://api.apimart.ai/v1/tasks/test';
+      await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
+      statusEl.textContent = '✅ 代理可用: ' + (proxy || '直接连接');
+      statusEl.style.color = 'var(--success)';
+      return;
+    } catch (e) {
+      continue;
     }
-  } catch (e) {
-    result.textContent = `❌ 连接失败：${e.message}`;
-    result.style.color = 'var(--danger)';
   }
-
-  btn.disabled = false;
-  btn.textContent = '🔍 测试连接';
+  statusEl.textContent = '❌ 所有代理不可用';
+  statusEl.style.color = 'var(--danger)';
 }
 
-// ============ Admin ============
-function login() {
-  const user = document.getElementById('loginUser').value.trim();
-  const pass = document.getElementById('loginPass').value;
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[{"username":"admin","password":"admin123","role":"admin"}]');
-  const found = accounts.find(a => a.username === user && a.password === pass);
-
-  if (found) {
-    const session = { username: found.username, role: found.role, loginTime: new Date().toISOString() };
-    localStorage.setItem('poster_ai_session', JSON.stringify(session));
-    document.getElementById('currentUser').textContent = found.username;
-    document.getElementById('adminArea').classList.remove('hidden');
-    document.getElementById('mainArea').classList.remove('hidden');
-    document.getElementById('loginArea').classList.add('hidden');
-    loadAccounts();
-  } else {
-    alert('用户名或密码错误');
-  }
-}
-
-function logout() {
-  localStorage.removeItem('poster_ai_session');
-  location.reload();
-}
-
-function showAddAccount() {
-  document.getElementById('addAccountForm').classList.remove('hidden');
-}
-
-function hideAddAccount() {
-  document.getElementById('addAccountForm').classList.add('hidden');
-  document.getElementById('newUsername').value = '';
-  document.getElementById('newPassword').value = '';
-  document.getElementById('newRole').value = 'user';
-}
-
-function addAccount() {
-  const username = document.getElementById('newUsername').value.trim();
-  const password = document.getElementById('newPassword').value;
-  const role = document.getElementById('newRole').value;
-
-  if (!username || !password) return alert('请填写用户名和密码');
-  if (password.length < 4) return alert('密码至少4位');
-
-  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
-  if (accounts.find(a => a.username === username)) return alert('用户名已存在');
-
-  accounts.push({ username, password, role });
-  localStorage.setItem('poster_ai_accounts', JSON.stringify(accounts));
-  hideAddAccount();
-  loadAccounts();
-}
-
-function deleteAccount(username) {
-  if (!confirm(`确认删除用户 ${username}？`)) return;
-  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
-  const filtered = accounts.filter(a => a.username !== username);
-  localStorage.setItem('poster_ai_accounts', JSON.stringify(filtered));
-  loadAccounts();
-}
-
-function loadAccounts() {
-  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
-  const tbody = document.getElementById('accountsTbody');
-  tbody.innerHTML = '';
-
-  accounts.forEach(acc => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td style="padding:8px 12px">${acc.username}</td>
-      <td style="padding:8px 12px">${acc.role}</td>
-      <td style="padding:8px 12px">
-        <button class="btn btn-danger" onclick="deleteAccount('${acc.username}')" ${acc.username === 'admin' ? 'disabled' : ''} style="font-size:11px;padding:4px 8px">删除</button>
-      </td>
-    `;
-    tbody.appendChild(row);
-  });
-}
-
-function setApiKey() {
-  const key = document.getElementById('apiKeyInput').value.trim();
-  if (!key) return alert('请输入 API Key');
-  localStorage.setItem('apimart_key', key);
-  document.getElementById('apiStatus').textContent = '✅';
-  alert('API Key 已保存');
-}
-
-function saveCustomPrompt() {
-  const template = document.getElementById('customPromptInput').value.trim();
-  localStorage.setItem('poster_ai_custom_prompts', template);
-  alert(template ? '自定义模板已保存' : '已清除自定义模板');
-}
-
-// ============ Utility ============
-function debounce(fn, delay) {
-  let timer = null;
-  return function() {
-    clearTimeout(timer);
-    timer = setTimeout(fn, delay);
-  };
-}
-
-function init() {
-  // Initialize admin account
-  if (!localStorage.getItem('poster_ai_initialized')) {
-    localStorage.setItem('poster_ai_accounts', JSON.stringify([{
-      username: 'admin',
-      password: 'admin123',
-      role: 'admin'
-    }]));
-    localStorage.setItem('poster_ai_initialized', 'true');
-  }
-
-  // Check session
-  const session = localStorage.getItem('poster_ai_session');
-  if (session) {
-    const s = JSON.parse(session);
-    document.getElementById('currentUser').textContent = s.username;
-    document.getElementById('adminArea').classList.remove('hidden');
-    document.getElementById('mainArea').classList.remove('hidden');
-    document.getElementById('loginArea').classList.add('hidden');
-    loadAccounts();
-  } else {
-    document.getElementById('loginArea').classList.remove('hidden');
-  }
-
-  // Load API Key
-  const savedKey = localStorage.getItem('apimart_key');
-  if (savedKey) {
-    document.getElementById('apiKeyInput').value = savedKey;
-    document.getElementById('apiStatus').textContent = '✅';
-  }
-
-  // Load proxy setting
-  const savedProxy = localStorage.getItem('proxy_config') || 'auto';
-  document.getElementById('proxySelect').value = savedProxy;
-
-  // Load custom prompt
-  const customPrompt = localStorage.getItem('poster_ai_custom_prompts') || '';
-  document.getElementById('customPromptInput').value = customPrompt;
-}
-
-// Initialize on load
+// ============ Start ============
 init();
-  
+</script>
+</body>
+</html>
