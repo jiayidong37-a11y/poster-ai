@@ -1,1 +1,1304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回帖客服海报生图工作台</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f1117;--card:#1a1d27;--border:#2a2d3a;--text:#e4e4e7;--text2:#9ca3af;--accent:#6366f1;--accent2:#818cf8;--success:#22c55e;--warn:#f59e0b;--danger:#ef4444;--radius:8px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5}
+.container{max-width:1200px;margin:0 auto;padding:12px}
+header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px}
+header h1{font-size:16px;font-weight:600;background:linear-gradient(135deg,var(--accent),#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+header .actions{display:flex;gap:8px;align-items:center}
+header .actions span{font-size:12px;color:var(--text2)}
+.btn{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:500;transition:all .2s}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent2)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text2)}.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-success{background:var(--success);color:#fff}.btn-success:hover{opacity:.9}
+.btn-warn{background:var(--warn);color:#000}.btn-warn:hover{opacity:.9}
+.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{opacity:.9}
+.btn-sm{padding:4px 10px;font-size:11px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:768px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.card-title{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.card-title .icon{font-size:15px}
+.form-group{margin-bottom:10px}
+.form-group label{display:block;font-size:11px;color:var(--text2);margin-bottom:4px;font-weight:500}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:7px 10px;background:#0f1117;border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;outline:none;transition:border-color .2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
+.form-group textarea{resize:vertical;min-height:50px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.chip-group{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:5px 10px;border-radius:16px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:11px;transition:all .2s;position:relative}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip .chip-desc{display:none;position:absolute;top:100%;left:0;background:#2a2d3a;color:var(--text2);padding:6px 8px;border-radius:4px;font-size:10px;width:160px;z-index:10;margin-top:4px}
+.chip:hover .chip-desc{display:block}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:16px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.upload-zone:hover{border-color:var(--accent)}
+.upload-zone.has-image{border-style:solid;border-color:var(--accent)}
+.upload-zone input{display:none}
+.upload-zone .preview{max-width:100%;max-height:120px;border-radius:4px;margin-top:6px}
+.upload-zone .hint{font-size:11px;color:var(--text2)}
+.upload-zone .multi-preview{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.upload-zone .multi-preview img{width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--border)}
+.upload-zone .remove-btn{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:10px;display:flex;align-items:center;center:center}
+.collapsible{cursor:pointer;user-select:none}
+.collapsible::after{content:'▼';font-size:10px;margin-left:4px;transition:transform .2s}
+.collapsible.collapsed::after{transform:rotate(-90deg)}
+.collapse-content{overflow:hidden;transition:max-height .3s;max-height:500px}
+.collapse-content.collapsed{max-height:0}
+.quality-panel{background:linear-gradient(135deg,#1a1d27,#1e2130);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.quality-panel.hidden{display:none}
+.score-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+.score-item{text-align:center}
+.score-item .label{font-size:11px;color:var(--text2);margin-bottom:4px}
+.score-item .score{font-size:22px;font-weight:700}
+.score-item .bar{height:4px;background:var(--border);border-radius:2px;margin-top:4px;overflow:hidden}
+.score-item .bar-fill{height:100%;border-radius:2px;transition:width .5s}
+.overall-score{text-align:center;padding:10px;margin-bottom:10px;border-radius:var(--radius)}
+.overall-score .number{font-size:28px;font-weight:700}
+.overall-score .status{font-size:12px;margin-top:2px}
+.suggestions{margin:8px 0}
+.suggestions li{font-size:11px;color:var(--text2);margin-bottom:3px;padding-left:4px}
+.quality-actions{display:flex;gap:8px;margin-top:10px}
+.result-area{margin-top:12px}
+.result-area .images{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:10px}
+.result-area .images img{width:100%;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer}
+.result-area .images img:hover{border-color:var(--accent)}
+.status-bar{padding:8px 12px;border-radius:6px;margin-bottom:10px;font-size:12px;display:none}
+.status-bar.info{background:rgba(99,101,241,.1);border:1px solid rgba(99,101,241,.3);color:var(--accent2);display:block}
+.status-bar.success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--success);display:block}
+.status-bar.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--danger);display:block}
+.status-bar.warn{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:var(--warn);display:block}
+.prompt-preview{background:#0f1117;border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text2);max-height:100px;overflow-y:auto;white-space:pre-wrap;margin-top:6px}
+/* Login */
+.login-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:1000}
+.login-overlay.hidden{display:none}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;width:320px}
+.login-box h2{font-size:18px;text-align:center;margin-bottom:16px}
+.login-box .form-group{margin-bottom:12px}
+.login-box .btn{width:100%;padding:10px}
+/* Admin */
+.admin-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:999;overflow-y:auto;padding:20px}
+.admin-overlay.hidden{display:none}
+.admin-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto}
+.admin-box h2{font-size:16px;margin-bottom:12px}
+.admin-box table{width:100%;border-collapse:collapse;margin-top:8px}
+.admin-box th,.admin-box td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--border);font-size:12px}
+.admin-box th{color:var(--text2);font-weight:500}
+.tag{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:500}
+.tag-admin{background:rgba(99,101,241,.2);color:var(--accent2)}
+.tag-user{background:rgba(34,197,94,.2);color:var(--success)}
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;border-radius:9px;font-size:10px;font-weight:600;padding:0 4px}
+.badge-green{background:var(--success);color:#fff}
+.badge-yellow{background:var(--warn);color:#000}
+.badge-red{background:var(--danger);color:#fff}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:768px){.two-col{grid-template-columns:1fr}}
+.section-desc{font-size:11px;color:var(--text2);margin-bottom:6px;font-style:italic}
+.required::after{content:'*';color:var(--danger);margin-left:2px}
+</style>
+</head>
+<body>
 
+<!-- Login Overlay -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <h2>🔐 登录</h2>
+    <div class="form-group">
+      <label>用户名</label>
+      <input type="text" id="loginUser" placeholder="输入用户名">
+    </div>
+    <div class="form-group">
+      <label>密码</label>
+      <input type="password" id="loginPass" placeholder="输入密码">
+    </div>
+    <button class="btn btn-primary" onclick="doLogin()" style="margin-top:8px">登录</button>
+    <p style="text-align:center;margin-top:10px;font-size:11px;color:var(--text2)">默认管理员: admin / admin123</p>
+  </div>
+</div>
+
+<!-- Admin Overlay -->
+<div class="admin-overlay hidden" id="adminOverlay">
+  <div class="admin-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h2>⚙️ 管理员后台</h2>
+      <button class="btn btn-outline btn-sm" onclick="closeAdmin()">关闭</button>
+    </div>
+    <div style="margin-bottom:14px">
+      <h3 style="font-size:13px;margin-bottom:8px">账号管理</h3>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <input type="text" id="newUsername" placeholder="用户名" style="flex:1;padding:6px 8px;background:#0f1117;border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px">
+        <input type="password" id="newPassword" placeholder="密码" style="flex:1;padding:6px 8px;background:#0f1117;border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px">
+        <select id="newRole" style="padding:6px 8px;background:#0f1117;border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px"><option value="user">用户</option><option value="admin">管理员</option></select>
+        <button class="btn btn-primary btn-sm" onclick="addAccount()">添加</button>
+      </div>
+      <table>
+        <thead><tr><th>用户名</th><th>角色</th><th>API Key</th><th>操作</th></tr></thead>
+        <tbody id="accountTable"></tbody>
+      </table>
+    </div>
+    <div>
+      <h3 style="font-size:13px;margin-bottom:8px">自定义提示词模板</h3>
+      <textarea id="customPromptText" rows="4" placeholder="自定义提示词模板，留空使用默认..." style="width:100%;padding:8px;background:#0f1117;border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;resize:vertical"></textarea>
+      <button class="btn btn-primary btn-sm" onclick="saveCustomPrompt()" style="margin-top:6px">保存模板</button>
+    </div>
+  </div>
+</div>
+
+<!-- Main App -->
+<div class="container" id="mainApp" style="display:none">
+  <header>
+    <h1>🎨 回帖客服海报生图工作台</h1>
+    <div class="actions">
+      <span id="userInfo"></span>
+      <button class="btn btn-outline btn-sm" id="adminBtn" style="display:none" onclick="openAdmin()">管理</button>
+      <button class="btn btn-outline btn-sm" onclick="doLogout()">退出</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- Left Column -->
+    <div>
+      <!-- Card 1: Product Info -->
+      <div class="card">
+        <div class="card-title"><span class="icon">📦</span> 产品信息</div>
+        <div class="form-group">
+          <label class="required">产品名称</label>
+          <input type="text" id="productName" placeholder="如：女士直筒裤、车载风扇..." oninput="updatePreview()">
+        </div>
+        <div class="two-col">
+          <div class="form-group">
+            <label class="required">产品图 <small style="color:var(--text2)">(支持多张/粘贴)</small></label>
+            <div class="upload-zone" id="productZone" onclick="document.getElementById('productInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleDrop(event,'product')">
+              <input type="file" id="productInput" accept="image/*" multiple onchange="handleFileSelect(this,'product')">
+              <div class="hint">点击上传 / Ctrl+V 粘贴</div>
+              <div class="multi-preview" id="productPreview"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>参考图 <small style="color:var(--text2)">(可选，支持多张)</small></label>
+            <div class="upload-zone" id="refZone" onclick="document.getElementById('refInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleDrop(event,'ref')">
+              <input type="file" id="refInput" accept="image/*" multiple onchange="handleFileSelect(this,'ref')">
+              <div class="hint">点击上传 / Ctrl+V 粘贴</div>
+              <div class="multi-preview" id="refPreview"></div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>产品卖点 <small style="color:var(--text2)">(一句话描述核心优势)</small></label>
+          <input type="text" id="productSelling" placeholder="如：透气速干、显瘦修身、USB快充..." oninput="updatePreview()">
+        </div>
+      </div>
+
+      <!-- Card 2: Marketing Strategy -->
+      <div class="card">
+        <div class="card-title"><span class="icon">🎯</span> 营销策略</div>
+        <div class="two-col">
+          <div class="form-group">
+            <label>目标市场</label>
+            <select id="targetRegion" onchange="updatePreview()">
+              <option value="">选择大区</option>
+              <option value="北美">北美</option>
+              <option value="欧洲">欧洲</option>
+              <option value="东南亚">东南亚</option>
+              <option value="中东">中东</option>
+              <option value="日韩">日韩</option>
+              <option value="全球">全球</option>
+            </select>
+            <input type="text" id="targetCountry" placeholder="具体国家，如：英国、美国..." style="margin-top:4px" oninput="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label>目标用户</label>
+            <select id="targetUser" onchange="updatePreview()">
+              <option value="">选择用户类型</option>
+              <option value="年轻男性">年轻男性 (18-30)</option>
+              <option value="年轻女性">年轻女性 (18-30)</option>
+              <option value="中年男性">中年男性 (30-50)</option>
+              <option value="中年女性">中年女性 (30-50)</option>
+              <option value="家庭用户">家庭用户</option>
+              <option value="专业人士">专业人士</option>
+              <option value="老年用户">老年用户</option>
+              <option value="男女通用">男女通用</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>海报用途</label>
+          <div class="chip-group" id="purposeChips">
+            <div class="chip" data-val="产品销售" onclick="selectChip(this,'purpose')">产品销售<span class="chip-desc">日常产品展示，突出卖点</span></div>
+            <div class="chip" data-val="限时促销" onclick="selectChip(this,'purpose')">限时促销<span class="chip-desc">强调折扣/优惠/限时活动</span></div>
+            <div class="chip" data-val="新品推广" onclick="selectChip(this,'purpose')">新品推广<span class="chip-desc">新品上市，吸引关注</span></div>
+            <div class="chip" data-val="买家评价" onclick="selectChip(this,'purpose')">买家评价<span class="chip-desc">展示真实好评，建立信任</span></div>
+            <div class="chip" data-val="产品教程" onclick="selectChip(this,'purpose')">产品教程<span class="chip-desc">使用方法/安装说明</span></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>展示方式</label>
+          <div class="chip-group" id="displayChips">
+            <div class="chip" data-val="产品特写" onclick="selectChip(this,'display')">产品特写<span class="chip-desc">聚焦产品细节和质感</span></div>
+            <div class="chip" data-val="真人使用" onclick="selectChip(this,'display')">真人使用<span class="chip-desc">模特/用户实际使用场景</span></div>
+            <div class="chip" data-val="生活场景" onclick="selectChip(this,'display')">生活场景<span class="chip-desc">产品融入日常生活环境</span></div>
+            <div class="chip" data-val="前后对比" onclick="selectChip(this,'display')">前后对比<span class="chip-desc">使用前后效果对比</span></div>
+            <div class="chip" data-val="多品组合" onclick="selectChip(this,'display')">多品组合<span class="chip-desc">多款产品组合展示</span></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>图片布局</label>
+          <div class="chip-group" id="layoutChips">
+            <div class="chip" data-val="产品突出型" onclick="selectChip(this,'layout')">产品突出型<span class="chip-desc">产品占主画面60%以上</span></div>
+            <div class="chip" data-val="促销冲击型" onclick="selectChip(this,'layout')">促销冲击型<span class="chip-desc">大字价格+产品，强视觉冲击</span></div>
+            <div class="chip" data-val="场景沉浸型" onclick="selectChip(this,'layout')">场景沉浸型<span class="chip-desc">环境为主，产品自然融入</span></div>
+            <div class="chip" data-val="买家秀风格" onclick="selectChip(this,'layout')">买家秀风格<span class="chip-desc">仿真实用户拍摄风格</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div>
+      <!-- Card 3: Generation Settings -->
+      <div class="card">
+        <div class="card-title"><span class="icon">⚡</span> 生成设置</div>
+        <div class="form-group">
+          <label>场景风格</label>
+          <div class="chip-group" id="styleChips">
+            <div class="chip active" data-val="studio" onclick="selectChip(this,'style')">棚拍白底<span class="chip-desc">纯白/纯色背景，专业产品照</span></div>
+            <div class="chip" data-val="lifestyle" onclick="selectChip(this,'style')">生活场景<span class="chip-desc">居家/办公室等真实环境</span></div>
+            <div class="chip" data-val="model" onclick="selectChip(this,'style')">模特展示<span class="chip-desc">真人模特使用/穿戴</span></div>
+            <div class="chip" data-val="closeup" onclick="selectChip(this,'style')">微距细节<span class="chip-desc">材质/工艺/细节特写</span></div>
+            <div class="chip" data-val="outdoor" onclick="selectChip(this,'style')">户外场景<span class="chip-desc">自然光/户外环境</span></div>
+            <div class="chip" data-val="minimal" onclick="selectChip(this,'style')">极简高级<span class="chip-desc">大面积留白，高端感</span></div>
+          </div>
+        </div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>海报尺寸</label>
+            <select id="imageSize" onchange="updatePreview()">
+              <option value="1:1">1:1 正方形</option>
+              <option value="16:9">16:9 横版</option>
+              <option value="9:16">9:16 竖版</option>
+              <option value="4:5">4:5 FB竖版</option>
+              <option value="3:4">3:4 图片</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>图片清晰度</label>
+            <select id="imageQuality" onchange="updatePreview()">
+              <option value="2K">2K 标准</option>
+              <option value="4K" selected>4K 高清</option>
+              <option value="8K">8K 超清</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>生成张数</label>
+            <select id="imageCount">
+              <option value="1">1张</option>
+              <option value="2">2张</option>
+              <option value="3">3张</option>
+              <option value="4">4张</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>AI 模型</label>
+          <select id="aiModel">
+            <option value="gpt-image-2-lite">Image2-低价版 (快速)</option>
+            <option value="gpt-image-2" selected>官方稳定版 (推荐)</option>
+            <option value="nano-banana-pro">Banana Pro (高质量)</option>
+          </select>
+        </div>
+
+        <!-- API Key -->
+        <div class="form-group">
+          <label class="collapsible" onclick="toggleCollapse(this)"> API Key 设置</label>
+          <div class="collapse-content collapsed" id="apiKeySection">
+            <div style="margin-top:6px">
+              <input type="password" id="apiKeyInput" placeholder="输入 APIMart API Key">
+              <button class="btn btn-outline btn-sm" onclick="saveApiKey()" style="margin-top:4px">保存</button>
+              <p style="font-size:10px;color:var(--text2);margin-top:4px">Key 仅存本地浏览器，不会上传</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Proxy Selection -->
+        <div class="form-group">
+          <label class="collapsible" onclick="toggleCollapse(this)"> 代理设置 <small style="color:var(--text2)">(请求失败时自动切换)</small></label>
+          <div class="collapse-content collapsed" id="proxySection">
+            <div style="margin-top:6px">
+              <select id="proxySelect" style="width:100%;padding:6px 8px;background:#0f1117;border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px">
+                <option value="auto"> 自动切换 (推荐)</option>
+                <option value="https://corsproxy.io/?">corsproxy.io</option>
+                <option value="https://api.allorigins.win/raw?url=">allorigins</option>
+                <option value="https://corsproxy.org/?">corsproxy.org</option>
+                <option value="">直接请求 (无需代理)</option>
+              </select>
+              <div style="display:flex;gap:6px;margin-top:6px">
+                <button class="btn btn-outline btn-sm" onclick="testProxy()"> 测试代理</button>
+                <span id="proxyStatus" style="font-size:11px;color:var(--text2);align-self:center"></span>
+              </div>
+              <p style="font-size:10px;color:var(--text2);margin-top:4px">如果默认代理失败，尝试切换或选择"直接请求"</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prompt Preview -->
+        <div class="form-group">
+          <label>📝 提示词预览 (自动生成)</label>
+          <div class="prompt-preview" id="promptPreview">填写产品信息后自动显示...</div>
+        </div>
+      </div>
+
+      <!-- Quality Panel -->
+      <div class="quality-panel hidden" id="qualityPanel">
+        <div class="card-title"><span class="icon">🔍</span> AI生成质量检测</div>
+        <div class="overall-score" id="overallScore">
+          <div class="number" id="overallNumber">--</div>
+          <div class="status" id="overallStatus">点击"AI智能分析"开始检测</div>
+        </div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="label">信息完整度 (40%)</div>
+            <div class="score" id="scoreInfo" style="color:var(--text)">--</div>
+            <div class="bar"><div class="bar-fill" id="barInfo" style="width:0;background:var(--accent)"></div></div>
+          </div>
+          <div class="score-item">
+            <div class="label">视觉匹配度 (30%)</div>
+            <div class="score" id="scoreVisual" style="color:var(--text)">--</div>
+            <div class="bar"><div class="bar-fill" id="barVisual" style="width:0;background:var(--success)"></div></div>
+          </div>
+          <div class="score-item">
+            <div class="label">转化潜力 (30%)</div>
+            <div class="score" id="scoreConvert" style="color:var(--text)">--</div>
+            <div class="bar"><div class="bar-fill" id="barConvert" style="width:0;background:var(--warn)"></div></div>
+          </div>
+        </div>
+        <div class="suggestions" id="suggestions"></div>
+        <div class="quality-actions">
+          <button class="btn btn-primary btn-sm" onclick="aiOptimize()">🪄 使用AI优化</button>
+          <button class="btn btn-success btn-sm" onclick="proceedGenerate()">🚀 继续生成</button>
+          <button class="btn btn-outline btn-sm" onclick="closeQuality()">📝 重新编辑</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div style="display:flex;gap:10px;justify-content:center;margin:12px 0">
+    <button class="btn btn-outline" onclick="runQualityCheck()">🔍 AI智能分析</button>
+    <button class="btn btn-primary" id="generateBtn" onclick="onGenerate()">🚀 生成图片</button>
+  </div>
+
+  <!-- Status -->
+  <div class="status-bar" id="statusBar"></div>
+
+  <!-- Results -->
+  <div class="result-area" id="resultArea" style="display:none">
+    <div class="card-title"><span class="icon">🖼️</span> 生成结果</div>
+    <div class="images" id="resultImages"></div>
+  </div>
+</div>
+
+<script>
+// ============ State ============
+let currentUser = null;
+let productImages = [];
+let refImages = [];
+let selectedPurpose = '';
+let selectedDisplay = '';
+let selectedLayout = '';
+let selectedStyle = 'studio';
+let qualityScore = null;
+
+// ============ Init ============
+function init() {
+  initAccounts();
+  checkSession();
+  setupPasteHandlers();
+}
+
+function initAccounts() {
+  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || 'null');
+  if (!accounts) {
+    const defaultAccounts = [{ username: 'admin', password: hashPassword('admin123'), role: 'admin', apiKey: '' }];
+    localStorage.setItem('poster_ai_accounts', JSON.stringify(defaultAccounts));
+  }
+}
+
+function hashPassword(pwd) {
+  let hash = 0;
+  const str = pwd + '_poster_ai_salt';
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return hash.toString(36);
+}
+
+function checkSession() {
+  const session = JSON.parse(sessionStorage.getItem('poster_ai_session') || 'null');
+  if (session && session.username) {
+    currentUser = session;
+    showApp();
+  }
+}
+
+function doLogin() {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  if (!username || !password) return;
+  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
+  const account = accounts.find(a => a.username === username && a.password === hashPassword(password));
+  if (!account) { alert('用户名或密码错误'); return; }
+  currentUser = { username: account.username, role: account.role };
+  sessionStorage.setItem('poster_ai_session', JSON.stringify(currentUser));
+  showApp();
+}
+
+function doLogout() {
+  sessionStorage.removeItem('poster_ai_session');
+  currentUser = null;
+  document.getElementById('loginOverlay').classList.remove('hidden');
+  document.getElementById('mainApp').style.display = 'none';
+}
+
+function showApp() {
+  document.getElementById('loginOverlay').classList.add('hidden');
+  document.getElementById('mainApp').style.display = 'block';
+  document.getElementById('userInfo').textContent = `👤 ${currentUser.username}`;
+  document.getElementById('adminBtn').style.display = currentUser.role === 'admin' ? '' : 'none';
+  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
+  const acc = accounts.find(a => a.username === currentUser.username);
+  if (acc && acc.apiKey) {
+    document.getElementById('apiKeyInput').value = acc.apiKey;
+  }
+  const cp = localStorage.getItem('poster_ai_custom_prompts') || '';
+  if (cp) document.getElementById('customPromptText').value = cp;
+}
+
+function openAdmin() {
+  document.getElementById('adminOverlay').classList.remove('hidden');
+  renderAccountTable();
+}
+function closeAdmin() { document.getElementById('adminOverlay').classList.add('hidden'); }
+
+function renderAccountTable() {
+  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
+  const tbody = document.getElementById('accountTable');
+  tbody.innerHTML = accounts.map((a, i) => `
+    <tr>
+      <td>${a.username}</td>
+      <td><span class="tag tag-${a.role}">${a.role}</span></td>
+      <td>${a.apiKey ? '✅ 已设置' : '❌ 未设置'}</td>
+      <td>
+        ${a.username !== 'admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteAccount(${i})">删除</button>` : ''}
+        <button class="btn btn-outline btn-sm" onclick="resetApiKey(${i})">重置Key</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function addAccount() {
+  const username = document.getElementById('newUsername').value.trim();
+  const password = document.getElementById('newPassword').value;
+  const role = document.getElementById('newRole').value;
+  if (!username || !password) return alert('请填写用户名和密码');
+  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
+  if (accounts.find(a => a.username === username)) return alert('用户名已存在');
+  accounts.push({ username, password: hashPassword(password), role, apiKey: '' });
+  localStorage.setItem('poster_ai_accounts', JSON.stringify(accounts));
+  document.getElementById('newUsername').value = '';
+  document.getElementById('newPassword').value = '';
+  renderAccountTable();
+}
+
+function deleteAccount(idx) {
+  if (!confirm('确定删除该账号?')) return;
+  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
+  accounts.splice(idx, 1);
+  localStorage.setItem('poster_ai_accounts', JSON.stringify(accounts));
+  renderAccountTable();
+}
+
+function resetApiKey(idx) {
+  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
+  accounts[idx].apiKey = '';
+  localStorage.setItem('poster_ai_accounts', JSON.stringify(accounts));
+  renderAccountTable();
+}
+
+function saveCustomPrompt() {
+  localStorage.setItem('poster_ai_custom_prompts', document.getElementById('customPromptText').value);
+  alert('模板已保存');
+}
+
+function setupPasteHandlers() {
+  document.addEventListener('paste', (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        e.preventDefault();
+        const file = item.getAsFile();
+        const activeEl = document.activeElement;
+        const nearRef = activeEl && (activeEl.closest('#refZone') || activeEl.closest('#refPreview'));
+        if (nearRef) {
+          processImageFile(file, 'ref');
+        } else {
+          processImageFile(file, 'product');
+        }
+        return;
+      }
+    }
+  });
+}
+
+function handleDrop(e, type) {
+  e.preventDefault();
+  e.currentTarget.style.borderColor = '';
+  const files = e.dataTransfer.files;
+  for (const file of files) {
+    if (file.type.startsWith('image/')) {
+      processImageFile(file, type);
+    }
+  }
+}
+
+function handleFileSelect(input, type) {
+  const files = input.files;
+  for (const file of files) {
+    if (file.type.startsWith('image/')) {
+      processImageFile(file, type);
+    }
+  }
+  input.value = '';
+}
+
+function processImageFile(file, type) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const data = e.target.result;
+    if (type === 'product') {
+      productImages.push(data);
+      renderProductPreviews();
+    } else {
+      refImages.push(data);
+      renderRefPreviews();
+    }
+    updatePreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderProductPreviews() {
+  const container = document.getElementById('productPreview');
+  container.innerHTML = productImages.map((img, i) => `
+    <div style="position:relative;display:inline-block">
+      <img src="${img}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--border)">
+      <button onclick="removeProductImg(${i})" style="position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
+    </div>
+  `).join('');
+  if (productImages.length > 0) {
+    document.getElementById('productZone').classList.add('has-image');
+  }
+}
+
+function removeProductImg(idx) {
+  productImages.splice(idx, 1);
+  renderProductPreviews();
+  if (productImages.length === 0) {
+    document.getElementById('productZone').classList.remove('has-image');
+  }
+}
+
+function renderRefPreviews() {
+  const container = document.getElementById('refPreview');
+  container.innerHTML = refImages.map((img, i) => `
+    <div style="position:relative;display:inline-block">
+      <img src="${img}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--border)">
+      <button onclick="removeRef(${i})" style="position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
+    </div>
+  `).join('');
+  if (refImages.length > 0) {
+    document.getElementById('refZone').classList.add('has-image');
+  }
+}
+
+function removeRef(idx) {
+  refImages.splice(idx, 1);
+  renderRefPreviews();
+  if (refImages.length === 0) {
+    document.getElementById('refZone').classList.remove('has-image');
+  }
+}
+
+function selectChip(el, group) {
+  const parent = el.parentElement;
+  parent.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const val = el.dataset.val;
+  if (group === 'purpose') selectedPurpose = val;
+  else if (group === 'display') selectedDisplay = val;
+  else if (group === 'layout') selectedLayout = val;
+  else if (group === 'style') selectedStyle = val;
+  updatePreview();
+}
+
+function toggleCollapse(el) {
+  el.classList.toggle('collapsed');
+  const content = el.nextElementSibling;
+  content.classList.toggle('collapsed');
+}
+
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
+  const acc = accounts.find(a => a.username === currentUser.username);
+  if (acc) {
+    acc.apiKey = key;
+    localStorage.setItem('poster_ai_accounts', JSON.stringify(accounts));
+    setStatus('API Key 已保存', 'success');
+  }
+}
+
+function getApiKey() {
+  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
+  const acc = accounts.find(a => a.username === currentUser.username);
+  return acc?.apiKey || document.getElementById('apiKeyInput').value.trim();
+}
+  function buildPrompt() {
+  const name = document.getElementById('productName').value.trim();
+  const selling = document.getElementById('productSelling').value.trim();
+  const region = document.getElementById('targetRegion').value;
+  const country = document.getElementById('targetCountry').value.trim();
+  const targetUser = document.getElementById('targetUser').value;
+  const size = document.getElementById('imageSize').value;
+  const quality = document.getElementById('imageQuality').value;
+
+  let prompt = '';
+
+  // Custom prompt template
+  const customTemplate = localStorage.getItem('poster_ai_custom_prompts') || '';
+  if (customTemplate) {
+    prompt = customTemplate
+      .replace('{产品名称}', name)
+      .replace('{产品卖点}', selling)
+      .replace('{目标市场}', region + (country ? '·' + country : ''))
+      .replace('{目标用户}', targetUser)
+      .replace('{海报用途}', selectedPurpose)
+      .replace('{展示方式}', selectedDisplay)
+      .replace('{图片布局}', selectedLayout)
+      .replace('{场景风格}', selectedStyle);
+    return prompt;
+  }
+
+  // Default prompt
+  prompt = `Create a professional e-commerce product poster for: "${name}"`;
+  if (selling) prompt += `\nKey selling point: ${selling}`;
+  if (selectedPurpose) prompt += `\nPurpose: ${selectedPurpose}`;
+  if (selectedStyle) {
+    const styleMap = { studio: 'studio photography with clean white/pure color background', lifestyle: 'lifestyle scene in a realistic home/office environment', model: 'featuring a model using/wearing the product', closeup: 'macro close-up shot showing material and craft details', outdoor: 'outdoor scene with natural lighting', minimal: 'minimalist high-end style with large whitespace' };
+    prompt += `\nVisual style: ${styleMap[selectedStyle] || selectedStyle}`;
+  }
+  if (selectedDisplay) prompt += `\nDisplay method: ${selectedDisplay}`;
+  if (selectedLayout) prompt += `\nLayout: ${selectedLayout}`;
+  if (targetUser) prompt += `\nTarget audience: ${targetUser}`;
+  if (region || country) {
+    const market = region + (country ? ' - ' + country : '');
+    prompt += `\nTarget market: ${market}`;
+  }
+  prompt += `\nAspect ratio: ${size}`;
+  prompt += `\nQuality: ${quality} resolution, highly detailed, professional commercial photography`;
+  prompt += `\nNo Asian faces. Use Western/European models if people are shown.`;
+  prompt += `\nMake it look like a real professional e-commerce poster, not AI generated.`;
+
+  return prompt;
+}
+
+function updatePreview() {
+  const preview = document.getElementById('promptPreview');
+  const name = document.getElementById('productName').value.trim();
+  if (!name && productImages.length === 0) {
+    preview.textContent = '填写产品信息后自动显示...';
+    return;
+  }
+  preview.textContent = buildPrompt();
+}
+
+// ============ Quality Check ============
+function runQualityCheck() {
+  const name = document.getElementById('productName').value.trim();
+  const selling = document.getElementById('productSelling').value.trim();
+  const region = document.getElementById('targetRegion').value;
+  const targetUser = document.getElementById('targetUser').value;
+
+  // Score calculation
+  let infoScore = 0;
+  let visualScore = 0;
+  let convertScore = 0;
+  const suggestions = [];
+
+  // === Info Completeness (40%) ===
+  if (productImages.length > 0) infoScore += 30;
+  else suggestions.push('❗ 请上传产品图片（必须）');
+
+  if (name) infoScore += 25;
+  else suggestions.push('❗ 请填写产品名称（必须）');
+
+  if (selling) infoScore += 20;
+  else suggestions.push('💡 补充产品卖点可提升生成效果');
+
+  if (selectedPurpose) infoScore += 15;
+  else suggestions.push('💡 选择海报用途帮助AI理解目标');
+
+  if (region || targetUser) infoScore += 10;
+  else suggestions.push('💡 填写目标市场或用户可提升转化效果');
+
+  // === Visual Match (30%) ===
+  if (refImages.length > 0) visualScore += 30;
+  else suggestions.push('📷 上传参考图可稳定视觉方向');
+
+  if (selectedStyle) visualScore += 25;
+  else suggestions.push('🎨 请选择场景风格');
+
+  if (selectedDisplay) visualScore += 25;
+  else suggestions.push('👁️ 选择展示方式帮助确定构图');
+
+  if (selectedLayout) visualScore += 20;
+  else suggestions.push('📐 选择图片布局控制画面结构');
+
+  // === Conversion Potential (30%) ===
+  if (targetUser) convertScore += 25;
+  else suggestions.push('🎯 明确目标用户提升转化');
+
+  if (region || document.getElementById('targetCountry').value) convertScore += 25;
+  else suggestions.push('🌍 设定目标市场帮助本地化');
+
+  if (selectedPurpose) convertScore += 25;
+  else suggestions.push('📢 设定海报用途明确营销方向');
+
+  if (selling) convertScore += 25;
+  else suggestions.push('✨ 提炼核心卖点增强说服力');
+
+  // Overall
+  const overall = Math.round(infoScore * 0.4 + visualScore * 0.3 + convertScore * 0.3);
+  qualityScore = { overall, infoScore, visualScore, convertScore, suggestions };
+
+  // Render
+  renderQualityPanel();
+  document.getElementById('qualityPanel').classList.remove('hidden');
+}
+
+function renderQualityPanel() {
+  if (!qualityScore) return;
+  const { overall, infoScore, visualScore, convertScore, suggestions } = qualityScore;
+
+  // Overall
+  document.getElementById('overallNumber').textContent = overall;
+  const overallEl = document.getElementById('overallScore');
+
+  let statusText, statusColor, bgColor;
+  if (overall >= 90) { statusText = '✅ 信息充足，可以生成'; statusColor = 'var(--success)'; bgColor = 'rgba(34,197,94,.1)'; }
+  else if (overall >= 70) { statusText = '⚡ 基本完整，建议优化后生成'; statusColor = 'var(--accent2)'; bgColor = 'rgba(99,101,241,.1)'; }
+  else if (overall >= 50) { statusText = '⚠️ 信息不足，生成效果可能不稳定'; statusColor = 'var(--warn)'; bgColor = 'rgba(245,158,11,.1)'; }
+  else { statusText = '❌ 信息缺失较多，强烈建议补充'; statusColor = 'var(--danger)'; bgColor = 'rgba(239,68,68,.1)'; }
+
+  document.getElementById('overallStatus').textContent = statusText;
+  document.getElementById('overallStatus').style.color = statusColor;
+  overallEl.style.background = bgColor;
+  document.getElementById('overallNumber').style.color = statusColor;
+
+  // Scores
+  document.getElementById('scoreInfo').textContent = infoScore;
+  document.getElementById('scoreInfo').style.color = getScoreColor(infoScore);
+  document.getElementById('barInfo').style.width = infoScore + '%';
+  document.getElementById('barInfo').style.background = getScoreColor(infoScore);
+
+  document.getElementById('scoreVisual').textContent = visualScore;
+  document.getElementById('scoreVisual').style.color = getScoreColor(visualScore);
+  document.getElementById('barVisual').style.width = visualScore + '%';
+  document.getElementById('barVisual').style.background = getScoreColor(visualScore);
+
+  document.getElementById('scoreConvert').textContent = convertScore;
+  document.getElementById('scoreConvert').style.color = getScoreColor(convertScore);
+  document.getElementById('barConvert').style.width = convertScore + '%';
+  document.getElementById('barConvert').style.background = getScoreColor(convertScore);
+
+  // Suggestions
+  const sugEl = document.getElementById('suggestions');
+  if (suggestions.length === 0) {
+    sugEl.innerHTML = '<p style="font-size:12px;color:var(--success)">🎉 所有信息完善，无需补充！</p>';
+  } else {
+    sugEl.innerHTML = '<p style="font-size:11px;color:var(--text2);margin-bottom:4px">AI建议：</p><ul>' +
+      suggestions.map(s => `<li>${s}</li>`).join('') + '</ul>';
+  }
+}
+
+function getScoreColor(score) {
+  if (score >= 80) return 'var(--success)';
+  if (score >= 60) return 'var(--accent2)';
+  if (score >= 40) return 'var(--warn)';
+  return 'var(--danger)';
+}
+
+function aiOptimize() {
+  const name = document.getElementById('productName').value.trim();
+  if (!name) { alert('请先填写产品名称'); return; }
+
+  // AI auto-fill based on product name keywords
+  const nameLower = name.toLowerCase();
+
+  // Auto detect target user
+  if (!document.getElementById('targetUser').value) {
+    if (/女|裙|裙|cosmetic|beauty|lady|women/i.test(name)) {
+      document.getElementById('targetUser').value = '年轻女性';
+    } else if (/男|shirt|men|man/i.test(name)) {
+      document.getElementById('targetUser').value = '年轻男性';
+    } else if (/童|kid|child|baby/i.test(name)) {
+      document.getElementById('targetUser').value = '家庭用户';
+    } else if (/car|车载|auto|车/i.test(name)) {
+      document.getElementById('targetUser').value = '中年男性';
+    } else {
+      document.getElementById('targetUser').value = '男女通用';
+    }
+  }
+
+  // Auto detect region
+  if (!document.getElementById('targetRegion').value) {
+    document.getElementById('targetRegion').value = '欧洲';
+  }
+  if (!document.getElementById('targetCountry').value) {
+    document.getElementById('targetCountry').value = '英国';
+  }
+
+  // Auto detect purpose
+  if (!selectedPurpose) {
+    const chips = document.getElementById('purposeChips').querySelectorAll('.chip');
+    chips[0].click(); // Default to 产品销售
+  }
+
+  // Auto detect display
+  if (!selectedDisplay) {
+    const chips = document.getElementById('displayChips').querySelectorAll('.chip');
+    if (/裤|衣|裙|shirt|dress|cloth/i.test(name)) {
+      chips[1].click(); // 真人使用 for clothing
+    } else {
+      chips[0].click(); // 产品特写 default
+    }
+  }
+
+  // Auto detect layout
+  if (!selectedLayout) {
+    const chips = document.getElementById('layoutChips').querySelectorAll('.chip');
+    chips[0].click(); // 产品突出型
+  }
+
+  // Auto suggest selling point if empty
+  if (!document.getElementById('productSelling').value) {
+    if (/fan|风扇/i.test(name)) {
+      document.getElementById('productSelling').value = 'USB静音快充，多档调节，便携夹式设计';
+    } else if (/遮阳|sunshade|sun/i.test(name)) {
+      document.getElementById('productSelling').value = 'UPF50+防晒，折叠收纳，通用车型';
+    } else if (/裤|pant|trouser/i.test(name)) {
+      document.getElementById('productSelling').value = '高弹力面料，显瘦修身，透气舒适';
+    } else {
+      document.getElementById('productSelling').value = '高品质材料，实用设计，性价比之选';
+    }
+  }
+
+  updatePreview();
+  runQualityCheck();
+  setStatus('✅ AI已自动补充缺失字段，请检查后生成', 'success');
+}
+
+function proceedGenerate() {
+  document.getElementById('qualityPanel').classList.add('hidden');
+  doGenerate();
+}
+
+function closeQuality() {
+  document.getElementById('qualityPanel').classList.add('hidden');
+}
+
+// ============ Generate ============
+function onGenerate() {
+  // Validate
+  const name = document.getElementById('productName').value.trim();
+  if (!name) return setStatus('请填写产品名称', 'error');
+  if (productImages.length === 0) return setStatus('请上传产品图片', 'error');
+  const apiKey = getApiKey();
+  if (!apiKey) return setStatus('请先设置 API Key', 'error');
+
+  // Show quality check first if not done
+  if (!qualityScore) {
+    runQualityCheck();
+    if (qualityScore && qualityScore.overall < 70) {
+      setStatus('⚠️ 信息不足，建议先优化或点击"继续生成"', 'warn');
+      return;
+    }
+  }
+
+  doGenerate();
+}
+  async function doGenerate() {
+  // Check API Key
+  const apiKey = getApiKey();
+  if (!apiKey) return setStatus('请先设置 API Key', 'error');
+
+  // Read form
+  const name = document.getElementById('productName').value.trim();
+  const model = document.getElementById('modelSelect').value;
+  const size = document.getElementById('imageSize').value;
+  const quality = document.getElementById('imageQuality').value;
+
+  // Build prompt
+  const finalPrompt = buildPrompt();
+  if (!finalPrompt) return setStatus('请先填写产品信息', 'error');
+
+  setStatus('提交生成任务...', 'info');
+  document.getElementById('generateBtn').disabled = true;
+
+  try {
+    // Submit task
+    const payload = {
+      model: model,
+      prompt: finalPrompt,
+      n: 1,
+      size: size
+    };
+    if (quality === 'hd') payload.quality = 'hd';
+
+    // Add reference images
+    if (productImages.length > 0) {
+      payload.image_urls = [...productImages];
+    }
+    if (refImages.length > 0) {
+      payload.image_urls = (payload.image_urls || []).concat(refImages);
+    }
+
+    let response = await fetchWithProxy('https://api.apimart.ai/v1/images/generations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.status === 401) {
+      document.getElementById('apiStatus').textContent = '❌';
+      return setStatus('❌ API Key 无效，请检查', 'error');
+    }
+    if (!response.ok) {
+      const errText = await response.text();
+      return setStatus(`❌ 提交失败 (${response.status})，错误代码：${errText.substring(0,200)}`, 'error');
+    }
+
+    const data = await response.json();
+    const taskId = data.task_id;
+    if (!taskId) return setStatus('❌ 未返回任务ID，响应：' + JSON.stringify(data).substring(0,200), 'error');
+
+    setStatus(`✅ 已提交，任务ID：${taskId}，等待生成...`, 'success');
+    pollTask(taskId, apiKey);
+  } catch (err) {
+    document.getElementById('generateBtn').disabled = false;
+    setStatus('❌ 提交失败：' + err.message + '，所有代理均不可用，请检查网络连接', 'error');
+  }
+}
+
+async function pollTask(taskId, apiKey) {
+  const startTime = Date.now();
+  const maxTime = 5 * 60 * 1000;
+
+  const poll = async () => {
+    if (Date.now() - startTime > maxTime) {
+      document.getElementById('generateBtn').disabled = false;
+      return setStatus('❌ 超时（5分钟），请手动查询任务ID：' + taskId, 'error');
+    }
+
+    try {
+      let response = await fetchWithProxy(`https://api.apimart.ai/v1/tasks/${taskId}`, {
+        headers: { 'Authorization': 'Bearer ' + apiKey }
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        document.getElementById('generateBtn').disabled = false;
+        return setStatus(`❌ 查询失败 (${response.status})，任务ID：${taskId}`, 'error');
+      }
+
+      const status = data.status || data.state || '';
+
+      if (status === 'completed' || status === 'success') {
+        // Find the result URL
+        let url = '';
+        if (data.output && data.output.images && data.output.images.length > 0) {
+          url = data.output.images[0].url || data.output.images[0];
+        } else if (data.data && data.data.length > 0) {
+          url = data.data[0].url;
+        } else if (data.result && data.result.url) {
+          url = data.result.url;
+        } else if (typeof data.output === 'string') {
+          url = data.output;
+        }
+
+        if (!url) return setStatus('❌ 任务完成但未找到图片URL，请检查任务详情。任务ID：' + taskId, 'error');
+
+        displayResult(url, taskId);
+        document.getElementById('generateBtn').disabled = false;
+        return;
+      }
+
+      if (status === 'failed' || status === 'error') {
+        document.getElementById('generateBtn').disabled = false;
+        return setStatus(`❌ 生成失败。任务ID：${taskId}，错误信息：${data.error || data.message || '未知'}`, 'error');
+      }
+
+      // Still processing
+      setStatus(`⏳ ${status === 'processing' ? '处理中' : status || '排队中'}...任务ID：${taskId}`, 'info');
+      setTimeout(poll, 3000);
+    } catch (err) {
+      document.getElementById('generateBtn').disabled = false;
+      setStatus('❌ 查询失败：' + err.message, 'error');
+    }
+  };
+
+  poll();
+}
+
+function displayResult(url, taskId) {
+  const container = document.getElementById('resultImageContainer');
+  container.innerHTML = `
+    <img src="${url}" alt="生成结果" style="width:100%;border-radius:8px;cursor:pointer" onclick="window.open(this.src)">
+    <div style="margin-top:8px;display:flex;gap:8px">
+      <a href="${url}" download="poster_${taskId}.png" class="btn btn-success" style="text-decoration:none;font-size:12px">⬇️ 下载</a>
+      <span style="font-size:11px;color:var(--text2);line-height:32px">任务ID：${taskId}</span>
+    </div>
+  `;
+  document.getElementById('resultArea').classList.remove('hidden');
+  document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
+  setStatus('✅ 生成完成！点击图片可放大查看', 'success');
+}
+
+function setStatus(msg, type) {
+  const el = document.getElementById('statusMessage');
+  el.textContent = msg;
+  el.className = 'status-message ' + (type || 'info');
+}
+
+// ============ Proxy Functions ============
+async function fetchWithProxy(url, options) {
+  const proxyList = [
+    'https://corsproxy.io/?',
+    'https://api.allorigins.win/raw?url=',
+    'https://corsproxy.org/?',
+    'https://thingproxy.freeboard.io/fetch/',
+    '' // Direct as last resort
+  ];
+
+  // Use selected proxy if set
+  const selectedProxy = localStorage.getItem('proxy_config') || '';
+  if (selectedProxy && selectedProxy !== 'auto') {
+    const targetUrl = selectedProxy === 'direct' ? url : selectedProxy + url;
+    const resp = await fetch(targetUrl, options);
+    if (resp.ok) return resp;
+    throw new Error(`Selected proxy failed: ${resp.status}`);
+  }
+
+  // Auto mode: try each proxy
+  for (const proxy of proxyList) {
+    try {
+      const targetUrl = proxy ? proxy + url : url;
+      const resp = await fetch(targetUrl, options);
+      if (resp.ok || resp.status === 401) return resp; // 401 = valid response, bad key
+    } catch (e) {
+      continue; // Try next proxy
+    }
+  }
+  throw new Error('All proxies failed');
+}
+
+async function testProxy() {
+  const select = document.getElementById('proxySelect');
+  const value = select.value;
+  const btn = document.getElementById('testProxyBtn');
+  const result = document.getElementById('proxyTestResult');
+
+  btn.disabled = true;
+  btn.textContent = '测试中...';
+  result.textContent = '';
+
+  const testUrl = 'https://api.apimart.ai/v1/tasks/test';
+  const proxyUrl = value === 'auto' ? '' : (value === 'direct' ? testUrl : value + testUrl);
+
+  try {
+    const resp = await fetch(proxyUrl, { headers: { 'Authorization': 'Bearer test' } });
+    result.textContent = `✅ 连接成功！状态码：${resp.status}`;
+    result.style.color = 'var(--success)';
+    if (value === 'auto') {
+      localStorage.removeItem('proxy_config');
+    } else {
+      localStorage.setItem('proxy_config', value);
+    }
+  } catch (e) {
+    result.textContent = `❌ 连接失败：${e.message}`;
+    result.style.color = 'var(--danger)';
+  }
+
+  btn.disabled = false;
+  btn.textContent = '🔍 测试连接';
+}
+
+// ============ Admin ============
+function login() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+
+  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[{"username":"admin","password":"admin123","role":"admin"}]');
+  const found = accounts.find(a => a.username === user && a.password === pass);
+
+  if (found) {
+    const session = { username: found.username, role: found.role, loginTime: new Date().toISOString() };
+    localStorage.setItem('poster_ai_session', JSON.stringify(session));
+    document.getElementById('currentUser').textContent = found.username;
+    document.getElementById('adminArea').classList.remove('hidden');
+    document.getElementById('mainArea').classList.remove('hidden');
+    document.getElementById('loginArea').classList.add('hidden');
+    loadAccounts();
+  } else {
+    alert('用户名或密码错误');
+  }
+}
+
+function logout() {
+  localStorage.removeItem('poster_ai_session');
+  location.reload();
+}
+
+function showAddAccount() {
+  document.getElementById('addAccountForm').classList.remove('hidden');
+}
+
+function hideAddAccount() {
+  document.getElementById('addAccountForm').classList.add('hidden');
+  document.getElementById('newUsername').value = '';
+  document.getElementById('newPassword').value = '';
+  document.getElementById('newRole').value = 'user';
+}
+
+function addAccount() {
+  const username = document.getElementById('newUsername').value.trim();
+  const password = document.getElementById('newPassword').value;
+  const role = document.getElementById('newRole').value;
+
+  if (!username || !password) return alert('请填写用户名和密码');
+  if (password.length < 4) return alert('密码至少4位');
+
+  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
+  if (accounts.find(a => a.username === username)) return alert('用户名已存在');
+
+  accounts.push({ username, password, role });
+  localStorage.setItem('poster_ai_accounts', JSON.stringify(accounts));
+  hideAddAccount();
+  loadAccounts();
+}
+
+function deleteAccount(username) {
+  if (!confirm(`确认删除用户 ${username}？`)) return;
+  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
+  const filtered = accounts.filter(a => a.username !== username);
+  localStorage.setItem('poster_ai_accounts', JSON.stringify(filtered));
+  loadAccounts();
+}
+
+function loadAccounts() {
+  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
+  const tbody = document.getElementById('accountsTbody');
+  tbody.innerHTML = '';
+
+  accounts.forEach(acc => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td style="padding:8px 12px">${acc.username}</td>
+      <td style="padding:8px 12px">${acc.role}</td>
+      <td style="padding:8px 12px">
+        <button class="btn btn-danger" onclick="deleteAccount('${acc.username}')" ${acc.username === 'admin' ? 'disabled' : ''} style="font-size:11px;padding:4px 8px">删除</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function setApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) return alert('请输入 API Key');
+  localStorage.setItem('apimart_key', key);
+  document.getElementById('apiStatus').textContent = '✅';
+  alert('API Key 已保存');
+}
+
+function saveCustomPrompt() {
+  const template = document.getElementById('customPromptInput').value.trim();
+  localStorage.setItem('poster_ai_custom_prompts', template);
+  alert(template ? '自定义模板已保存' : '已清除自定义模板');
+}
+
+// ============ Utility ============
+function debounce(fn, delay) {
+  let timer = null;
+  return function() {
+    clearTimeout(timer);
+    timer = setTimeout(fn, delay);
+  };
+}
+
+function init() {
+  // Initialize admin account
+  if (!localStorage.getItem('poster_ai_initialized')) {
+    localStorage.setItem('poster_ai_accounts', JSON.stringify([{
+      username: 'admin',
+      password: 'admin123',
+      role: 'admin'
+    }]));
+    localStorage.setItem('poster_ai_initialized', 'true');
+  }
+
+  // Check session
+  const session = localStorage.getItem('poster_ai_session');
+  if (session) {
+    const s = JSON.parse(session);
+    document.getElementById('currentUser').textContent = s.username;
+    document.getElementById('adminArea').classList.remove('hidden');
+    document.getElementById('mainArea').classList.remove('hidden');
+    document.getElementById('loginArea').classList.add('hidden');
+    loadAccounts();
+  } else {
+    document.getElementById('loginArea').classList.remove('hidden');
+  }
+
+  // Load API Key
+  const savedKey = localStorage.getItem('apimart_key');
+  if (savedKey) {
+    document.getElementById('apiKeyInput').value = savedKey;
+    document.getElementById('apiStatus').textContent = '✅';
+  }
+
+  // Load proxy setting
+  const savedProxy = localStorage.getItem('proxy_config') || 'auto';
+  document.getElementById('proxySelect').value = savedProxy;
+
+  // Load custom prompt
+  const customPrompt = localStorage.getItem('poster_ai_custom_prompts') || '';
+  document.getElementById('customPromptInput').value = customPrompt;
+}
+
+// Initialize on load
+init();
+  
