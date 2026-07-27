@@ -85,6 +85,7 @@ header .actions span{font-size:12px;color:var(--text2)}
     <h1>🎨 FB评论-海报生图器</h1>
     <div class="actions">
       <span id="userInfo"></span>
+      <button class="btn btn-outline btn-sm" id="adminBtn" style="display:none;margin-right:8px" onclick="toggleAdmin()">⚙️ 管理</button>
       <button class="btn btn-outline btn-sm" onclick="doLogout()">退出</button>
     </div>
   </header>
@@ -274,6 +275,32 @@ header .actions span{font-size:12px;color:var(--text2)}
         <div id="resultArea" style="min-height:200px;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:12px">
           生成的图片将显示在这里
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="adminPanel" style="display:none;margin-top:12px">
+    <div class="card">
+      <div class="card-title"><span class="icon">⚙️</span> 用户管理 <button class="btn btn-outline btn-sm" style="margin-left:auto" onclick="toggleAdmin()">关闭</button></div>
+      <div id="userList" style="margin-bottom:12px"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input type="text" id="addUser" placeholder="用户名" style="flex:1;min-width:100px">
+        <input type="password" id="addPass" placeholder="密码" style="flex:1;min-width:100px">
+        <select id="addRole" style="min-width:120px">
+          <option value="admin">普通管理员</option>
+          <option value="operator">运营人员</option>
+          <option value="viewer">查看人员</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="addUser()">添加</button>
+      </div>
+    </div>
+    <div class="card" style="margin-top:8px">
+      <div class="card-title"><span class="icon">🔑</span> 修改密码</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input type="password" id="oldPass" placeholder="旧密码" style="flex:1;min-width:100px">
+        <input type="password" id="newPass" placeholder="新密码" style="flex:1;min-width:100px">
+        <button class="btn btn-primary btn-sm" onclick="changePassword()">修改</button>
       </div>
     </div>
   </div>
