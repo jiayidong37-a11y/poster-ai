@@ -6,211 +6,76 @@
 <title>FB评论-海报生图器</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0f1117;--card:#1a1d27;--border:#2a2d3a;--text:#e4e4e7;--text2:#9ca3af;--accent:#6366f1;--accent2:#818cf8;--success:#22c55e;--warn:#f59e0b;--danger:#ef4444;--radius:8px;--pink:#ec4899;--cyan:#06b6d4;--orange:#f97316}
+:root{--bg:#0f1117;--card:#1a1d27;--border:#2a2d3a;--text:#e4e4e7;--text2:#9ca3af;--accent:#6366f1;--accent2:#818cf8;--success:#22c55e;--warn:#f59e0b;--danger:#ef4444;--radius:8px}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5}
-.container{max-width:1280px;margin:0 auto;padding:10px}
-header{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px}
-header h1{font-size:15px;font-weight:600;background:linear-gradient(135deg,var(--accent),var(--pink),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-header .actions{display:flex;gap:6px;align-items:center}
-header .actions span{font-size:11px;color:var(--text2)}
-.btn{padding:5px 12px;border-radius:6px;border:none;cursor:pointer;font-size:11px;font-weight:500;transition:all .2s;white-space:nowrap}
+.container{max-width:1200px;margin:0 auto;padding:12px}
+header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px}
+header h1{font-size:16px;font-weight:600;background:linear-gradient(135deg,var(--accent),#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+header .actions{display:flex;gap:8px;align-items:center}
+header .actions span{font-size:12px;color:var(--text2)}
+.btn{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:500;transition:all .2s}
 .btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent2)}
 .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text2)}.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
 .btn-success{background:var(--success);color:#fff}.btn-success:hover{opacity:.9}
 .btn-warn{background:var(--warn);color:#000}.btn-warn:hover{opacity:.9}
 .btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{opacity:.9}
-.btn-sm{padding:3px 8px;font-size:10px}
+.btn-sm{padding:4px 10px;font-size:11px}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-.grid{display:grid;grid-template-columns:1fr 1fr 300px;gap:10px}
-@media(max-width:1024px){.grid{grid-template-columns:1fr 1fr}}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:768px){.grid{grid-template-columns:1fr}}
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:10px}
-.card-title{font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:5px}
-.card-title .icon{font-size:14px}
-.form-group{margin-bottom:8px}
-.form-group label{display:block;font-size:11px;color:var(--text2);margin-bottom:3px;font-weight:500}
-.form-group input,.form-group select,.form-group textarea{width:100%;padding:6px 8px;background:#0f1117;border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;outline:none;transition:border-color .2s}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.card-title{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.card-title .icon{font-size:15px}
+.form-group{margin-bottom:10px}
+.form-group label{display:block;font-size:11px;color:var(--text2);margin-bottom:4px;font-weight:500}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:7px 10px;background:#0f1117;border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;outline:none;transition:border-color .2s}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
-.form-group textarea{resize:vertical;min-height:40px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-.chip-group{display:flex;flex-wrap:wrap;gap:5px}
-.chip{padding:4px 9px;border-radius:14px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:10px;transition:all .2s;position:relative}
+.form-group textarea{resize:vertical;min-height:50px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.chip-group{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:5px 10px;border-radius:16px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:11px;transition:all .2s;position:relative}
 .chip:hover{border-color:var(--accent);color:var(--accent)}
 .chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.chip .chip-desc{display:none;position:absolute;top:100%;left:0;background:#2a2d3a;color:var(--text2);padding:5px 7px;border-radius:4px;font-size:9px;width:150px;z-index:10;margin-top:3px}
+.chip .chip-desc{display:none;position:absolute;top:100%;left:0;background:#2a2d3a;color:var(--text2);padding:6px 8px;border-radius:4px;font-size:10px;width:160px;z-index:10;margin-top:4px}
 .chip:hover .chip-desc{display:block}
-.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:12px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:16px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
 .upload-zone:hover{border-color:var(--accent)}
 .upload-zone.has-image{border-style:solid;border-color:var(--accent)}
 .upload-zone input{display:none}
-.upload-zone .hint{font-size:10px;color:var(--text2)}
-.upload-zone .multi-preview{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
-.upload-zone .multi-preview img{width:50px;height:50px;object-fit:cover;border-radius:3px;border:1px solid var(--border)}
-.collapsible{cursor:pointer;user-select:none}
-.collapsible::after{content:'▼';font-size:9px;margin-left:3px;transition:transform .2s}
-.collapsible.collapsed::after{transform:rotate(-90deg)}
-.collapse-content{overflow:hidden;transition:max-height .3s;max-height:500px}
-.collapse-content.collapsed{max-height:0}
-.quality-panel{background:linear-gradient(135deg,#1a1d27,#1e2130);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:10px}
-.quality-panel.hidden{display:none}
-.score-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:8px 0}
-.score-item{text-align:center}
-.score-item .label{font-size:10px;color:var(--text2);margin-bottom:3px}
-.score-item .score{font-size:20px;font-weight:700}
-.score-item .bar{height:3px;background:var(--border);border-radius:2px;margin-top:3px;overflow:hidden}
-.score-item .bar-fill{height:100%;border-radius:2px;transition:width .5s}
-.overall-score{text-align:center;padding:8px;margin-bottom:8px;border-radius:var(--radius)}
-.overall-score .number{font-size:26px;font-weight:700}
-.overall-score .status{font-size:11px;margin-top:2px}
-.suggestions{margin:6px 0}
-.suggestions li{font-size:10px;color:var(--text2);margin-bottom:2px;padding-left:3px}
-.quality-actions{display:flex;gap:6px;margin-top:8px}
-.result-area{margin-top:10px}
-.result-area .images{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:8px}
-.result-area .images img{width:100%;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer}
-.result-area .images img:hover{border-color:var(--accent)}
-.status-bar{padding:6px 10px;border-radius:6px;margin-bottom:8px;font-size:11px;display:none}
+.upload-zone .hint{font-size:11px;color:var(--text2)}
+.upload-zone .multi-preview{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.upload-zone .multi-preview img{width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--border)}
+.upload-zone .remove-btn{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center}
+.status-bar{padding:8px 12px;border-radius:6px;margin-bottom:10px;font-size:12px;display:none}
 .status-bar.info{background:rgba(99,101,241,.1);border:1px solid rgba(99,101,241,.3);color:var(--accent2);display:block}
 .status-bar.success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--success);display:block}
 .status-bar.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--danger);display:block}
 .status-bar.warn{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:var(--warn);display:block}
-.prompt-preview{background:#0f1117;border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:10px;color:var(--text2);max-height:80px;overflow-y:auto;white-space:pre-wrap;margin-top:5px}
 /* Login */
 .login-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:1000}
 .login-overlay.hidden{display:none}
-.login-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;width:300px}
-.login-box h2{font-size:17px;text-align:center;margin-bottom:14px}
-.login-box .form-group{margin-bottom:10px}
-.login-box .btn{width:100%;padding:10px}
-/* Modals */
-.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:999}
-.modal-overlay.hidden{display:none}
-.modal-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;width:100%;max-width:640px;max-height:90vh;overflow-y:auto}
-.modal-box h2{font-size:15px;margin-bottom:10px}
-.modal-box h3{font-size:12px;margin:10px 0 6px;color:var(--accent2)}
-/* Tabs */
-.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:10px}
-.tab{padding:6px 12px;cursor:pointer;font-size:11px;color:var(--text2);border-bottom:2px solid transparent;transition:all .2s}
-.tab:hover{color:var(--text)}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-.tab-content{display:none}.tab-content.active{display:block}
-/* Admin table */
-.admin-table{width:100%;border-collapse:collapse;margin-top:6px;font-size:11px}
-.admin-table th,.admin-table td{padding:5px 7px;text-align:left;border-bottom:1px solid var(--border)}
-.admin-table th{color:var(--text2);font-weight:500;font-size:10px}
-/* Tags */
-.tag{display:inline-block;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:600}
-.tag-super{background:rgba(236,72,153,.2);color:var(--pink)}
-.tag-admin{background:rgba(99,101,241,.2);color:var(--accent2)}
-.tag-operator{background:rgba(6,182,212,.2);color:var(--cyan)}
-.tag-viewer{background:rgba(245,158,11,.2);color:var(--warn)}
-/* Category badge */
-.cat-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;margin-left:6px;cursor:default}
-.cat-服装{background:rgba(236,72,153,.15);color:#f472b6}
-.cat-美妆{background:rgba(168,85,247,.15);color:#c084fc}
-.cat-汽车用品{background:rgba(245,158,11,.15);color:#fbbf24}
-.cat-家居用品{background:rgba(34,197,94,.15);color:#4ade80}
-.cat-电子产品{background:rgba(6,182,212,.15);color:#22d3ee}
-.cat-食品{background:rgba(249,115,22,.15);color:#fb923c}
-.cat-其他{background:rgba(156,163,175,.15);color:#9ca3af}
-/* Recommendation panel */
-.rec-item{padding:6px 0;border-bottom:1px solid var(--border)}
-.rec-item:last-child{border-bottom:none}
-.rec-label{font-size:10px;color:var(--text2);margin-bottom:2px}
-.rec-value{font-size:12px;font-weight:600}
-.rec-stars{color:var(--warn);font-size:11px;letter-spacing:1px}
-.rec-desc{font-size:10px;color:var(--text2);margin-top:1px}
-/* Clothing template chips */
-.chip-cloth{border-color:var(--pink);color:#f472b6}
-.chip-cloth.active{background:var(--pink);border-color:var(--pink);color:#fff}
-.chip-cloth:hover{border-color:var(--pink);color:var(--pink)}
-/* Inline edit */
-.inline-row{display:flex;gap:4px;align-items:center;margin-bottom:4px}
-.inline-row input,.inline-row select{flex:1;padding:5px 7px;background:#0f1117;border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:11px}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-@media(max-width:768px){.two-col{grid-template-columns:1fr}}
-.required::after{content:'*';color:var(--danger);margin-left:2px}
-.lang-auto{font-size:10px;color:var(--cyan);margin-top:2px}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:30px;width:320px}
+.login-box h2{font-size:20px;text-align:center;margin-bottom:20px;background:linear-gradient(135deg,var(--accent),#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.login-box .form-group{margin-bottom:16px}
+.login-box .btn{width:100%;padding:12px;font-size:14px;font-weight:600}
 </style>
 </head>
 <body>
 
-<!-- Login Overlay -->
+<!-- Login -->
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <h2>🔐 FB评论-海报生图器</h2>
     <div class="form-group">
       <label>用户名</label>
-      <input type="text" id="loginUser" placeholder="输入用户名" onkeydown="if(event.key==='Enter')doLogin()">
+      <input type="text" id="loginUser" placeholder="输入用户名" value="admin">
     </div>
     <div class="form-group">
       <label>密码</label>
-      <input type="password" id="loginPass" placeholder="输入密码" onkeydown="if(event.key==='Enter')doLogin()">
+      <input type="password" id="loginPass" placeholder="输入密码" value="admin123">
     </div>
     <button class="btn btn-primary" onclick="doLogin()">登录</button>
-  </div>
-</div>
-
-<!-- Password Change Modal -->
-<div class="modal-overlay hidden" id="pwdModal">
-  <div class="modal-box" style="max-width:340px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <h2>🔑 修改密码</h2>
-      <button class="btn btn-outline btn-sm" onclick="closePwdModal()">✕</button>
-    </div>
-    <div class="form-group"><label>当前密码</label><input type="password" id="pwdOld"></div>
-    <div class="form-group"><label>新密码</label><input type="password" id="pwdNew"></div>
-    <div class="form-group"><label>确认新密码</label><input type="password" id="pwdConfirm"></div>
-    <button class="btn btn-primary" onclick="changePassword()" style="width:100%">确认修改</button>
-  </div>
-</div>
-
-<!-- Admin Overlay -->
-<div class="modal-overlay hidden" id="adminOverlay">
-  <div class="modal-box">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <h2>⚙️ 管理员后台</h2>
-      <button class="btn btn-outline btn-sm" onclick="closeAdmin()">关闭</button>
-    </div>
-    <div class="tabs" id="adminTabs">
-      <div class="tab active" onclick="switchAdminTab(0)">账号管理</div>
-      <div class="tab" onclick="switchAdminTab(1)">系统配置</div>
-      <div class="tab" onclick="switchAdminTab(2)">数据管理</div>
-    </div>
-    <!-- Tab 0: Account Management -->
-    <div class="tab-content active" id="adminTab0">
-      <div class="inline-row">
-        <input type="text" id="newUsername" placeholder="用户名">
-        <input type="password" id="newPassword" placeholder="密码">
-        <select id="newRole">
-          <option value="super_admin">超级管理员</option>
-          <option value="admin">普通管理员</option>
-          <option value="operator">运营人员</option>
-          <option value="viewer">查看人员</option>
-        </select>
-        <button class="btn btn-primary btn-sm" onclick="addAccount()">添加</button>
-      </div>
-      <table class="admin-table">
-        <thead><tr><th>用户名</th><th>角色</th><th>API Key</th><th>操作</th></tr></thead>
-        <tbody id="accountTable"></tbody>
-      </table>
-    </div>
-    <!-- Tab 1: System Config -->
-    <div class="tab-content" id="adminTab1">
-      <h3>自定义提示词模板</h3>
-      <textarea id="customPromptText" rows="4" placeholder="自定义提示词模板，留空使用默认。支持变量：{产品名称} {产品卖点} {目标市场} {目标用户} {海报用途} {展示方式} {图片布局} {场景风格} {生成语言}" style="width:100%;padding:7px;background:#0f1117;border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;resize:vertical"></textarea>
-      <button class="btn btn-primary btn-sm" onclick="saveCustomPrompt()" style="margin-top:5px">保存模板</button>
-    </div>
-    <!-- Tab 2: Data Management -->
-    <div class="tab-content" id="adminTab2">
-      <h3>生成记录</h3>
-      <div id="dataRecords" style="font-size:11px;color:var(--text2)">暂无记录</div>
-      <div style="margin-top:8px;display:flex;gap:6px">
-        <button class="btn btn-outline btn-sm" onclick="exportRecords()">导出记录</button>
-        <button class="btn btn-danger btn-sm" onclick="clearRecords()">清空记录</button>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -220,68 +85,61 @@ header .actions span{font-size:11px;color:var(--text2)}
     <h1>🎨 FB评论-海报生图器</h1>
     <div class="actions">
       <span id="userInfo"></span>
-      <span id="roleInfo" class="tag" style="margin-right:4px"></span>
-      <button class="btn btn-outline btn-sm" id="adminBtn" style="display:none" onclick="openAdmin()">管理</button>
-      <button class="btn btn-outline btn-sm" onclick="openPwdModal()">改密</button>
       <button class="btn btn-outline btn-sm" onclick="doLogout()">退出</button>
     </div>
   </header>
 
+  <div id="statusBar" class="status-bar"></div>
+
   <div class="grid">
-    <!-- Left Column -->
+    <!-- Left: Product Info -->
     <div>
-      <!-- Card 1: Product Info -->
       <div class="card">
-        <div class="card-title"><span class="icon">📦</span> 产品信息 <span id="catBadge" class="cat-badge cat-其他" style="display:none"></span></div>
+        <div class="card-title"><span class="icon">📦</span> 产品信息</div>
         <div class="form-group">
-          <label class="required">产品名称</label>
-          <input type="text" id="productName" placeholder="如：女士直筒裤、车载风扇..." oninput="onProductChange()">
+          <label>产品名称 *</label>
+          <input type="text" id="productName" placeholder="如：女士直筒裤、车载风扇...">
         </div>
-        <div class="two-col">
+        <div class="form-row">
           <div class="form-group">
-            <label class="required">产品图 <small style="color:var(--text2)">(多张/粘贴)</small></label>
-            <div class="upload-zone" id="productZone" onclick="document.getElementById('productInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleDrop(event,'product')">
-              <input type="file" id="productInput" accept="image/*" multiple onchange="handleFileSelect(this,'product')">
-              <div class="hint">点击上传 / Ctrl+V 粘贴</div>
+            <label>产品图 * <small style="color:var(--text2)">(支持多张)</small></label>
+            <div class="upload-zone" id="productZone" onclick="document.getElementById('productInput').click()">
+              <input type="file" id="productInput" accept="image/*" multiple onchange="handleFiles(this,'product')">
+              <div class="hint">点击上传产品图</div>
               <div class="multi-preview" id="productPreview"></div>
             </div>
           </div>
           <div class="form-group">
-            <label>参考图 <small style="color:var(--text2)">(可选多张)</small></label>
-            <div class="upload-zone" id="refZone" onclick="document.getElementById('refInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleDrop(event,'ref')">
-              <input type="file" id="refInput" accept="image/*" multiple onchange="handleFileSelect(this,'ref')">
-              <div class="hint">点击上传 / Ctrl+V 粘贴</div>
+            <label>参考图 <small style="color:var(--text2)">(可选)</small></label>
+            <div class="upload-zone" id="refZone" onclick="document.getElementById('refInput').click()">
+              <input type="file" id="refInput" accept="image/*" multiple onchange="handleFiles(this,'ref')">
+              <div class="hint">点击上传参考图</div>
               <div class="multi-preview" id="refPreview"></div>
             </div>
           </div>
         </div>
         <div class="form-group">
-          <label>产品卖点 <small style="color:var(--text2)">(核心优势)</small></label>
-          <input type="text" id="productSelling" placeholder="如：透气速干、显瘦修身..." oninput="updatePreview()">
+          <label>产品卖点</label>
+          <input type="text" id="productSelling" placeholder="一句话描述核心优势">
         </div>
-        <div class="form-group">
-          <label>商品类别 <small style="color:var(--text2)">(AI自动识别，可手动修改)</small></label>
-          <select id="productCategory" onchange="onCategoryChange()">
-            <option value="">自动识别</option>
-            <option value="服装">👗 服装</option>
-            <option value="美妆">💄 美妆</option>
-            <option value="汽车用品">🚗 汽车用品</option>
-            <option value="家居用品">🏠 家居用品</option>
-            <option value="电子产品">📱 电子产品</option>
-            <option value="食品">🍕 食品</option>
-            <option value="其他">📦 其他</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Card 2: Marketing Strategy -->
-      <div class="card">
-        <div class="card-title"><span class="icon">🎯</span> 营销策略</div>
-        <div class="two-col">
+        <div class="form-row">
+          <div class="form-group">
+            <label>商品类别</label>
+            <select id="productCategory">
+              <option value="auto">🔍 自动识别</option>
+              <option value="服装">👗 服装</option>
+              <option value="美妆">💄 美妆</option>
+              <option value="汽车用品">🚗 汽车用品</option>
+              <option value="家居用品">🏠 家居用品</option>
+              <option value="电子产品">📱 电子产品</option>
+              <option value="食品">🍕 食品</option>
+              <option value="其他">📦 其他</option>
+            </select>
+          </div>
           <div class="form-group">
             <label>目标市场</label>
-            <select id="targetRegion" onchange="onMarketChange()">
-              <option value="">选择大区</option>
+            <select id="targetRegion">
+              <option value="">选择地区</option>
               <option value="国内">国内</option>
               <option value="北美">北美</option>
               <option value="欧洲">欧洲</option>
@@ -290,26 +148,11 @@ header .actions span{font-size:11px;color:var(--text2)}
               <option value="日韩">日韩</option>
               <option value="全球">全球</option>
             </select>
-            <input type="text" id="targetCountry" placeholder="具体国家，如：英国、美国..." style="margin-top:3px" oninput="onMarketChange()">
-          </div>
-          <div class="form-group">
-            <label>目标用户</label>
-            <select id="targetUser" onchange="updatePreview()">
-              <option value="">选择用户类型</option>
-              <option value="年轻男性">年轻男性 (18-30)</option>
-              <option value="年轻女性">年轻女性 (18-30)</option>
-              <option value="中年男性">中年男性 (30-50)</option>
-              <option value="中年女性">中年女性 (30-50)</option>
-              <option value="家庭用户">家庭用户</option>
-              <option value="专业人士">专业人士</option>
-              <option value="老年用户">老年用户</option>
-              <option value="男女通用">男女通用</option>
-            </select>
           </div>
         </div>
         <div class="form-group">
           <label>生成语言</label>
-          <select id="genLanguage" onchange="updatePreview()">
+          <select id="genLanguage">
             <option value="auto">🌐 自动匹配目标市场</option>
             <option value="中文">中文</option>
             <option value="English">English</option>
@@ -319,8 +162,11 @@ header .actions span{font-size:11px;color:var(--text2)}
             <option value="Italiano">Italiano</option>
             <option value="日本語">日本語</option>
           </select>
-          <div class="lang-auto" id="langHint"></div>
         </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon">🎯</span> 营销策略</div>
         <div class="form-group">
           <label>海报用途</label>
           <div class="chip-group" id="purposeChips">
@@ -331,8 +177,7 @@ header .actions span{font-size:11px;color:var(--text2)}
             <div class="chip" data-val="产品教程" onclick="selectChip(this,'purpose')">产品教程<span class="chip-desc">使用/安装说明</span></div>
           </div>
         </div>
-        <!-- General Display (hidden when category=服装) -->
-        <div class="form-group" id="generalDisplayGroup">
+        <div class="form-group">
           <label>展示方式</label>
           <div class="chip-group" id="displayChips">
             <div class="chip" data-val="产品特写" onclick="selectChip(this,'display')">产品特写<span class="chip-desc">聚焦细节和质感</span></div>
@@ -342,25 +187,22 @@ header .actions span{font-size:11px;color:var(--text2)}
             <div class="chip" data-val="多品组合" onclick="selectChip(this,'display')">多品组合<span class="chip-desc">多款组合展示</span></div>
           </div>
         </div>
-        <!-- Clothing Templates (shown when category=服装) -->
-        <div class="form-group" id="clothingTemplateGroup" style="display:none">
-          <label>👗 服装专属内容类型</label>
+        <div class="form-group" id="clothingTypes" style="display:none">
+          <label>👗 服装专属类型</label>
           <div class="chip-group" id="clothingChips">
-            <div class="chip chip-cloth" data-val="多身材模特实拍" onclick="selectChip(this,'display')">多身材模特实拍<span class="chip-desc">不同身高/体型模特穿同款</span></div>
-            <div class="chip chip-cloth" data-val="多色系穿搭合集" onclick="selectChip(this,'display')">多色系穿搭合集<span class="chip-desc">同款不同颜色组合</span></div>
-            <div class="chip chip-cloth" data-val="日常场景穿搭" onclick="selectChip(this,'display')">日常场景穿搭<span class="chip-desc">通勤/休闲/约会/旅行</span></div>
-            <div class="chip chip-cloth" data-val="叠穿搭配示范" onclick="selectChip(this,'display')">叠穿搭配示范<span class="chip-desc">外套+鞋+包+配饰完整搭配</span></div>
-            <div class="chip chip-cloth" data-val="长短款版型对比" onclick="selectChip(this,'display')">长短款/版型对比<span class="chip-desc">长vs短/修身vs宽松</span></div>
-            <div class="chip chip-cloth" data-val="配饰搭配展示" onclick="selectChip(this,'display')">配饰搭配展示<span class="chip-desc">衣+鞋+包+首饰完整方案</span></div>
-            <div class="chip chip-cloth" data-val="面料细节微距" onclick="selectChip(this,'display')">面料细节微距<span class="chip-desc">纹理/走线/拉链/纽扣</span></div>
-            <div class="chip chip-cloth" data-val="尺码指南图" onclick="selectChip(this,'display')">尺码指南图<span class="chip-desc">肩宽/胸围/腰围/臀围测量</span></div>
+            <div class="chip" data-val="多身材模特" onclick="selectChip(this,'clothing')">多身材模特<span class="chip-desc">不同身高/体型模特穿同款</span></div>
+            <div class="chip" data-val="多色系合集" onclick="selectChip(this,'clothing')">多色系合集<span class="chip-desc">同款不同颜色组合</span></div>
+            <div class="chip" data-val="日常穿搭" onclick="selectChip(this,'clothing')">日常穿搭<span class="chip-desc">通勤/休闲/约会/旅行</span></div>
+            <div class="chip" data-val="叠穿搭配" onclick="selectChip(this,'clothing')">叠穿搭配<span class="chip-desc">外套+鞋+包+配饰完整搭配</span></div>
+            <div class="chip" data-val="版型对比" onclick="selectChip(this,'clothing')">版型对比<span class="chip-desc">长vs短/修身vs宽松</span></div>
+            <div class="chip" data-val="面料微距" onclick="selectChip(this,'clothing')">面料微距<span class="chip-desc">纹理/走线/拉链/纽扣</span></div>
+            <div class="chip" data-val="尺码指南" onclick="selectChip(this,'clothing')">尺码指南<span class="chip-desc">肩宽/胸围/腰围/臀围测量</span></div>
           </div>
         </div>
         <div class="form-group">
           <label>图片布局</label>
           <div class="chip-group" id="layoutChips">
             <div class="chip" data-val="产品突出型" onclick="selectChip(this,'layout')">产品突出型<span class="chip-desc">产品占主画面60%+</span></div>
-            <div class="chip" data-val="促销冲击型" onclick="selectChip(this,'layout')">促销冲击型<span class="chip-desc">大字价格+产品</span></div>
             <div class="chip" data-val="场景沉浸型" onclick="selectChip(this,'layout')">场景沉浸型<span class="chip-desc">环境为主产品融入</span></div>
             <div class="chip" data-val="买家秀风格" onclick="selectChip(this,'layout')">买家秀风格<span class="chip-desc">仿真实用户拍摄</span></div>
           </div>
@@ -368,26 +210,25 @@ header .actions span{font-size:11px;color:var(--text2)}
       </div>
     </div>
 
-    <!-- Center Column -->
+    <!-- Right: Generation Settings -->
     <div>
-      <!-- Card 3: Generation Settings -->
       <div class="card">
         <div class="card-title"><span class="icon">⚡</span> 生成设置</div>
         <div class="form-group">
           <label>场景风格</label>
           <div class="chip-group" id="styleChips">
             <div class="chip active" data-val="studio" onclick="selectChip(this,'style')">棚拍白底<span class="chip-desc">纯白/纯色背景</span></div>
-            <div class="chip" data-val="lifestyle" onclick="selectChip(this,'style')">生活场景<span class="chip-desc">居家/办公室</span></div>
-            <div class="chip" data-val="model" onclick="selectChip(this,'style')">模特展示<span class="chip-desc">真人模特穿戴</span></div>
-            <div class="chip" data-val="closeup" onclick="selectChip(this,'style')">微距细节<span class="chip-desc">材质/工艺特写</span></div>
-            <div class="chip" data-val="outdoor" onclick="selectChip(this,'style')">户外场景<span class="chip-desc">自然光/户外</span></div>
-            <div class="chip" data-val="minimal" onclick="selectChip(this,'style')">极简高级<span class="chip-desc">大面积留白</span></div>
+            <div class="chip" data-val="lifestyle" onclick="selectChip(this,'style')">生活场景<span class="chip-desc">居家/办公室环境</span></div>
+            <div class="chip" data-val="model" onclick="selectChip(this,'style')">模特展示<span class="chip-desc">真人模特使用</span></div>
+            <div class="chip" data-val="closeup" onclick="selectChip(this,'style')">微距细节<span class="chip-desc">材质工艺特写</span></div>
+            <div class="chip" data-val="outdoor" onclick="selectChip(this,'style')">户外场景<span class="chip-desc">自然光户外</span></div>
+            <div class="chip" data-val="minimal" onclick="selectChip(this,'style')">极简高级<span class="chip-desc">大面积留白高端感</span></div>
           </div>
         </div>
         <div class="form-row-3">
           <div class="form-group">
             <label>海报尺寸</label>
-            <select id="imageSize" onchange="updatePreview()">
+            <select id="imageSize">
               <option value="1:1">1:1 正方</option>
               <option value="16:9">16:9 横版</option>
               <option value="9:16">9:16 竖版</option>
@@ -396,8 +237,8 @@ header .actions span{font-size:11px;color:var(--text2)}
             </select>
           </div>
           <div class="form-group">
-            <label>图片清晰度</label>
-            <select id="imageQuality" onchange="updatePreview()">
+            <label>清晰度</label>
+            <select id="imageQuality">
               <option value="2K">2K 标准</option>
               <option value="4K" selected>4K 高清</option>
               <option value="8K">8K 超清</option>
@@ -415,1100 +256,363 @@ header .actions span{font-size:11px;color:var(--text2)}
         </div>
         <div class="form-group">
           <label>AI 模型</label>
-          <select id="aiModel">
+          <select id="modelSelect">
             <option value="gpt-image-2-lite">Image2-低价版 (快速)</option>
             <option value="gpt-image-2" selected>官方稳定版 (推荐)</option>
             <option value="nano-banana-pro">Banana Pro (高质量)</option>
           </select>
         </div>
-        <!-- API Key -->
         <div class="form-group">
-          <label class="collapsible" onclick="toggleCollapse(this)"> API Key 设置</label>
-          <div class="collapse-content collapsed">
-            <div style="margin-top:5px">
-              <input type="password" id="apiKeyInput" placeholder="输入 APIMart API Key">
-              <button class="btn btn-outline btn-sm" onclick="saveApiKey()" style="margin-top:3px">保存</button>
-              <p style="font-size:9px;color:var(--text2);margin-top:3px">Key仅存本地浏览器，不会上传</p>
-            </div>
-          </div>
+          <label>API Key</label>
+          <input type="password" id="apiKeyInput" placeholder="输入你的 APIMart API Key">
         </div>
-        <!-- Proxy -->
-        <div class="form-group">
-          <label class="collapsible" onclick="toggleCollapse(this)"> 代理设置 <small style="color:var(--text2)">(失败自动切换)</small></label>
-          <div class="collapse-content collapsed">
-            <div style="margin-top:5px">
-              <select id="proxySelect" style="width:100%;padding:5px 7px;background:#0f1117;border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:11px">
-                <option value="auto">自动切换 (推荐)</option>
-                <option value="https://corsproxy.io/?">corsproxy.io</option>
-                <option value="https://api.allorigins.win/raw?url=">allorigins</option>
-                <option value="https://corsproxy.org/?">corsproxy.org</option>
-                <option value="https://thingproxy.freeboard.io/fetch/">thingproxy</option>
-                <option value="">直接请求</option>
-              </select>
-              <div style="display:flex;gap:5px;margin-top:5px">
-                <button class="btn btn-outline btn-sm" onclick="testProxy()">测试代理</button>
-                <span id="proxyStatus" style="font-size:10px;color:var(--text2);align-self:center"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Prompt Preview -->
-        <div class="form-group">
-          <label>📝 提示词预览</label>
-          <div class="prompt-preview" id="promptPreview">填写产品信息后自动显示...</div>
-        </div>
+        <button class="btn btn-primary" style="width:100%;padding:12px;font-size:14px" onclick="doGenerate()">🎨 生成海报</button>
       </div>
 
-      <!-- Quality Panel -->
-      <div class="quality-panel hidden" id="qualityPanel">
-        <div class="card-title"><span class="icon">🔍</span> AI生成质量检测</div>
-        <div class="overall-score" id="overallScore">
-          <div class="number" id="overallNumber">--</div>
-          <div class="status" id="overallStatus">点击"AI智能分析"开始检测</div>
-        </div>
-        <div class="score-grid">
-          <div class="score-item"><div class="label">信息完整度(40%)</div><div class="score" id="scoreInfo">--</div><div class="bar"><div class="bar-fill" id="barInfo" style="width:0;background:var(--accent)"></div></div></div>
-          <div class="score-item"><div class="label">视觉匹配度(30%)</div><div class="score" id="scoreVisual">--</div><div class="bar"><div class="bar-fill" id="barVisual" style="width:0;background:var(--success)"></div></div></div>
-          <div class="score-item"><div class="label">转化潜力(30%)</div><div class="score" id="scoreConvert">--</div><div class="bar"><div class="bar-fill" id="barConvert" style="width:0;background:var(--warn)"></div></div></div>
-        </div>
-        <div class="suggestions" id="suggestions"></div>
-        <div class="quality-actions">
-          <button class="btn btn-primary btn-sm" onclick="aiOptimize()">🪄 AI优化</button>
-          <button class="btn btn-success btn-sm" onclick="proceedGenerate()">🚀 继续生成</button>
-          <button class="btn btn-outline btn-sm" onclick="closeQuality()">📝 重新编辑</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Right Column: AI Recommendations -->
-    <div>
-      <div class="card" id="recPanel">
-        <div class="card-title"><span class="icon">🤖</span> AI智能推荐</div>
-        <div id="recContent">
-          <div style="text-align:center;padding:20px 0;color:var(--text2);font-size:11px">
-            填写产品信息后<br>自动生成推荐方案
-          </div>
-        </div>
-      </div>
-      <!-- Generation History (compact) -->
       <div class="card">
-        <div class="card-title"><span class="icon">📋</span> 最近生成</div>
-        <div id="historyList" style="max-height:200px;overflow-y:auto;font-size:11px;color:var(--text2)">
-          暂无记录
+        <div class="card-title"><span class="icon">🖼️</span> 生成结果</div>
+        <div id="resultArea" style="min-height:200px;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:12px">
+          生成的图片将显示在这里
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Action Buttons -->
-  <div style="display:flex;gap:8px;justify-content:center;margin:10px 0">
-    <button class="btn btn-outline" id="analyzeBtn" onclick="runQualityCheck()">🔍 AI智能分析</button>
-    <button class="btn btn-primary" id="generateBtn" onclick="onGenerate()">🚀 生成图片</button>
-  </div>
-
-  <!-- Status -->
-  <div class="status-bar" id="statusBar"></div>
-
-  <!-- Results -->
-  <div class="result-area" id="resultArea" style="display:none">
-    <div class="card-title"><span class="icon">🖼️</span> 生成结果</div>
-    <div class="images" id="resultImages"></div>
   </div>
 </div>
 
 <script>
-// ============ Constants ============
-const ROLES = {
-  super_admin: { label: '超级管理员', tag: 'tag-super', canConfig: true, canManageUsers: true, canManageModels: true, canManageData: true },
-  admin: { label: '普通管理员', tag: 'tag-admin', canConfig: true, canManageUsers: false, canManageModels: true, canManageData: true },
-  operator: { label: '运营人员', tag: 'tag-operator', canConfig: false, canManageUsers: false, canManageModels: false, canManageData: false },
-  viewer: { label: '查看人员', tag: 'tag-viewer', canConfig: false, canManageUsers: false, canManageModels: false, canManageData: false }
-};
-
-const COUNTRY_LANG = {
-  '美国':'English','英国':'English','加拿大':'English','澳大利亚':'English','新西兰':'English',
-  '德国':'Deutsch','奥地利':'Deutsch','瑞士':'Deutsch',
-  '法国':'Français','比利时':'Français',
-  '西班牙':'Español','墨西哥':'Español','阿根廷':'Español','哥伦比亚':'Español',
-  '意大利':'Italiano',
-  '日本':'日本語',
-  '中国':'中文','国内':'中文'
-};
-
-const CATEGORY_KEYWORDS = {
-  '服装': /衣|裤|裙|衫|外套|夹克|T恤|衬衫|连衣裙|半身裙|牛仔裤|运动服|毛衣|大衣|风衣|西服|旗袍|汉服|卫衣|针织|棉服|羽绒服|短裤|吊带|抹胸|背心|hoodie|shirt|dress|pant|jacket|coat|sweater|clothing|apparel|fashion|wear/i,
-  '美妆': /口红|粉底|眼影|面膜|精华|乳液|防晒|化妆|美容|护肤|眉笔|腮红|卸妆|洗面|唇膏|lipstick|foundation|skincare|beauty|cosmetic|makeup|serum|moisturizer/i,
-  '汽车用品': /车载|汽车|车用|车品|坐垫|脚垫|方向盘|行车记录|车充|雨刮|车衣|car|auto|vehicle|dashboard|accessories/i,
-  '家居用品': /枕|被|毯|杯|碗|收纳|清洁|拖把|垃圾桶|灯|挂画|花瓶|窗帘|地毯|沙发|床垫|home|kitchen|decor|household|furniture|cushion|blanket/i,
-  '电子产品': /充电|蓝牙|耳机|手机壳|数据线|鼠标|键盘|屏幕|智能|电子|手表|音箱|相机|pad|charger|bluetooth|earphone|phone|cable|mouse|keyboard|electronic|gadget/i,
-  '食品': /零食|茶|咖啡|坚果|水果|肉|鱼|面包|蛋糕|巧克力|酒|饮品|蜂蜜|枸杞|snack|tea|coffee|food|chocolate|beverage|organic/i
-};
-
-const CATEGORY_MARKETING = {
-  '服装': { focus: '模特/搭配/版型/尺码', style: 'model', display: '真人使用', layout: '场景沉浸型' },
-  '美妆': { focus: '真人效果/使用过程/前后变化', style: 'model', display: '真人使用', layout: '产品突出型' },
-  '汽车用品': { focus: '使用场景/功能展示/专业感/前后效果', style: 'lifestyle', display: '前后对比', layout: '场景沉浸型' },
-  '家居用品': { focus: '空间搭配/家庭场景/氛围感', style: 'lifestyle', display: '生活场景', layout: '场景沉浸型' },
-  '电子产品': { focus: '功能演示/技术参数/使用场景', style: 'studio', display: '产品特写', layout: '产品突出型' },
-  '食品': { focus: '食用场景/新鲜感/口感展示', style: 'lifestyle', display: '生活场景', layout: '场景沉浸型' },
-  '其他': { focus: '产品特点/实用场景', style: 'studio', display: '产品特写', layout: '产品突出型' }
-};
-
 // ============ State ============
 let currentUser = null;
 let productImages = [];
 let refImages = [];
 let selectedPurpose = '';
 let selectedDisplay = '';
+let selectedClothing = '';
 let selectedLayout = '';
 let selectedStyle = 'studio';
-let qualityScore = null;
-let detectedCategory = '';
-let genRecords = JSON.parse(localStorage.getItem('poster_ai_records') || '[]');
-
-// ============ Init ============
-function init() {
-  initAccounts();
-  checkSession();
-  setupPasteHandlers();
-}
-
-function initAccounts() {
-  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || 'null');
-  if (!accounts) {
-    const defaults = [{ username: 'admin', password: hashPassword('admin123'), role: 'super_admin', apiKey: '' }];
-    localStorage.setItem('poster_ai_accounts', JSON.stringify(defaults));
-  } else {
-    // Migration V3: detect plain text passwords and re-hash them
-    let needsUpdate = false;
-    accounts.forEach(a => {
-      // Directly check for known old-version plain text passwords
-      // Old version stored passwords as plain text, V3 uses hashPassword()
-      const knownPlainTexts = ['admin123', 'admin', '123456', 'password'];
-      if (a.password && knownPlainTexts.includes(a.password)) {
-        // This is definitely plain text from old version, re-hash it
-        a.password = hashPassword(a.password);
-        needsUpdate = true;
-      }
-      // Migration: ensure admin has super_admin role
-      if (a.username === 'admin' && (a.role === 'admin' || !a.role)) {
-        a.role = 'super_admin';
-        needsUpdate = true;
-      }
-      // Ensure all accounts have valid roles
-      if (!ROLES[a.role]) {
-        a.role = 'viewer';
-        needsUpdate = true;
-      }
-    });
-    if (needsUpdate) {
-      localStorage.setItem('poster_ai_accounts', JSON.stringify(accounts));
-    }
-  }
-}
-
-function hashPassword(pwd) {
-  let hash = 0;
-  const str = pwd + '_poster_ai_v3_salt';
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
-  }
-  return hash.toString(36);
-}
-
-function checkSession() {
-  const session = JSON.parse(sessionStorage.getItem('poster_ai_session') || 'null');
-  if (session && session.username) {
-    currentUser = session;
-    showApp();
-  }
-}
 
 // ============ Auth ============
 function doLogin() {
   const username = document.getElementById('loginUser').value.trim();
   const password = document.getElementById('loginPass').value;
-  if (!username || !password) return;
-  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
-  const account = accounts.find(a => a.username === username && a.password === hashPassword(password));
-  if (!account) { alert('用户名或密码错误'); return; }
-  currentUser = { username: account.username, role: account.role };
-  sessionStorage.setItem('poster_ai_session', JSON.stringify(currentUser));
+  
+  // Simple authentication
+  const accounts = JSON.parse(localStorage.getItem('poster_accounts') || '[]');
+  
+  // First time: create default admin
+  if (accounts.length === 0) {
+    accounts.push({ username: 'admin', password: 'admin123', role: 'admin' });
+    localStorage.setItem('poster_accounts', JSON.stringify(accounts));
+  }
+  
+  const account = accounts.find(a => a.username === username && a.password === password);
+  if (!account) {
+    alert('用户名或密码错误');
+    return;
+  }
+  
+  currentUser = account;
+  sessionStorage.setItem('poster_session', JSON.stringify(account));
   showApp();
 }
 
 function doLogout() {
-  sessionStorage.removeItem('poster_ai_session');
+  sessionStorage.removeItem('poster_session');
   currentUser = null;
-  document.getElementById('loginOverlay').classList.remove('hidden');
   document.getElementById('mainApp').style.display = 'none';
+  document.getElementById('loginOverlay').classList.remove('hidden');
 }
 
 function showApp() {
   document.getElementById('loginOverlay').classList.add('hidden');
   document.getElementById('mainApp').style.display = 'block';
-  const role = ROLES[currentUser.role] || ROLES.viewer;
-  document.getElementById('userInfo').textContent = `👤 ${currentUser.username}`;
-  document.getElementById('roleInfo').textContent = role.label;
-  document.getElementById('roleInfo').className = 'tag ' + role.tag;
-
-  // Role-based UI
-  const canAdmin = role.canConfig || role.canManageUsers || role.canManageData;
-  document.getElementById('adminBtn').style.display = canAdmin ? '' : 'none';
-  // Viewer: hide generate/analyze
-  const isViewer = currentUser.role === 'viewer';
-  document.getElementById('generateBtn').style.display = isViewer ? 'none' : '';
-  document.getElementById('analyzeBtn').style.display = isViewer ? 'none' : '';
-  // Operator: can generate but not config
-  // Disable config inputs for non-config roles
-  const configDisabled = !role.canConfig;
-
-  // Load API key
-  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
-  const acc = accounts.find(a => a.username === currentUser.username);
-  if (acc && acc.apiKey) document.getElementById('apiKeyInput').value = acc.apiKey;
-  // Load custom prompt
-  const cp = localStorage.getItem('poster_ai_custom_prompts') || '';
-  if (cp) document.getElementById('customPromptText').value = cp;
-
-  renderHistory();
+  document.getElementById('userInfo').textContent = '👤 ' + currentUser.username;
+  
+  const key = localStorage.getItem('poster_apikey') || '';
+  document.getElementById('apiKeyInput').value = key;
 }
 
-// ============ Password Management ============
-function openPwdModal() {
-  document.getElementById('pwdModal').classList.remove('hidden');
-  document.getElementById('pwdOld').value = '';
-  document.getElementById('pwdNew').value = '';
-  document.getElementById('pwdConfirm').value = '';
-}
-function closePwdModal() { document.getElementById('pwdModal').classList.add('hidden'); }
-
-function changePassword() {
-  const old = document.getElementById('pwdOld').value;
-  const newP = document.getElementById('pwdNew').value;
-  const confirm = document.getElementById('pwdConfirm').value;
-  if (!old || !newP) return alert('请填写完整');
-  if (newP !== confirm) return alert('两次密码不一致');
-  if (newP.length < 4) return alert('密码至少4位');
-  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
-  const acc = accounts.find(a => a.username === currentUser.username);
-  if (!acc) return alert('账号异常');
-  if (acc.password !== hashPassword(old)) return alert('当前密码错误');
-  acc.password = hashPassword(newP);
-  localStorage.setItem('poster_ai_accounts', JSON.stringify(accounts));
-  closePwdModal();
-  alert('密码修改成功');
-}
-
-function resetUserPassword(idx) {
-  const newP = prompt('请输入新密码（至少4位）:');
-  if (!newP || newP.length < 4) return alert('密码无效');
-  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
-  accounts[idx].password = hashPassword(newP);
-  localStorage.setItem('poster_ai_accounts', JSON.stringify(accounts));
-  renderAccountTable();
-  alert('密码已重置');
-}
-
-// ============ Admin ============
-function openAdmin() {
-  document.getElementById('adminOverlay').classList.remove('hidden');
-  renderAccountTable();
-  renderDataRecords();
-  // Role-based tab visibility
-  const role = ROLES[currentUser.role];
-  const tabs = document.querySelectorAll('#adminTabs .tab');
-  if (!role.canManageUsers && !role.canConfig) tabs[0].style.display = 'none'; // 账号管理
-  if (!role.canConfig) tabs[1].style.display = 'none'; // 系统配置
-  if (!role.canManageData) tabs[2].style.display = 'none'; // 数据管理
-}
-function closeAdmin() { document.getElementById('adminOverlay').classList.add('hidden'); }
-
-function switchAdminTab(idx) {
-  document.querySelectorAll('#adminTabs .tab').forEach((t,i) => t.classList.toggle('active', i === idx));
-  document.querySelectorAll('#adminOverlay .tab-content').forEach((t,i) => t.classList.toggle('active', i === idx));
-}
-
-function renderAccountTable() {
-  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
-  const tbody = document.getElementById('accountTable');
-  const isSuperAdmin = currentUser.role === 'super_admin';
-  tbody.innerHTML = accounts.map((a, i) => {
-    const r = ROLES[a.role] || ROLES.viewer;
-    return `<tr>
-      <td>${a.username}</td>
-      <td><span class="tag ${r.tag}">${r.label}</span></td>
-      <td>${a.apiKey ? '✅' : '❌'}</td>
-      <td>
-        ${a.username !== 'admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteAccount(${i})">删除</button>` : ''}
-        <button class="btn btn-outline btn-sm" onclick="resetUserPassword(${i})">重置密码</button>
-        <button class="btn btn-outline btn-sm" onclick="resetApiKey(${i})">重置Key</button>
-      </td>
-    </tr>`;
-  }).join('');
-}
-
-function addAccount() {
-  const username = document.getElementById('newUsername').value.trim();
-  const password = document.getElementById('newPassword').value;
-  const role = document.getElementById('newRole').value;
-  if (!username || !password) return alert('请填写用户名和密码');
-  if (password.length < 4) return alert('密码至少4位');
-  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
-  if (accounts.find(a => a.username === username)) return alert('用户名已存在');
-  accounts.push({ username, password: hashPassword(password), role, apiKey: '' });
-  localStorage.setItem('poster_ai_accounts', JSON.stringify(accounts));
-  document.getElementById('newUsername').value = '';
-  document.getElementById('newPassword').value = '';
-  renderAccountTable();
-}
-
-function deleteAccount(idx) {
-  if (!confirm('确定删除该账号?')) return;
-  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
-  accounts.splice(idx, 1);
-  localStorage.setItem('poster_ai_accounts', JSON.stringify(accounts));
-  renderAccountTable();
-}
-
-function resetApiKey(idx) {
-  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
-  accounts[idx].apiKey = '';
-  localStorage.setItem('poster_ai_accounts', JSON.stringify(accounts));
-  renderAccountTable();
-}
-
-function saveCustomPrompt() {
-  localStorage.setItem('poster_ai_custom_prompts', document.getElementById('customPromptText').value);
-  alert('模板已保存');
-}
-
-// ============ Data Management ============
-function renderDataRecords() {
-  const el = document.getElementById('dataRecords');
-  if (genRecords.length === 0) { el.innerHTML = '暂无记录'; return; }
-  el.innerHTML = genRecords.slice(-20).reverse().map(r =>
-    `<div style="padding:4px 0;border-bottom:1px solid var(--border)">
-      <span style="color:var(--text)">${r.name}</span>
-      <span class="tag ${ROLES[r.role]?.tag || 'tag-viewer'}" style="margin-left:4px">${r.role_label || r.role}</span>
-      <span style="color:var(--text2);margin-left:4px">${r.time}</span>
-      <span style="color:${r.success ? 'var(--success)' : 'var(--danger)'};margin-left:4px">${r.success ? '✅' : '❌'}</span>
-    </div>`
-  ).join('');
-}
-
-function addRecord(name, success) {
-  const r = ROLES[currentUser.role] || ROLES.viewer;
-  genRecords.push({ name, success, time: new Date().toLocaleString('zh-CN'), role: currentUser.role, role_label: r.label, user: currentUser.username });
-  if (genRecords.length > 100) genRecords = genRecords.slice(-100);
-  localStorage.setItem('poster_ai_records', JSON.stringify(genRecords));
-  renderHistory();
-}
-
-function renderHistory() {
-  const el = document.getElementById('historyList');
-  const myRecords = genRecords.filter(r => r.user === currentUser.username || currentUser.role === 'super_admin' || currentUser.role === 'admin');
-  if (myRecords.length === 0) { el.innerHTML = '暂无记录'; return; }
-  el.innerHTML = myRecords.slice(-10).reverse().map(r =>
-    `<div style="padding:2px 0;border-bottom:1px solid var(--border)">
-      <span>${r.success ? '✅' : '❌'}</span> ${r.name} <span style="color:var(--text2)">${r.time.split(' ')[1] || r.time}</span>
-    </div>`
-  ).join('');
-}
-
-function exportRecords() {
-  const data = JSON.stringify(genRecords, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'poster_ai_records.json';
-  a.click();
-}
-
-function clearRecords() {
-  if (!confirm('确定清空所有记录?')) return;
-  genRecords = [];
-  localStorage.setItem('poster_ai_records', '[]');
-  renderDataRecords();
-  renderHistory();
-}
-
-// ============ Category Detection ============
-function detectCategory(name) {
-  if (!name) return '';
-  for (const [cat, regex] of Object.entries(CATEGORY_KEYWORDS)) {
-    if (regex.test(name)) return cat;
-  }
-  return '其他';
-}
-
-function onProductChange() {
-  const name = document.getElementById('productName').value.trim();
-  // Auto-detect category
-  const manualCat = document.getElementById('productCategory').value;
-  if (!manualCat) {
-    detectedCategory = detectCategory(name);
-    updateCategoryBadge();
-  }
-  updatePreview();
-  updateRecommendations();
-}
-
-function onCategoryChange() {
-  const val = document.getElementById('productCategory').value;
-  detectedCategory = val || detectCategory(document.getElementById('productName').value.trim());
-  updateCategoryBadge();
-  toggleClothingTemplates();
-  updatePreview();
-  updateRecommendations();
-  // Auto-apply category marketing defaults
-  applyCategoryDefaults();
-}
-
-function updateCategoryBadge() {
-  const badge = document.getElementById('catBadge');
-  if (detectedCategory) {
-    badge.textContent = detectedCategory;
-    badge.className = 'cat-badge cat-' + detectedCategory;
-    badge.style.display = '';
-  } else {
-    badge.style.display = 'none';
+function checkSession() {
+  const session = sessionStorage.getItem('poster_session');
+  if (session) {
+    currentUser = JSON.parse(session);
+    showApp();
   }
 }
 
-function toggleClothingTemplates() {
-  const isClothing = detectedCategory === '服装';
-  document.getElementById('generalDisplayGroup').style.display = isClothing ? 'none' : '';
-  document.getElementById('clothingTemplateGroup').style.display = isClothing ? '' : 'none';
-  // Reset display selection when switching
-  selectedDisplay = '';
-  document.querySelectorAll('#displayChips .chip, #clothingChips .chip').forEach(c => c.classList.remove('active'));
-}
-
-function applyCategoryDefaults() {
-  const mk = CATEGORY_MARKETING[detectedCategory];
-  if (!mk) return;
-  // Auto-set style if not set
-  if (!selectedStyle || selectedStyle === 'studio') {
-    const styleChip = document.querySelector(`#styleChips .chip[data-val="${mk.style}"]`);
-    if (styleChip) styleChip.click();
-  }
-  // Auto-set display
-  if (!selectedDisplay) {
-    const dispChip = document.querySelector(`#displayChips .chip[data-val="${mk.display}"]`);
-    if (dispChip) dispChip.click();
-  }
-  // Auto-set layout
-  if (!selectedLayout) {
-    const layChip = document.querySelector(`#layoutChips .chip[data-val="${mk.layout}"]`);
-    if (layChip) layChip.click();
-  }
-}
-
-// ============ Language ============
-function getDetectedLanguage() {
-  const langSelect = document.getElementById('genLanguage').value;
-  if (langSelect !== 'auto') return langSelect;
-  // Auto-detect from country
-  const country = document.getElementById('targetCountry').value.trim();
-  if (country && COUNTRY_LANG[country]) return COUNTRY_LANG[country];
-  // Fallback from region
-  const region = document.getElementById('targetRegion').value;
-  const regionLang = { '国内': '中文', '北美': 'English', '欧洲': 'English', '东南亚': 'English', '中东': 'English', '日韩': '日本語', '全球': 'English' };
-  return regionLang[region] || '中文';
-}
-
-function onMarketChange() {
-  updatePreview();
-  updateRecommendations();
-  const lang = getDetectedLanguage();
-  const hint = document.getElementById('langHint');
-  if (document.getElementById('genLanguage').value === 'auto') {
-    hint.textContent = '↳ 自动识别: ' + lang;
-  } else {
-    hint.textContent = '';
-  }
-}
-
-// ============ Image Upload ============
-function setupPasteHandlers() {
-  document.addEventListener('paste', (e) => {
-    const items = e.clipboardData?.items;
-    if (!items) return;
-    for (const item of items) {
-      if (item.type.startsWith('image/')) {
-        e.preventDefault();
-        const file = item.getAsFile();
-        const activeEl = document.activeElement;
-        const nearRef = activeEl && (activeEl.closest('#refZone') || activeEl.closest('#refPreview'));
-        processImageFile(file, nearRef ? 'ref' : 'product');
-        return;
+// ============ File Upload ============
+function handleFiles(input, type) {
+  const files = Array.from(input.files);
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      if (type === 'product') {
+        productImages.push(dataUrl);
+        renderPreview('product');
+      } else {
+        refImages.push(dataUrl);
+        renderPreview('ref');
       }
-    }
+    };
+    reader.readAsDataURL(file);
   });
-}
-
-function handleDrop(e, type) {
-  e.preventDefault();
-  e.currentTarget.style.borderColor = '';
-  for (const file of e.dataTransfer.files) {
-    if (file.type.startsWith('image/')) processImageFile(file, type);
-  }
-}
-
-function handleFileSelect(input, type) {
-  for (const file of input.files) {
-    if (file.type.startsWith('image/')) processImageFile(file, type);
-  }
   input.value = '';
 }
 
-function processImageFile(file, type) {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    if (type === 'product') { productImages.push(e.target.result); renderProductPreviews(); }
-    else { refImages.push(e.target.result); renderRefPreviews(); }
-    updatePreview();
-    updateRecommendations();
-  };
-  reader.readAsDataURL(file);
+function renderPreview(type) {
+  const images = type === 'product' ? productImages : refImages;
+  const container = document.getElementById(type + 'Preview');
+  container.innerHTML = '';
+  images.forEach((img, idx) => {
+    const div = document.createElement('div');
+    div.style.position = 'relative';
+    div.style.display = 'inline-block';
+    div.innerHTML = `
+      <img src="${img}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--border)">
+      <button onclick="removeImage('${type}',${idx})" style="position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:16px;height:16px;cursor:pointer;font-size:10px">×</button>
+    `;
+    container.appendChild(div);
+  });
 }
 
-function renderProductPreviews() {
-  const c = document.getElementById('productPreview');
-  c.innerHTML = productImages.map((img, i) =>
-    `<div style="position:relative;display:inline-block"><img src="${img}" style="width:50px;height:50px;object-fit:cover;border-radius:3px;border:1px solid var(--border)"><button onclick="removeProductImg(${i})" style="position:absolute;top:-3px;right:-3px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:14px;height:14px;font-size:8px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button></div>`
-  ).join('');
-  document.getElementById('productZone').classList.toggle('has-image', productImages.length > 0);
+function removeImage(type, idx) {
+  if (type === 'product') {
+    productImages.splice(idx, 1);
+    renderPreview('product');
+  } else {
+    refImages.splice(idx, 1);
+    renderPreview('ref');
+  }
 }
-
-function removeProductImg(idx) { productImages.splice(idx, 1); renderProductPreviews(); }
-
-function renderRefPreviews() {
-  const c = document.getElementById('refPreview');
-  c.innerHTML = refImages.map((img, i) =>
-    `<div style="position:relative;display:inline-block"><img src="${img}" style="width:50px;height:50px;object-fit:cover;border-radius:3px;border:1px solid var(--border)"><button onclick="removeRef(${i})" style="position:absolute;top:-3px;right:-3px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:14px;height:14px;font-size:8px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button></div>`
-  ).join('');
-  document.getElementById('refZone').classList.toggle('has-image', refImages.length > 0);
-}
-
-function removeRef(idx) { refImages.splice(idx, 1); renderRefPreviews(); }
 
 // ============ Chip Selection ============
 function selectChip(el, group) {
   const parent = el.parentElement;
   parent.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
+  
   const val = el.dataset.val;
   if (group === 'purpose') selectedPurpose = val;
   else if (group === 'display') selectedDisplay = val;
+  else if (group === 'clothing') selectedClothing = val;
   else if (group === 'layout') selectedLayout = val;
   else if (group === 'style') selectedStyle = val;
-  updatePreview();
-  updateRecommendations();
 }
-
-function toggleCollapse(el) {
-  el.classList.toggle('collapsed');
-  el.nextElementSibling.classList.toggle('collapsed');
-}
-
-// ============ API Key ============
-function saveApiKey() {
-  const key = document.getElementById('apiKeyInput').value.trim();
-  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
-  const acc = accounts.find(a => a.username === currentUser.username);
-  if (acc) { acc.apiKey = key; localStorage.setItem('poster_ai_accounts', JSON.stringify(accounts)); setStatus('API Key 已保存', 'success'); }
-}
-
-function getApiKey() {
-  const accounts = JSON.parse(localStorage.getItem('poster_ai_accounts') || '[]');
-  const acc = accounts.find(a => a.username === currentUser.username);
-  return acc?.apiKey || document.getElementById('apiKeyInput').value.trim();
-}
-
-// ============ Prompt Building (Language-Aware) ============
-function buildPrompt() {
-  const name = document.getElementById('productName').value.trim();
-  const selling = document.getElementById('productSelling').value.trim();
-  const region = document.getElementById('targetRegion').value;
-  const country = document.getElementById('targetCountry').value.trim();
-  const targetUser = document.getElementById('targetUser').value;
-  const size = document.getElementById('imageSize').value;
-  const quality = document.getElementById('imageQuality').value;
-  const lang = getDetectedLanguage();
-  const category = detectedCategory || '其他';
-  const mkFocus = CATEGORY_MARKETING[category]?.focus || '';
-
-  // Custom prompt template
-  const customTemplate = localStorage.getItem('poster_ai_custom_prompts') || '';
-  if (customTemplate) {
-    return customTemplate
-      .replace('{产品名称}', name)
-      .replace('{产品卖点}', selling)
-      .replace('{目标市场}', region + (country ? '·' + country : ''))
-      .replace('{目标用户}', targetUser)
-      .replace('{海报用途}', selectedPurpose)
-      .replace('{展示方式}', selectedDisplay)
-      .replace('{图片布局}', selectedLayout)
-      .replace('{场景风格}', selectedStyle)
-      .replace('{生成语言}', lang)
-      .replace('{商品类别}', category)
-      .replace('{营销重点}', mkFocus);
-  }
-
-  // Language-aware prompt building
-  const isChinese = lang === '中文';
-  const market = region + (country ? ' - ' + country : '');
-
-  if (isChinese) {
-    return buildChinesePrompt(name, selling, region, country, targetUser, size, quality, category, mkFocus, market);
-  } else {
-    return buildEnglishPrompt(name, selling, region, country, targetUser, size, quality, category, mkFocus, market, lang);
-  }
-}
-
-function buildChinesePrompt(name, selling, region, country, targetUser, size, quality, category, mkFocus, market) {
-  let p = `为以下产品创建专业电商海报：「${name}」`;
-  if (selling) p += `\n核心卖点：${selling}`;
-  if (category && category !== '其他') p += `\n商品类别：${category}`;
-  if (mkFocus) p += `\n营销重点：${mkFocus}`;
-  if (selectedPurpose) p += `\n海报用途：${selectedPurpose}`;
-  if (selectedStyle) {
-    const sm = { studio: '棚拍白底，专业产品照', lifestyle: '生活场景，真实环境', model: '模特展示，真人穿戴/使用', closeup: '微距细节，材质特写', outdoor: '户外场景，自然光', minimal: '极简高级，大面积留白' };
-    p += `\n视觉风格：${sm[selectedStyle] || selectedStyle}`;
-  }
-  if (selectedDisplay) p += `\n展示方式：${selectedDisplay}`;
-  if (selectedLayout) p += `\n图片布局：${selectedLayout}`;
-  if (targetUser) p += `\n目标受众：${targetUser}`;
-  if (market) p += `\n目标市场：${market}`;
-  p += `\n比例：${size}，画质：${quality}，专业商业摄影级`;
-  p += `\n要求效果逼真，如同真实电商海报，不要AI痕迹`;
-  return p;
-}
-
-function buildEnglishPrompt(name, selling, region, country, targetUser, size, quality, category, mkFocus, market, lang) {
-  let p = `Create a professional e-commerce product poster for: "${name}"`;
-  if (selling) p += `\nKey selling point: ${selling}`;
-  if (category && category !== '其他') p += `\nProduct category: ${category}`;
-  if (mkFocus) p += `\nMarketing focus: ${mkFocus}`;
-  if (selectedPurpose) {
-    const pm = { '产品销售': 'Product sales showcase', '限时促销': 'Limited-time promotion with discount emphasis', '新品推广': 'New product launch', '买家评价': 'Customer review/testimonial style', '产品教程': 'Product tutorial/how-to guide' };
-    p += `\nPurpose: ${pm[selectedPurpose] || selectedPurpose}`;
-  }
-  if (selectedStyle) {
-    const sm = { studio: 'studio photography with clean white/pure color background', lifestyle: 'lifestyle scene in a realistic home/office environment', model: 'featuring a model using/wearing the product', closeup: 'macro close-up shot showing material and craft details', outdoor: 'outdoor scene with natural lighting', minimal: 'minimalist high-end style with large whitespace' };
-    p += `\nVisual style: ${sm[selectedStyle] || selectedStyle}`;
-  }
-  if (selectedDisplay) p += `\nDisplay method: ${selectedDisplay}`;
-  if (selectedLayout) p += `\nLayout: ${selectedLayout}`;
-  if (targetUser) p += `\nTarget audience: ${targetUser}`;
-  if (market) p += `\nTarget market: ${market}`;
-  p += `\nAspect ratio: ${size}, Quality: ${quality} resolution, highly detailed, professional commercial photography`;
-  // Add language instruction for non-English markets
-  if (lang !== 'English') {
-    const langNames = { 'Deutsch': 'German', 'Français': 'French', 'Español': 'Spanish', 'Italiano': 'Italian', '日本語': 'Japanese' };
-    p += `\nAll text and copy on the poster must be in ${langNames[lang] || lang}`;
-  }
-  p += `\nNo Asian faces. Use Western/European models if people are shown.`;
-  p += `\nMake it look like a real professional e-commerce poster, not AI generated.`;
-  return p;
-}
-
-function updatePreview() {
-  const preview = document.getElementById('promptPreview');
-  const name = document.getElementById('productName').value.trim();
-  if (!name && productImages.length === 0) {
-    preview.textContent = '填写产品信息后自动显示...';
-    return;
-  }
-  preview.textContent = buildPrompt();
-}
-
-// ============ AI Recommendations ============
-function updateRecommendations() {
-  const name = document.getElementById('productName').value.trim();
-  const region = document.getElementById('targetRegion').value;
-  const country = document.getElementById('targetCountry').value.trim();
-  const targetUser = document.getElementById('targetUser').value;
-  const category = detectedCategory || detectCategory(name) || '其他';
-  const lang = getDetectedLanguage();
-
-  if (!name) {
-    document.getElementById('recContent').innerHTML = '<div style="text-align:center;padding:20px 0;color:var(--text2);font-size:11px">填写产品信息后<br>自动生成推荐方案</div>';
-    return;
-  }
-
-  const mk = CATEGORY_MARKETING[category] || CATEGORY_MARKETING['其他'];
-  const recs = [];
-
-  // 1. Best image type
-  const imageTypeRecs = getImageTypeRecs(category);
-  recs.push({ label: '🖼️ 推荐图片类型', value: imageTypeRecs[0].name, stars: imageTypeRecs[0].stars, desc: imageTypeRecs[0].desc, alternatives: imageTypeRecs.slice(1) });
-
-  // 2. Marketing direction
-  recs.push({ label: '🎯 推荐营销方向', value: mk.focus, desc: `基于「${category}」品类特征` });
-
-  // 3. Recommended scene style
-  const styleRec = getStyleRec(category, region);
-  recs.push({ label: '🎨 推荐场景风格', value: styleRec.name, stars: styleRec.stars, desc: styleRec.desc });
-
-  // 4. Recommended language
-  const langRec = getLangRec(country, region, lang);
-  recs.push({ label: '🌐 推荐语言', value: lang, stars: langRec.stars, desc: langRec.desc });
-
-  // Render
-  const el = document.getElementById('recContent');
-  el.innerHTML = recs.map(r => `
-    <div class="rec-item">
-      <div class="rec-label">${r.label}</div>
-      <div class="rec-value">${r.value}</div>
-      ${r.stars ? `<div class="rec-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5 - r.stars)}</div>` : ''}
-      <div class="rec-desc">${r.desc}</div>
-      ${r.alternatives ? `<div style="margin-top:3px">${r.alternatives.map(a =>
-        `<div style="font-size:10px;color:var(--text2)">${'★'.repeat(a.stars)}${'☆'.repeat(5 - a.stars)} ${a.name}</div>`
-      ).join('')}</div>` : ''}
-    </div>
-  `).join('');
-}
-
-function getImageTypeRecs(category) {
-  const map = {
-    '服装': [
-      { name: '模特展示', stars: 5, desc: '服装最有效的展示方式' },
-      { name: '生活场景', stars: 4, desc: '日常穿搭代入感强' },
-      { name: '微距细节', stars: 3, desc: '面料质感补充' }
-    ],
-    '美妆': [
-      { name: '真人使用', stars: 5, desc: '美妆必备展示方式' },
-      { name: '前后对比', stars: 5, desc: '效果对比最具说服力' },
-      { name: '产品特写', stars: 3, desc: '产品包装质感' }
-    ],
-    '汽车用品': [
-      { name: '生活场景', stars: 5, desc: '车内使用场景最直观' },
-      { name: '前后对比', stars: 4, desc: '效果对比增强信任' },
-      { name: '产品特写', stars: 3, desc: '功能细节展示' }
-    ],
-    '家居用品': [
-      { name: '生活场景', stars: 5, desc: '家居场景沉浸感' },
-      { name: '产品特写', stars: 4, desc: '材质细节展示' },
-      { name: '多品组合', stars: 3, desc: '搭配方案展示' }
-    ],
-    '电子产品': [
-      { name: '产品特写', stars: 5, desc: '科技产品细节为王' },
-      { name: '生活场景', stars: 4, desc: '使用场景代入' },
-      { name: '真人使用', stars: 3, desc: '人机交互展示' }
-    ],
-    '食品': [
-      { name: '生活场景', stars: 5, desc: '食用场景最能激发食欲' },
-      { name: '产品特写', stars: 4, desc: '食材新鲜感展示' },
-      { name: '真人使用', stars: 3, desc: '品尝体验展示' }
-    ]
-  };
-  return map[category] || [
-    { name: '产品特写', stars: 5, desc: '通用产品展示' },
-    { name: '生活场景', stars: 4, desc: '使用场景代入' },
-    { name: '真人使用', stars: 3, desc: '用户互动展示' }
-  ];
-}
-
-function getStyleRec(category, region) {
-  const map = {
-    '服装': { name: '模特展示', stars: 5, desc: '服装首选模特展示风格' },
-    '美妆': { name: '模特展示', stars: 5, desc: '真人效果展示最有效' },
-    '汽车用品': { name: '生活场景', stars: 5, desc: '车内实际场景最直观' },
-    '家居用品': { name: '生活场景', stars: 5, desc: '家居氛围感最吸引人' },
-    '电子产品': { name: '棚拍白底', stars: 5, desc: '科技产品干净专业' },
-    '食品': { name: '生活场景', stars: 5, desc: '食用场景激发食欲' }
-  };
-  const base = map[category] || { name: '棚拍白底', stars: 5, desc: '通用专业展示' };
-  // Adjust for specific regions
-  if (region === '日韩' && category === '服装') return { name: '极简高级', stars: 5, desc: '日韩风格偏爱极简' };
-  return base;
-}
-
-function getLangRec(country, region, lang) {
-  if (lang === '中文') return { stars: 5, desc: '国内市场首选中文' };
-  if (lang === 'English') return { stars: 5, desc: '英语市场覆盖最广' };
-  if (lang === 'Deutsch') return { stars: 5, desc: '德语区本地化必备' };
-  if (lang === 'Français') return { stars: 5, desc: '法语区本地化必备' };
-  if (lang === 'Español') return { stars: 5, desc: '西语区本地化必备' };
-  if (lang === 'Italiano') return { stars: 5, desc: '意大利市场本地化' };
-  if (lang === '日本語') return { stars: 5, desc: '日本市场本地化' };
-  return { stars: 4, desc: '根据目标市场自动匹配' };
-}
-
-// ============ Quality Check ============
-function runQualityCheck() {
-  if (currentUser.role === 'viewer') return alert('查看人员无法执行此操作');
-  const name = document.getElementById('productName').value.trim();
-  const selling = document.getElementById('productSelling').value.trim();
-  const region = document.getElementById('targetRegion').value;
-  const targetUser = document.getElementById('targetUser').value;
-  let infoScore = 0, visualScore = 0, convertScore = 0;
-  const suggestions = [];
-
-  if (productImages.length > 0) infoScore += 30; else suggestions.push('❗ 请上传产品图片');
-  if (name) infoScore += 25; else suggestions.push('❗ 请填写产品名称');
-  if (selling) infoScore += 20; else suggestions.push('💡 补充产品卖点可提升效果');
-  if (selectedPurpose) infoScore += 15; else suggestions.push('💡 选择海报用途帮助AI理解目标');
-  if (region || targetUser) infoScore += 10; else suggestions.push('💡 填写目标市场或用户可提升转化');
-
-  if (refImages.length > 0) visualScore += 30; else suggestions.push('📷 上传参考图可稳定视觉方向');
-  if (selectedStyle) visualScore += 25; else suggestions.push('🎨 请选择场景风格');
-  if (selectedDisplay) visualScore += 25; else suggestions.push('👁️ 选择展示方式帮助确定构图');
-  if (selectedLayout) visualScore += 20; else suggestions.push('📐 选择图片布局控制画面结构');
-
-  if (targetUser) convertScore += 25; else suggestions.push('🎯 明确目标用户提升转化');
-  if (region || document.getElementById('targetCountry').value) convertScore += 25; else suggestions.push('🌍 设定目标市场帮助本地化');
-  if (selectedPurpose) convertScore += 25; else suggestions.push('📢 设定海报用途明确营销方向');
-  if (selling) convertScore += 25; else suggestions.push('✨ 提炼核心卖点增强说服力');
-
-  const overall = Math.round(infoScore * 0.4 + visualScore * 0.3 + convertScore * 0.3);
-  qualityScore = { overall, infoScore, visualScore, convertScore, suggestions };
-  renderQualityPanel();
-  document.getElementById('qualityPanel').classList.remove('hidden');
-}
-
-function renderQualityPanel() {
-  if (!qualityScore) return;
-  const { overall, infoScore, visualScore, convertScore, suggestions } = qualityScore;
-  document.getElementById('overallNumber').textContent = overall;
-  const overallEl = document.getElementById('overallScore');
-  let statusText, statusColor, bgColor;
-  if (overall >= 90) { statusText = '✅ 信息充足，可以生成'; statusColor = 'var(--success)'; bgColor = 'rgba(34,197,94,.1)'; }
-  else if (overall >= 70) { statusText = '⚡ 基本完整，建议优化后生成'; statusColor = 'var(--accent2)'; bgColor = 'rgba(99,101,241,.1)'; }
-  else if (overall >= 50) { statusText = '⚠️ 信息不足，效果可能不稳定'; statusColor = 'var(--warn)'; bgColor = 'rgba(245,158,11,.1)'; }
-  else { statusText = '❌ 信息缺失较多，建议补充'; statusColor = 'var(--danger)'; bgColor = 'rgba(239,68,68,.1)'; }
-  document.getElementById('overallStatus').textContent = statusText;
-  document.getElementById('overallStatus').style.color = statusColor;
-  overallEl.style.background = bgColor;
-  document.getElementById('overallNumber').style.color = statusColor;
-  document.getElementById('scoreInfo').textContent = infoScore;
-  document.getElementById('scoreInfo').style.color = getScoreColor(infoScore);
-  document.getElementById('barInfo').style.width = infoScore + '%';
-  document.getElementById('barInfo').style.background = getScoreColor(infoScore);
-  document.getElementById('scoreVisual').textContent = visualScore;
-  document.getElementById('scoreVisual').style.color = getScoreColor(visualScore);
-  document.getElementById('barVisual').style.width = visualScore + '%';
-  document.getElementById('barVisual').style.background = getScoreColor(visualScore);
-  document.getElementById('scoreConvert').textContent = convertScore;
-  document.getElementById('scoreConvert').style.color = getScoreColor(convertScore);
-  document.getElementById('barConvert').style.width = convertScore + '%';
-  document.getElementById('barConvert').style.background = getScoreColor(convertScore);
-  const sugEl = document.getElementById('suggestions');
-  sugEl.innerHTML = suggestions.length === 0
-    ? '<p style="font-size:11px;color:var(--success)">🎉 所有信息完善！</p>'
-    : '<p style="font-size:10px;color:var(--text2);margin-bottom:3px">AI建议：</p><ul>' + suggestions.map(s => `<li>${s}</li>`).join('') + '</ul>';
-}
-
-function getScoreColor(s) { return s >= 80 ? 'var(--success)' : s >= 60 ? 'var(--accent2)' : s >= 40 ? 'var(--warn)' : 'var(--danger)'; }
-
-function aiOptimize() {
-  const name = document.getElementById('productName').value.trim();
-  if (!name) { alert('请先填写产品名称'); return; }
-  const nameLower = name.toLowerCase();
-  // Auto detect target user
-  if (!document.getElementById('targetUser').value) {
-    if (/女|裙|cosmetic|beauty|lady|women/i.test(name)) document.getElementById('targetUser').value = '年轻女性';
-    else if (/男|shirt|men|man/i.test(name)) document.getElementById('targetUser').value = '年轻男性';
-    else if (/童|kid|child|baby/i.test(name)) document.getElementById('targetUser').value = '家庭用户';
-    else if (/car|车载|auto/i.test(name)) document.getElementById('targetUser').value = '中年男性';
-    else document.getElementById('targetUser').value = '男女通用';
-  }
-  if (!document.getElementById('targetRegion').value) document.getElementById('targetRegion').value = '欧洲';
-  if (!document.getElementById('targetCountry').value) document.getElementById('targetCountry').value = '英国';
-  if (!selectedPurpose) document.querySelector('#purposeChips .chip').click();
-  if (!selectedDisplay) {
-    const cat = detectedCategory || detectCategory(name);
-    const mk = CATEGORY_MARKETING[cat];
-    if (mk) {
-      const chip = document.querySelector(`#displayChips .chip[data-val="${mk.display}"]`);
-      if (chip) chip.click();
-    } else {
-      document.querySelector('#displayChips .chip').click();
-    }
-  }
-  if (!selectedLayout) {
-    const cat = detectedCategory || detectCategory(name);
-    const mk = CATEGORY_MARKETING[cat];
-    const chip = document.querySelector(`#layoutChips .chip[data-val="${mk?.layout || '产品突出型'}"]`);
-    if (chip) chip.click();
-  }
-  if (!document.getElementById('productSelling').value) {
-    if (/fan|风扇/i.test(name)) document.getElementById('productSelling').value = 'USB静音快充，多档调节';
-    else if (/遮阳|sun/i.test(name)) document.getElementById('productSelling').value = 'UPF50+防晒，折叠收纳';
-    else if (/裤|pant/i.test(name)) document.getElementById('productSelling').value = '高弹力面料，显瘦修身';
-    else document.getElementById('productSelling').value = '高品质材料，实用设计';
-  }
-  // Auto-detect category
-  if (!document.getElementById('productCategory').value) {
-    const cat = detectCategory(name);
-    if (cat && cat !== '其他') {
-      detectedCategory = cat;
-      document.getElementById('productCategory').value = cat;
-      updateCategoryBadge();
-      toggleClothingTemplates();
-    }
-  }
-  updatePreview();
-  updateRecommendations();
-  onMarketChange();
-  runQualityCheck();
-  setStatus('✅ AI已自动补充缺失字段', 'success');
-}
-
-function proceedGenerate() { document.getElementById('qualityPanel').classList.add('hidden'); doGenerate(); }
-function closeQuality() { document.getElementById('qualityPanel').classList.add('hidden'); }
 
 // ============ Generate ============
-function onGenerate() {
-  if (currentUser.role === 'viewer') return alert('查看人员无法生成图片');
+function doGenerate() {
   const name = document.getElementById('productName').value.trim();
+  const apiKey = document.getElementById('apiKeyInput').value.trim();
+  
   if (!name) return setStatus('请填写产品名称', 'error');
   if (productImages.length === 0) return setStatus('请上传产品图片', 'error');
-  if (!getApiKey()) return setStatus('请先设置 API Key', 'error');
-  if (!qualityScore) {
-    runQualityCheck();
-    if (qualityScore && qualityScore.overall < 70) {
-      setStatus('⚠️ 信息不足，建议先优化或点击"继续生成"', 'warn');
-      return;
-    }
-  }
-  doGenerate();
+  if (!apiKey) return setStatus('请填写 API Key', 'error');
+  
+  localStorage.setItem('poster_apikey', apiKey);
+  
+  // Build prompt
+  let prompt = buildPrompt(name);
+  
+  setStatus('正在生成...', 'info');
+  
+  // Submit to API
+  submitTask(prompt, apiKey);
 }
 
-async function doGenerate() {
-  const apiKey = getApiKey();
-  if (!apiKey) return setStatus('请先设置 API Key', 'error');
-  const name = document.getElementById('productName').value.trim();
-  const prompt = buildPrompt();
-  const model = document.getElementById('aiModel').value;
+function buildPrompt(name) {
+  const category = document.getElementById('productCategory').value;
+  const region = document.getElementById('targetRegion').value;
+  const language = document.getElementById('genLanguage').value;
+  const selling = document.getElementById('productSelling').value.trim();
+  const size = document.getElementById('imageSize').value;
+  const quality = document.getElementById('imageQuality').value;
+  
+  let lang = language === 'auto' ? getLanguageByRegion(region) : language;
+  
+  let p = `为以下产品创建专业电商海报：「${name}」`;
+  if (selling) p += `\n产品卖点：${selling}`;
+  if (category !== 'auto') p += `\n商品类别：${category}`;
+  if (selectedPurpose) p += `\n海报用途：${selectedPurpose}`;
+  if (selectedDisplay) p += `\n展示方式：${selectedDisplay}`;
+  if (selectedClothing && category === '服装') p += `\n服装类型：${selectedClothing}`;
+  if (selectedLayout) p += `\n图片布局：${selectedLayout}`;
+  
+  const styleMap = {
+    studio: '棚拍白底，纯白/纯色背景，专业产品照',
+    lifestyle: '生活场景，居家/办公室等真实环境',
+    model: '模特展示，真人模特使用/穿戴',
+    closeup: '微距细节，材质/工艺/细节特写',
+    outdoor: '户外场景，自然光/户外环境',
+    minimal: '极简高级，大面积留白，高端感'
+  };
+  if (selectedStyle && styleMap[selectedStyle]) {
+    p += `\n场景风格：${styleMap[selectedStyle]}`;
+  }
+  
+  if (region) p += `\n目标市场：${region}`;
+  p += `\n海报尺寸：${size}`;
+  p += `\n图片清晰度：${quality}`;
+  
+  if (lang !== '中文') {
+    p += `\n\n【重要】所有海报文案、标题、描述必须使用 ${lang} 语言`;
+  }
+  
+  p += `\n要求效果逼真，如同真实电商海报，不要AI痕迹`;
+  
+  return p;
+}
+
+function getLanguageByRegion(region) {
+  const map = {
+    '北美': 'English',
+    '欧洲': 'English',
+    '东南亚': 'English',
+    '中东': 'English',
+    '日韩': '日本語',
+    '国内': '中文',
+    '全球': 'English'
+  };
+  return map[region] || 'English';
+}
+
+async function submitTask(prompt, apiKey) {
+  const model = document.getElementById('modelSelect').value;
   const size = document.getElementById('imageSize').value;
   const count = parseInt(document.getElementById('imageCount').value);
-  const btn = document.getElementById('generateBtn');
-  btn.disabled = true; btn.textContent = '⏳ 生成中...';
-  setStatus('正在提交任务...', 'info');
-
+  
+  const payload = {
+    model: model,
+    prompt: prompt,
+    n: count,
+    size: size,
+    image_urls: productImages
+  };
+  
+  if (refImages.length > 0) {
+    payload.image_urls = payload.image_urls.concat(refImages);
+  }
+  
   try {
-    const imageUrls = [...productImages, ...refImages];
-    const body = { model, prompt, size, n: count, image_urls: imageUrls };
-    const proxies = getProxyUrl();
-    const submitResp = await fetchWithProxy('https://api.apimart.ai/v1/images/generations', {
+    const response = await fetchWithProxy('https://api.apimart.ai/v1/images/generations', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-      body: JSON.stringify(body)
-    }, proxies);
-    const submitData = await submitResp.json();
-    if (submitData.code !== 200 || !submitData.data || !submitData.data[0]?.task_id) {
-      const errMsg = submitData.message || submitData.msg || JSON.stringify(submitData);
-      throw new Error(`提交失败 [${submitData.code || submitResp.status}]: ${errMsg}`);
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    if (!response.ok) {
+      const err = await response.text();
+      return setStatus(`❌ 提交失败 (${response.status})：${err.substring(0, 200)}`, 'error');
     }
-    const taskId = submitData.data[0].task_id;
-    setStatus(`任务已提交 (${taskId.slice(0, 8)}...)，等待生成...`, 'info');
-    const result = await pollTask(taskId, apiKey);
-    displayResults(result);
-    setStatus('✅ 生成完成！', 'success');
-    addRecord(name, true);
-    qualityScore = null;
+    
+    const data = await response.json();
+    const taskId = data.task_id;
+    
+    if (!taskId) {
+      return setStatus('❌ 未返回任务ID：' + JSON.stringify(data).substring(0, 200), 'error');
+    }
+    
+    setStatus('✅ 已提交，任务ID：' + taskId + '，等待生成...', 'success');
+    pollTask(taskId, apiKey);
   } catch (err) {
-    setStatus('❌ 生成失败: ' + err.message, 'error');
-    addRecord(name, false);
-  } finally {
-    btn.disabled = false; btn.textContent = '🚀 生成图片';
+    setStatus('❌ 提交失败：' + err.message, 'error');
   }
 }
 
-function getProxyUrl() {
-  const allProxies = [
-    'https://corsproxy.io/?',
-    'https://api.allorigins.win/raw?url=',
-    'https://corsproxy.org/?',
-    'https://thingproxy.freeboard.io/fetch/',
-    ''
-  ];
-  const userPref = document.getElementById('proxySelect')?.value || 'auto';
-  if (userPref === 'auto') return allProxies;
-  return [userPref];
-}
-
-async function fetchWithProxy(url, options, proxies) {
-  let lastErr;
-  for (let i = 0; i < proxies.length; i++) {
+async function pollTask(taskId, apiKey) {
+  const startTime = Date.now();
+  const maxTime = 5 * 60 * 1000;
+  
+  const poll = async () => {
+    if (Date.now() - startTime > maxTime) {
+      return setStatus('❌ 超时（5分钟），任务ID：' + taskId, 'error');
+    }
+    
     try {
-      const proxy = proxies[i];
-      const proxyUrl = proxy ? (proxy + encodeURIComponent(url)) : url;
-      const resp = await fetch(proxyUrl, { ...options, signal: AbortSignal.timeout(15000) });
-      if (resp.ok) return resp;
-      lastErr = `HTTP ${resp.status}`;
-    } catch (e) { lastErr = e.message; continue; }
-  }
-  throw new Error(`所有代理均失败 (${lastErr})，请检查网络或API Key`);
-}
-
-async function pollTask(taskId, apiKey, maxAttempts = 60) {
-  const proxies = getProxyUrl();
-  for (let i = 0; i < maxAttempts; i++) {
-    await sleep(3000);
-    try {
-      const resp = await fetchWithProxy(`https://api.apimart.ai/v1/tasks/${taskId}`, {
-        method: 'GET', headers: { 'Authorization': 'Bearer ' + apiKey }
-      }, proxies);
-      const data = await resp.json();
-      if (data.code === 200 && data.data) {
-        const status = data.data.status;
-        if (status === 'completed') return data.data.result;
-        if (status === 'failed') throw new Error(`任务失败: ${data.data.error || '未知错误'}`);
-        setStatus(`生成中... (${i + 1}/${maxAttempts})`, 'info');
+      const response = await fetchWithProxy('https://api.apimart.ai/v1/tasks/' + taskId, {
+        headers: { 'Authorization': 'Bearer ' + apiKey }
+      });
+      
+      const data = await response.json();
+      const status = data.status || data.state || '';
+      
+      if (status === 'completed' || status === 'success') {
+        let url = '';
+        if (data.output && data.output.images && data.output.images.length > 0) {
+          url = data.output.images[0].url || data.output.images[0];
+        } else if (data.data && data.data.length > 0) {
+          url = data.data[0].url;
+        }
+        
+        if (!url) {
+          return setStatus('❌ 任务完成但未找到图片URL，任务ID：' + taskId, 'error');
+        }
+        
+        displayResult(url, taskId);
+        return;
       }
-    } catch (e) { if (e.message.includes('任务失败')) throw e; }
-  }
-  throw new Error('超时：任务未在规定时间内完成');
+      
+      if (status === 'failed' || status === 'error') {
+        return setStatus(`❌ 生成失败，任务ID：${taskId}，错误：${data.error || data.message || '未知'}`, 'error');
+      }
+      
+      setStatus(`⏳ ${status === 'processing' ? '处理中' : '排队中'}...任务ID：${taskId}`, 'info');
+      setTimeout(poll, 3000);
+    } catch (err) {
+      setStatus('❌ 查询失败：' + err.message, 'error');
+    }
+  };
+  
+  poll();
 }
 
-function displayResults(result) {
+function displayResult(url, taskId) {
   const area = document.getElementById('resultArea');
-  const container = document.getElementById('resultImages');
-  area.style.display = 'block';
-  if (result && result.images && result.images.length > 0) {
-    container.innerHTML = result.images.map(img =>
-      `<img src="${img.url}" onclick="window.open('${img.url}','_blank')" title="点击查看大图">`
-    ).join('');
-  } else {
-    container.innerHTML = '<p style="color:var(--text2)">未获取到图片结果</p>';
-  }
+  area.innerHTML = `
+    <div style="width:100%">
+      <img src="${url}" style="width:100%;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer" onclick="window.open(this.src)">
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <a href="${url}" download="poster_${taskId}.png" class="btn btn-success" style="text-decoration:none;font-size:12px">⬇️ 下载</a>
+        <span style="font-size:11px;color:var(--text2);line-height:32px">任务ID：${taskId}</span>
+      </div>
+    </div>
+  `;
+  setStatus('✅ 生成完成！点击图片可放大查看', 'success');
 }
 
-// ============ Utils ============
 function setStatus(msg, type) {
   const bar = document.getElementById('statusBar');
   bar.textContent = msg;
   bar.className = 'status-bar ' + type;
 }
 
-async function testProxy() {
-  const statusEl = document.getElementById('proxyStatus');
-  statusEl.textContent = '测试中...'; statusEl.style.color = 'var(--text2)';
-  const proxies = getProxyUrl();
-  for (let i = 0; i < proxies.length; i++) {
+// ============ Proxy ============
+async function fetchWithProxy(url, options) {
+  const proxies = [
+    'https://corsproxy.io/?',
+    'https://api.allorigins.win/raw?url=',
+    'https://corsproxy.org/?',
+    'https://thingproxy.freeboard.io/fetch/',
+    ''
+  ];
+  
+  for (const proxy of proxies) {
     try {
-      const proxy = proxies[i];
-      const proxyUrl = proxy ? (proxy + encodeURIComponent('https://api.apimart.ai/v1/tasks/test')) : 'https://api.apimart.ai/v1/tasks/test';
-      await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
-      statusEl.textContent = '✅ ' + (proxy || '直连') + ' 可用';
-      statusEl.style.color = 'var(--success)';
-      return;
-    } catch (e) { continue; }
+      const targetUrl = proxy ? proxy + url : url;
+      const resp = await fetch(targetUrl, options);
+      if (resp.ok || resp.status === 401) return resp;
+    } catch (e) {
+      continue;
+    }
   }
-  statusEl.textContent = '❌ 所有代理不可用'; statusEl.style.color = 'var(--danger)';
+  throw new Error('All proxies failed');
 }
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-// ============ Start ============
-init();
+// ============ Init ============
+checkSession();
 </script>
+
 </body>
 </html>
