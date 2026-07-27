@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FB评论-海报生图器</title>
+<title>FB璇勮-娴锋姤鐢熷浘鍣�</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0f1117;--card:#1a1d27;--border:#2a2d3a;--text:#e4e4e7;--text2:#9ca3af;--accent:#6366f1;--accent2:#818cf8;--success:#22c55e;--warn:#f59e0b;--danger:#ef4444;--radius:8px}
@@ -64,28 +64,28 @@ header .actions span{font-size:12px;color:var(--text2)}
 <body>
 
 <!-- Login -->
-<div class="login-overlay" id="loginOverlay">
+<div class="login-overlay hidden" id="loginOverlay">
   <div class="login-box">
-    <h2>🔐 FB评论-海报生图器</h2>
+    <h2>馃攼 FB璇勮-娴锋姤鐢熷浘鍣�</h2>
     <div class="form-group">
-      <label>用户名</label>
-      <input type="text" id="loginUser" placeholder="输入用户名" value="admin">
+      <label>鐢ㄦ埛鍚�</label>
+      <input type="text" id="loginUser" placeholder="杈撳叆鐢ㄦ埛鍚�" value="admin">
     </div>
     <div class="form-group">
-      <label>密码</label>
-      <input type="password" id="loginPass" placeholder="输入密码" value="admin123">
+      <label>瀵嗙爜</label>
+      <input type="password" id="loginPass" placeholder="杈撳叆瀵嗙爜" value="admin123">
     </div>
-    <button class="btn btn-primary" onclick="doLogin()">登录</button>
+    <button class="btn btn-primary" onclick="doLogin()">鐧诲綍</button>
   </div>
 </div>
 
 <!-- Main App -->
-<div class="container" id="mainApp" style="display:none">
+<div class="container" id="mainApp" style="display:block">
   <header>
-    <h1>🎨 FB评论-海报生图器</h1>
+    <h1>馃帹 FB璇勮-娴锋姤鐢熷浘鍣�</h1>
     <div class="actions">
       <span id="userInfo"></span>
-      <button class="btn btn-outline btn-sm" onclick="doLogout()">退出</button>
+      <button class="btn btn-outline btn-sm" onclick="doLogout()">閫€鍑�</button>
     </div>
   </header>
 
@@ -95,116 +95,116 @@ header .actions span{font-size:12px;color:var(--text2)}
     <!-- Left: Product Info -->
     <div>
       <div class="card">
-        <div class="card-title"><span class="icon">📦</span> 产品信息</div>
+        <div class="card-title"><span class="icon">馃摝</span> 浜у搧淇℃伅</div>
         <div class="form-group">
-          <label>产品名称 *</label>
-          <input type="text" id="productName" placeholder="如：女士直筒裤、车载风扇...">
+          <label>浜у搧鍚嶇О *</label>
+          <input type="text" id="productName" placeholder="濡傦細濂冲＋鐩寸瓛瑁ゃ€佽溅杞介鎵�...">
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>产品图 * <small style="color:var(--text2)">(支持多张)</small></label>
+            <label>浜у搧鍥� * <small style="color:var(--text2)">(鏀寔澶氬紶)</small></label>
             <div class="upload-zone" id="productZone" onclick="document.getElementById('productInput').click()">
               <input type="file" id="productInput" accept="image/*" multiple onchange="handleFiles(this,'product')">
-              <div class="hint">点击上传产品图</div>
+              <div class="hint">鐐瑰嚮涓婁紶浜у搧鍥�</div>
               <div class="multi-preview" id="productPreview"></div>
             </div>
           </div>
           <div class="form-group">
-            <label>参考图 <small style="color:var(--text2)">(可选)</small></label>
+            <label>鍙傝€冨浘 <small style="color:var(--text2)">(鍙€�)</small></label>
             <div class="upload-zone" id="refZone" onclick="document.getElementById('refInput').click()">
               <input type="file" id="refInput" accept="image/*" multiple onchange="handleFiles(this,'ref')">
-              <div class="hint">点击上传参考图</div>
+              <div class="hint">鐐瑰嚮涓婁紶鍙傝€冨浘</div>
               <div class="multi-preview" id="refPreview"></div>
             </div>
           </div>
         </div>
         <div class="form-group">
-          <label>产品卖点</label>
-          <input type="text" id="productSelling" placeholder="一句话描述核心优势">
+          <label>浜у搧鍗栫偣</label>
+          <input type="text" id="productSelling" placeholder="涓€鍙ヨ瘽鎻忚堪鏍稿績浼樺娍">
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>商品类别</label>
+            <label>鍟嗗搧绫诲埆</label>
             <select id="productCategory">
-              <option value="auto">🔍 自动识别</option>
-              <option value="服装">👗 服装</option>
-              <option value="美妆">💄 美妆</option>
-              <option value="汽车用品">🚗 汽车用品</option>
-              <option value="家居用品">🏠 家居用品</option>
-              <option value="电子产品">📱 电子产品</option>
-              <option value="食品">🍕 食品</option>
-              <option value="其他">📦 其他</option>
+              <option value="auto">馃攳 鑷姩璇嗗埆</option>
+              <option value="鏈嶈">馃憲 鏈嶈</option>
+              <option value="缇庡">馃拕 缇庡</option>
+              <option value="姹借溅鐢ㄥ搧">馃殫 姹借溅鐢ㄥ搧</option>
+              <option value="瀹跺眳鐢ㄥ搧">馃彔 瀹跺眳鐢ㄥ搧</option>
+              <option value="鐢靛瓙浜у搧">馃摫 鐢靛瓙浜у搧</option>
+              <option value="椋熷搧">馃崟 椋熷搧</option>
+              <option value="鍏朵粬">馃摝 鍏朵粬</option>
             </select>
           </div>
           <div class="form-group">
-            <label>目标市场</label>
+            <label>鐩爣甯傚満</label>
             <select id="targetRegion">
-              <option value="">选择地区</option>
-              <option value="国内">国内</option>
-              <option value="北美">北美</option>
-              <option value="欧洲">欧洲</option>
-              <option value="东南亚">东南亚</option>
-              <option value="中东">中东</option>
-              <option value="日韩">日韩</option>
-              <option value="全球">全球</option>
+              <option value="">閫夋嫨鍦板尯</option>
+              <option value="鍥藉唴">鍥藉唴</option>
+              <option value="鍖楃編">鍖楃編</option>
+              <option value="娆ф床">娆ф床</option>
+              <option value="涓滃崡浜�">涓滃崡浜�</option>
+              <option value="涓笢">涓笢</option>
+              <option value="鏃ラ煩">鏃ラ煩</option>
+              <option value="鍏ㄧ悆">鍏ㄧ悆</option>
             </select>
           </div>
         </div>
         <div class="form-group">
-          <label>生成语言</label>
+          <label>鐢熸垚璇█</label>
           <select id="genLanguage">
-            <option value="auto">🌐 自动匹配目标市场</option>
-            <option value="中文">中文</option>
+            <option value="auto">馃寪 鑷姩鍖归厤鐩爣甯傚満</option>
+            <option value="涓枃">涓枃</option>
             <option value="English">English</option>
             <option value="Deutsch">Deutsch</option>
-            <option value="Français">Français</option>
-            <option value="Español">Español</option>
+            <option value="Fran莽ais">Fran莽ais</option>
+            <option value="Espa帽ol">Espa帽ol</option>
             <option value="Italiano">Italiano</option>
-            <option value="日本語">日本語</option>
+            <option value="鏃ユ湰瑾�">鏃ユ湰瑾�</option>
           </select>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title"><span class="icon">🎯</span> 营销策略</div>
+        <div class="card-title"><span class="icon">馃幆</span> 钀ラ攢绛栫暐</div>
         <div class="form-group">
-          <label>海报用途</label>
+          <label>娴锋姤鐢ㄩ€�</label>
           <div class="chip-group" id="purposeChips">
-            <div class="chip" data-val="产品销售" onclick="selectChip(this,'purpose')">产品销售<span class="chip-desc">日常产品展示</span></div>
-            <div class="chip" data-val="限时促销" onclick="selectChip(this,'purpose')">限时促销<span class="chip-desc">折扣/优惠/限时</span></div>
-            <div class="chip" data-val="新品推广" onclick="selectChip(this,'purpose')">新品推广<span class="chip-desc">新品上市</span></div>
-            <div class="chip" data-val="买家评价" onclick="selectChip(this,'purpose')">买家评价<span class="chip-desc">真实好评</span></div>
-            <div class="chip" data-val="产品教程" onclick="selectChip(this,'purpose')">产品教程<span class="chip-desc">使用/安装说明</span></div>
+            <div class="chip" data-val="浜у搧閿€鍞�" onclick="selectChip(this,'purpose')">浜у搧閿€鍞�<span class="chip-desc">鏃ュ父浜у搧灞曠ず</span></div>
+            <div class="chip" data-val="闄愭椂淇冮攢" onclick="selectChip(this,'purpose')">闄愭椂淇冮攢<span class="chip-desc">鎶樻墸/浼樻儬/闄愭椂</span></div>
+            <div class="chip" data-val="鏂板搧鎺ㄥ箍" onclick="selectChip(this,'purpose')">鏂板搧鎺ㄥ箍<span class="chip-desc">鏂板搧涓婂競</span></div>
+            <div class="chip" data-val="涔板璇勪环" onclick="selectChip(this,'purpose')">涔板璇勪环<span class="chip-desc">鐪熷疄濂借瘎</span></div>
+            <div class="chip" data-val="浜у搧鏁欑▼" onclick="selectChip(this,'purpose')">浜у搧鏁欑▼<span class="chip-desc">浣跨敤/瀹夎璇存槑</span></div>
           </div>
         </div>
         <div class="form-group">
-          <label>展示方式</label>
+          <label>灞曠ず鏂瑰紡</label>
           <div class="chip-group" id="displayChips">
-            <div class="chip" data-val="产品特写" onclick="selectChip(this,'display')">产品特写<span class="chip-desc">聚焦细节和质感</span></div>
-            <div class="chip" data-val="真人使用" onclick="selectChip(this,'display')">真人使用<span class="chip-desc">模特实际使用</span></div>
-            <div class="chip" data-val="生活场景" onclick="selectChip(this,'display')">生活场景<span class="chip-desc">融入日常生活</span></div>
-            <div class="chip" data-val="前后对比" onclick="selectChip(this,'display')">前后对比<span class="chip-desc">效果对比</span></div>
-            <div class="chip" data-val="多品组合" onclick="selectChip(this,'display')">多品组合<span class="chip-desc">多款组合展示</span></div>
+            <div class="chip" data-val="浜у搧鐗瑰啓" onclick="selectChip(this,'display')">浜у搧鐗瑰啓<span class="chip-desc">鑱氱劍缁嗚妭鍜岃川鎰�</span></div>
+            <div class="chip" data-val="鐪熶汉浣跨敤" onclick="selectChip(this,'display')">鐪熶汉浣跨敤<span class="chip-desc">妯＄壒瀹為檯浣跨敤</span></div>
+            <div class="chip" data-val="鐢熸椿鍦烘櫙" onclick="selectChip(this,'display')">鐢熸椿鍦烘櫙<span class="chip-desc">铻嶅叆鏃ュ父鐢熸椿</span></div>
+            <div class="chip" data-val="鍓嶅悗瀵规瘮" onclick="selectChip(this,'display')">鍓嶅悗瀵规瘮<span class="chip-desc">鏁堟灉瀵规瘮</span></div>
+            <div class="chip" data-val="澶氬搧缁勫悎" onclick="selectChip(this,'display')">澶氬搧缁勫悎<span class="chip-desc">澶氭缁勫悎灞曠ず</span></div>
           </div>
         </div>
         <div class="form-group" id="clothingTypes" style="display:none">
-          <label>👗 服装专属类型</label>
+          <label>馃憲 鏈嶈涓撳睘绫诲瀷</label>
           <div class="chip-group" id="clothingChips">
-            <div class="chip" data-val="多身材模特" onclick="selectChip(this,'clothing')">多身材模特<span class="chip-desc">不同身高/体型模特穿同款</span></div>
-            <div class="chip" data-val="多色系合集" onclick="selectChip(this,'clothing')">多色系合集<span class="chip-desc">同款不同颜色组合</span></div>
-            <div class="chip" data-val="日常穿搭" onclick="selectChip(this,'clothing')">日常穿搭<span class="chip-desc">通勤/休闲/约会/旅行</span></div>
-            <div class="chip" data-val="叠穿搭配" onclick="selectChip(this,'clothing')">叠穿搭配<span class="chip-desc">外套+鞋+包+配饰完整搭配</span></div>
-            <div class="chip" data-val="版型对比" onclick="selectChip(this,'clothing')">版型对比<span class="chip-desc">长vs短/修身vs宽松</span></div>
-            <div class="chip" data-val="面料微距" onclick="selectChip(this,'clothing')">面料微距<span class="chip-desc">纹理/走线/拉链/纽扣</span></div>
-            <div class="chip" data-val="尺码指南" onclick="selectChip(this,'clothing')">尺码指南<span class="chip-desc">肩宽/胸围/腰围/臀围测量</span></div>
+            <div class="chip" data-val="澶氳韩鏉愭ā鐗�" onclick="selectChip(this,'clothing')">澶氳韩鏉愭ā鐗�<span class="chip-desc">涓嶅悓韬珮/浣撳瀷妯＄壒绌垮悓娆�</span></div>
+            <div class="chip" data-val="澶氳壊绯诲悎闆�" onclick="selectChip(this,'clothing')">澶氳壊绯诲悎闆�<span class="chip-desc">鍚屾涓嶅悓棰滆壊缁勫悎</span></div>
+            <div class="chip" data-val="鏃ュ父绌挎惌" onclick="selectChip(this,'clothing')">鏃ュ父绌挎惌<span class="chip-desc">閫氬嫟/浼戦棽/绾︿細/鏃呰</span></div>
+            <div class="chip" data-val="鍙犵┛鎼厤" onclick="selectChip(this,'clothing')">鍙犵┛鎼厤<span class="chip-desc">澶栧+闉�+鍖�+閰嶉グ瀹屾暣鎼厤</span></div>
+            <div class="chip" data-val="鐗堝瀷瀵规瘮" onclick="selectChip(this,'clothing')">鐗堝瀷瀵规瘮<span class="chip-desc">闀縱s鐭�/淇韩vs瀹芥澗</span></div>
+            <div class="chip" data-val="闈㈡枡寰窛" onclick="selectChip(this,'clothing')">闈㈡枡寰窛<span class="chip-desc">绾圭悊/璧扮嚎/鎷夐摼/绾芥墸</span></div>
+            <div class="chip" data-val="灏虹爜鎸囧崡" onclick="selectChip(this,'clothing')">灏虹爜鎸囧崡<span class="chip-desc">鑲╁/鑳稿洿/鑵板洿/鑷€鍥存祴閲�</span></div>
           </div>
         </div>
         <div class="form-group">
-          <label>图片布局</label>
+          <label>鍥剧墖甯冨眬</label>
           <div class="chip-group" id="layoutChips">
-            <div class="chip" data-val="产品突出型" onclick="selectChip(this,'layout')">产品突出型<span class="chip-desc">产品占主画面60%+</span></div>
-            <div class="chip" data-val="场景沉浸型" onclick="selectChip(this,'layout')">场景沉浸型<span class="chip-desc">环境为主产品融入</span></div>
-            <div class="chip" data-val="买家秀风格" onclick="selectChip(this,'layout')">买家秀风格<span class="chip-desc">仿真实用户拍摄</span></div>
+            <div class="chip" data-val="浜у搧绐佸嚭鍨�" onclick="selectChip(this,'layout')">浜у搧绐佸嚭鍨�<span class="chip-desc">浜у搧鍗犱富鐢婚潰60%+</span></div>
+            <div class="chip" data-val="鍦烘櫙娌夋蹈鍨�" onclick="selectChip(this,'layout')">鍦烘櫙娌夋蹈鍨�<span class="chip-desc">鐜涓轰富浜у搧铻嶅叆</span></div>
+            <div class="chip" data-val="涔板绉€椋庢牸" onclick="selectChip(this,'layout')">涔板绉€椋庢牸<span class="chip-desc">浠跨湡瀹炵敤鎴锋媿鎽�</span></div>
           </div>
         </div>
       </div>
@@ -213,66 +213,66 @@ header .actions span{font-size:12px;color:var(--text2)}
     <!-- Right: Generation Settings -->
     <div>
       <div class="card">
-        <div class="card-title"><span class="icon">⚡</span> 生成设置</div>
+        <div class="card-title"><span class="icon">鈿�</span> 鐢熸垚璁剧疆</div>
         <div class="form-group">
-          <label>场景风格</label>
+          <label>鍦烘櫙椋庢牸</label>
           <div class="chip-group" id="styleChips">
-            <div class="chip active" data-val="studio" onclick="selectChip(this,'style')">棚拍白底<span class="chip-desc">纯白/纯色背景</span></div>
-            <div class="chip" data-val="lifestyle" onclick="selectChip(this,'style')">生活场景<span class="chip-desc">居家/办公室环境</span></div>
-            <div class="chip" data-val="model" onclick="selectChip(this,'style')">模特展示<span class="chip-desc">真人模特使用</span></div>
-            <div class="chip" data-val="closeup" onclick="selectChip(this,'style')">微距细节<span class="chip-desc">材质工艺特写</span></div>
-            <div class="chip" data-val="outdoor" onclick="selectChip(this,'style')">户外场景<span class="chip-desc">自然光户外</span></div>
-            <div class="chip" data-val="minimal" onclick="selectChip(this,'style')">极简高级<span class="chip-desc">大面积留白高端感</span></div>
+            <div class="chip active" data-val="studio" onclick="selectChip(this,'style')">妫氭媿鐧藉簳<span class="chip-desc">绾櫧/绾壊鑳屾櫙</span></div>
+            <div class="chip" data-val="lifestyle" onclick="selectChip(this,'style')">鐢熸椿鍦烘櫙<span class="chip-desc">灞呭/鍔炲叕瀹ょ幆澧�</span></div>
+            <div class="chip" data-val="model" onclick="selectChip(this,'style')">妯＄壒灞曠ず<span class="chip-desc">鐪熶汉妯＄壒浣跨敤</span></div>
+            <div class="chip" data-val="closeup" onclick="selectChip(this,'style')">寰窛缁嗚妭<span class="chip-desc">鏉愯川宸ヨ壓鐗瑰啓</span></div>
+            <div class="chip" data-val="outdoor" onclick="selectChip(this,'style')">鎴峰鍦烘櫙<span class="chip-desc">鑷劧鍏夋埛澶�</span></div>
+            <div class="chip" data-val="minimal" onclick="selectChip(this,'style')">鏋佺畝楂樼骇<span class="chip-desc">澶ч潰绉暀鐧介珮绔劅</span></div>
           </div>
         </div>
         <div class="form-row-3">
           <div class="form-group">
-            <label>海报尺寸</label>
+            <label>娴锋姤灏哄</label>
             <select id="imageSize">
-              <option value="1:1">1:1 正方</option>
-              <option value="16:9">16:9 横版</option>
-              <option value="9:16">9:16 竖版</option>
-              <option value="4:5">4:5 FB竖版</option>
-              <option value="3:4">3:4 图片</option>
+              <option value="1:1">1:1 姝ｆ柟</option>
+              <option value="16:9">16:9 妯増</option>
+              <option value="9:16">9:16 绔栫増</option>
+              <option value="4:5">4:5 FB绔栫増</option>
+              <option value="3:4">3:4 鍥剧墖</option>
             </select>
           </div>
           <div class="form-group">
-            <label>清晰度</label>
+            <label>娓呮櫚搴�</label>
             <select id="imageQuality">
-              <option value="2K">2K 标准</option>
-              <option value="4K" selected>4K 高清</option>
-              <option value="8K">8K 超清</option>
+              <option value="2K">2K 鏍囧噯</option>
+              <option value="4K" selected>4K 楂樻竻</option>
+              <option value="8K">8K 瓒呮竻</option>
             </select>
           </div>
           <div class="form-group">
-            <label>生成张数</label>
+            <label>鐢熸垚寮犳暟</label>
             <select id="imageCount">
-              <option value="1">1张</option>
-              <option value="2">2张</option>
-              <option value="3">3张</option>
-              <option value="4">4张</option>
+              <option value="1">1寮�</option>
+              <option value="2">2寮�</option>
+              <option value="3">3寮�</option>
+              <option value="4">4寮�</option>
             </select>
           </div>
         </div>
         <div class="form-group">
-          <label>AI 模型</label>
+          <label>AI 妯″瀷</label>
           <select id="modelSelect">
-            <option value="gpt-image-2-lite">Image2-低价版 (快速)</option>
-            <option value="gpt-image-2" selected>官方稳定版 (推荐)</option>
-            <option value="nano-banana-pro">Banana Pro (高质量)</option>
+            <option value="gpt-image-2-lite">Image2-浣庝环鐗� (蹇€�)</option>
+            <option value="gpt-image-2" selected>瀹樻柟绋冲畾鐗� (鎺ㄨ崘)</option>
+            <option value="nano-banana-pro">Banana Pro (楂樿川閲�)</option>
           </select>
         </div>
         <div class="form-group">
           <label>API Key</label>
-          <input type="password" id="apiKeyInput" placeholder="输入你的 APIMart API Key">
+          <input type="password" id="apiKeyInput" placeholder="杈撳叆浣犵殑 APIMart API Key">
         </div>
-        <button class="btn btn-primary" style="width:100%;padding:12px;font-size:14px" onclick="doGenerate()">🎨 生成海报</button>
+        <button class="btn btn-primary" style="width:100%;padding:12px;font-size:14px" onclick="doGenerate()">馃帹 鐢熸垚娴锋姤</button>
       </div>
 
       <div class="card">
-        <div class="card-title"><span class="icon">🖼️</span> 生成结果</div>
+        <div class="card-title"><span class="icon">馃柤锔�</span> 鐢熸垚缁撴灉</div>
         <div id="resultArea" style="min-height:200px;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:12px">
-          生成的图片将显示在这里
+          鐢熸垚鐨勫浘鐗囧皢鏄剧ず鍦ㄨ繖閲�
         </div>
       </div>
     </div>
@@ -306,7 +306,7 @@ function doLogin() {
   
   const account = accounts.find(a => a.username === username && a.password === password);
   if (!account) {
-    alert('用户名或密码错误');
+    alert('鐢ㄦ埛鍚嶆垨瀵嗙爜閿欒');
     return;
   }
   
@@ -325,7 +325,7 @@ function doLogout() {
 function showApp() {
   document.getElementById('loginOverlay').classList.add('hidden');
   document.getElementById('mainApp').style.display = 'block';
-  document.getElementById('userInfo').textContent = '👤 ' + currentUser.username;
+  document.getElementById('userInfo').textContent = '馃懁 ' + currentUser.username;
   
   const key = localStorage.getItem('poster_apikey') || '';
   document.getElementById('apiKeyInput').value = key;
@@ -369,7 +369,7 @@ function renderPreview(type) {
     div.style.display = 'inline-block';
     div.innerHTML = `
       <img src="${img}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--border)">
-      <button onclick="removeImage('${type}',${idx})" style="position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:16px;height:16px;cursor:pointer;font-size:10px">×</button>
+      <button onclick="removeImage('${type}',${idx})" style="position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:16px;height:16px;cursor:pointer;font-size:10px">脳</button>
     `;
     container.appendChild(div);
   });
@@ -404,16 +404,16 @@ function doGenerate() {
   const name = document.getElementById('productName').value.trim();
   const apiKey = document.getElementById('apiKeyInput').value.trim();
   
-  if (!name) return setStatus('请填写产品名称', 'error');
-  if (productImages.length === 0) return setStatus('请上传产品图片', 'error');
-  if (!apiKey) return setStatus('请填写 API Key', 'error');
+  if (!name) return setStatus('璇峰～鍐欎骇鍝佸悕绉�', 'error');
+  if (productImages.length === 0) return setStatus('璇蜂笂浼犱骇鍝佸浘鐗�', 'error');
+  if (!apiKey) return setStatus('璇峰～鍐� API Key', 'error');
   
   localStorage.setItem('poster_apikey', apiKey);
   
   // Build prompt
   let prompt = buildPrompt(name);
   
-  setStatus('正在生成...', 'info');
+  setStatus('姝ｅ湪鐢熸垚...', 'info');
   
   // Submit to API
   submitTask(prompt, apiKey);
@@ -429,48 +429,48 @@ function buildPrompt(name) {
   
   let lang = language === 'auto' ? getLanguageByRegion(region) : language;
   
-  let p = `为以下产品创建专业电商海报：「${name}」`;
-  if (selling) p += `\n产品卖点：${selling}`;
-  if (category !== 'auto') p += `\n商品类别：${category}`;
-  if (selectedPurpose) p += `\n海报用途：${selectedPurpose}`;
-  if (selectedDisplay) p += `\n展示方式：${selectedDisplay}`;
-  if (selectedClothing && category === '服装') p += `\n服装类型：${selectedClothing}`;
-  if (selectedLayout) p += `\n图片布局：${selectedLayout}`;
+  let p = `涓轰互涓嬩骇鍝佸垱寤轰笓涓氱數鍟嗘捣鎶ワ細銆�${name}銆峘;
+  if (selling) p += `\n浜у搧鍗栫偣锛�${selling}`;
+  if (category !== 'auto') p += `\n鍟嗗搧绫诲埆锛�${category}`;
+  if (selectedPurpose) p += `\n娴锋姤鐢ㄩ€旓細${selectedPurpose}`;
+  if (selectedDisplay) p += `\n灞曠ず鏂瑰紡锛�${selectedDisplay}`;
+  if (selectedClothing && category === '鏈嶈') p += `\n鏈嶈绫诲瀷锛�${selectedClothing}`;
+  if (selectedLayout) p += `\n鍥剧墖甯冨眬锛�${selectedLayout}`;
   
   const styleMap = {
-    studio: '棚拍白底，纯白/纯色背景，专业产品照',
-    lifestyle: '生活场景，居家/办公室等真实环境',
-    model: '模特展示，真人模特使用/穿戴',
-    closeup: '微距细节，材质/工艺/细节特写',
-    outdoor: '户外场景，自然光/户外环境',
-    minimal: '极简高级，大面积留白，高端感'
+    studio: '妫氭媿鐧藉簳锛岀函鐧�/绾壊鑳屾櫙锛屼笓涓氫骇鍝佺収',
+    lifestyle: '鐢熸椿鍦烘櫙锛屽眳瀹�/鍔炲叕瀹ょ瓑鐪熷疄鐜',
+    model: '妯＄壒灞曠ず锛岀湡浜烘ā鐗逛娇鐢�/绌挎埓',
+    closeup: '寰窛缁嗚妭锛屾潗璐�/宸ヨ壓/缁嗚妭鐗瑰啓',
+    outdoor: '鎴峰鍦烘櫙锛岃嚜鐒跺厜/鎴峰鐜',
+    minimal: '鏋佺畝楂樼骇锛屽ぇ闈㈢Н鐣欑櫧锛岄珮绔劅'
   };
   if (selectedStyle && styleMap[selectedStyle]) {
-    p += `\n场景风格：${styleMap[selectedStyle]}`;
+    p += `\n鍦烘櫙椋庢牸锛�${styleMap[selectedStyle]}`;
   }
   
-  if (region) p += `\n目标市场：${region}`;
-  p += `\n海报尺寸：${size}`;
-  p += `\n图片清晰度：${quality}`;
+  if (region) p += `\n鐩爣甯傚満锛�${region}`;
+  p += `\n娴锋姤灏哄锛�${size}`;
+  p += `\n鍥剧墖娓呮櫚搴︼細${quality}`;
   
-  if (lang !== '中文') {
-    p += `\n\n【重要】所有海报文案、标题、描述必须使用 ${lang} 语言`;
+  if (lang !== '涓枃') {
+    p += `\n\n銆愰噸瑕併€戞墍鏈夋捣鎶ユ枃妗堛€佹爣棰樸€佹弿杩板繀椤讳娇鐢� ${lang} 璇█`;
   }
   
-  p += `\n要求效果逼真，如同真实电商海报，不要AI痕迹`;
+  p += `\n瑕佹眰鏁堟灉閫肩湡锛屽鍚岀湡瀹炵數鍟嗘捣鎶ワ紝涓嶈AI鐥曡抗`;
   
   return p;
 }
 
 function getLanguageByRegion(region) {
   const map = {
-    '北美': 'English',
-    '欧洲': 'English',
-    '东南亚': 'English',
-    '中东': 'English',
-    '日韩': '日本語',
-    '国内': '中文',
-    '全球': 'English'
+    '鍖楃編': 'English',
+    '娆ф床': 'English',
+    '涓滃崡浜�': 'English',
+    '涓笢': 'English',
+    '鏃ラ煩': '鏃ユ湰瑾�',
+    '鍥藉唴': '涓枃',
+    '鍏ㄧ悆': 'English'
   };
   return map[region] || 'English';
 }
@@ -504,20 +504,20 @@ async function submitTask(prompt, apiKey) {
     
     if (!response.ok) {
       const err = await response.text();
-      return setStatus(`❌ 提交失败 (${response.status})：${err.substring(0, 200)}`, 'error');
+      return setStatus(`鉂� 鎻愪氦澶辫触 (${response.status})锛�${err.substring(0, 200)}`, 'error');
     }
     
     const data = await response.json();
     const taskId = data.task_id;
     
     if (!taskId) {
-      return setStatus('❌ 未返回任务ID：' + JSON.stringify(data).substring(0, 200), 'error');
+      return setStatus('鉂� 鏈繑鍥炰换鍔D锛�' + JSON.stringify(data).substring(0, 200), 'error');
     }
     
-    setStatus('✅ 已提交，任务ID：' + taskId + '，等待生成...', 'success');
+    setStatus('鉁� 宸叉彁浜わ紝浠诲姟ID锛�' + taskId + '锛岀瓑寰呯敓鎴�...', 'success');
     pollTask(taskId, apiKey);
   } catch (err) {
-    setStatus('❌ 提交失败：' + err.message, 'error');
+    setStatus('鉂� 鎻愪氦澶辫触锛�' + err.message, 'error');
   }
 }
 
@@ -527,7 +527,7 @@ async function pollTask(taskId, apiKey) {
   
   const poll = async () => {
     if (Date.now() - startTime > maxTime) {
-      return setStatus('❌ 超时（5分钟），任务ID：' + taskId, 'error');
+      return setStatus('鉂� 瓒呮椂锛�5鍒嗛挓锛夛紝浠诲姟ID锛�' + taskId, 'error');
     }
     
     try {
@@ -547,7 +547,7 @@ async function pollTask(taskId, apiKey) {
         }
         
         if (!url) {
-          return setStatus('❌ 任务完成但未找到图片URL，任务ID：' + taskId, 'error');
+          return setStatus('鉂� 浠诲姟瀹屾垚浣嗘湭鎵惧埌鍥剧墖URL锛屼换鍔D锛�' + taskId, 'error');
         }
         
         displayResult(url, taskId);
@@ -555,13 +555,13 @@ async function pollTask(taskId, apiKey) {
       }
       
       if (status === 'failed' || status === 'error') {
-        return setStatus(`❌ 生成失败，任务ID：${taskId}，错误：${data.error || data.message || '未知'}`, 'error');
+        return setStatus(`鉂� 鐢熸垚澶辫触锛屼换鍔D锛�${taskId}锛岄敊璇細${data.error || data.message || '鏈煡'}`, 'error');
       }
       
-      setStatus(`⏳ ${status === 'processing' ? '处理中' : '排队中'}...任务ID：${taskId}`, 'info');
+      setStatus(`鈴� ${status === 'processing' ? '澶勭悊涓�' : '鎺掗槦涓�'}...浠诲姟ID锛�${taskId}`, 'info');
       setTimeout(poll, 3000);
     } catch (err) {
-      setStatus('❌ 查询失败：' + err.message, 'error');
+      setStatus('鉂� 鏌ヨ澶辫触锛�' + err.message, 'error');
     }
   };
   
@@ -574,12 +574,12 @@ function displayResult(url, taskId) {
     <div style="width:100%">
       <img src="${url}" style="width:100%;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer" onclick="window.open(this.src)">
       <div style="margin-top:8px;display:flex;gap:8px">
-        <a href="${url}" download="poster_${taskId}.png" class="btn btn-success" style="text-decoration:none;font-size:12px">⬇️ 下载</a>
-        <span style="font-size:11px;color:var(--text2);line-height:32px">任务ID：${taskId}</span>
+        <a href="${url}" download="poster_${taskId}.png" class="btn btn-success" style="text-decoration:none;font-size:12px">猬囷笍 涓嬭浇</a>
+        <span style="font-size:11px;color:var(--text2);line-height:32px">浠诲姟ID锛�${taskId}</span>
       </div>
     </div>
   `;
-  setStatus('✅ 生成完成！点击图片可放大查看', 'success');
+  setStatus('鉁� 鐢熸垚瀹屾垚锛佺偣鍑诲浘鐗囧彲鏀惧ぇ鏌ョ湅', 'success');
 }
 
 function setStatus(msg, type) {
@@ -611,7 +611,10 @@ async function fetchWithProxy(url, options) {
 }
 
 // ============ Init ============
-checkSession();
+// Auto login as admin (no password required)
+currentUser = { username: 'admin', password: 'admin123', role: 'superadmin' };
+sessionStorage.setItem('poster_session', JSON.stringify(currentUser));
+showApp();
 </script>
 
 </body>
