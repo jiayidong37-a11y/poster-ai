@@ -1,1 +1,772 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FB评论-海报生图器</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f1117;--card:#1a1d27;--border:#2a2d3a;--text:#e4e4e7;--text2:#9ca3af;--accent:#6366f1;--accent2:#818cf8;--success:#22c55e;--warn:#f59e0b;--danger:#ef4444;--radius:8px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5}
+.container{max-width:1200px;margin:0 auto;padding:12px}
+header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px}
+header h1{font-size:16px;font-weight:600;background:linear-gradient(135deg,var(--accent),#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+header .actions{display:flex;gap:8px;align-items:center}
+header .actions span{font-size:12px;color:var(--text2)}
+.btn{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:500;transition:all .2s}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent2)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text2)}.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-success{background:var(--success);color:#fff}.btn-success:hover{opacity:.9}
+.btn-warn{background:var(--warn);color:#000}.btn-warn:hover{opacity:.9}
+.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{opacity:.9}
+.btn-sm{padding:4px 10px;font-size:11px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:768px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.card-title{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.card-title .icon{font-size:15px}
+.form-group{margin-bottom:10px}
+.form-group label{display:block;font-size:11px;color:var(--text2);margin-bottom:4px;font-weight:500}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:7px 10px;background:#0f1117;border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;outline:none;transition:border-color .2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
+.form-group textarea{resize:vertical;min-height:50px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.chip-group{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:5px 10px;border-radius:16px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:11px;transition:all .2s;position:relative}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip .chip-desc{display:none;position:absolute;top:100%;left:0;background:#2a2d3a;color:var(--text2);padding:6px 8px;border-radius:4px;font-size:10px;width:160px;z-index:10;margin-top:4px}
+.chip:hover .chip-desc{display:block}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:16px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.upload-zone:hover{border-color:var(--accent)}
+.upload-zone.has-image{border-style:solid;border-color:var(--accent)}
+.upload-zone input{display:none}
+.upload-zone .hint{font-size:11px;color:var(--text2)}
+.upload-zone .multi-preview{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.upload-zone .multi-preview img{width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--border)}
+.upload-zone .remove-btn{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center}
+.status-bar{padding:8px 12px;border-radius:6px;margin-bottom:10px;font-size:12px;display:none}
+.status-bar.info{background:rgba(99,101,241,.1);border:1px solid rgba(99,101,241,.3);color:var(--accent2);display:block}
+.status-bar.success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--success);display:block}
+.status-bar.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--danger);display:block}
+.status-bar.warn{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:var(--warn);display:block}
+/* Login */
+.login-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:1000}
+.login-overlay.hidden{display:none}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:30px;width:320px}
+.login-box h2{font-size:20px;text-align:center;margin-bottom:20px;background:linear-gradient(135deg,var(--accent),#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.login-box .form-group{margin-bottom:16px}
+.login-box .btn{width:100%;padding:12px;font-size:14px;font-weight:600}
+</style>
+</head>
+<body>
 
+<!-- Login -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <h2>🔐 FB评论-海报生图器</h2>
+    <div class="form-group">
+      <label>用户名</label>
+      <input type="text" id="loginUser" placeholder="输入用户名" value="admin">
+    </div>
+    <div class="form-group">
+      <label>密码</label>
+      <input type="password" id="loginPass" placeholder="输入密码" value="admin123">
+    </div>
+    <button class="btn btn-primary" onclick="doLogin()">登录</button>
+  </div>
+</div>
+
+<!-- Main App -->
+<div class="container" id="mainApp" style="display:none">
+  <header>
+    <h1>🎨 FB评论-海报生图器</h1>
+    <div class="actions">
+      <span id="userInfo"></span>
+      <button class="btn btn-outline btn-sm" onclick="doLogout()">退出</button>
+    </div>
+  </header>
+
+  <div id="statusBar" class="status-bar"></div>
+
+  <div class="grid">
+    <!-- Left: Product Info -->
+    <div>
+      <div class="card">
+        <div class="card-title"><span class="icon">📦</span> 产品信息</div>
+        <div class="form-group">
+          <label>产品名称 *</label>
+          <input type="text" id="productName" placeholder="如：女士直筒裤、车载风扇...">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>产品图 * <small style="color:var(--text2)">(支持多张)</small></label>
+            <div class="upload-zone" id="productZone" onclick="document.getElementById('productInput').click()">
+              <input type="file" id="productInput" accept="image/*" multiple onchange="handleFiles(this,'product')">
+              <div class="hint">点击上传产品图</div>
+              <div class="multi-preview" id="productPreview"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>参考图 <small style="color:var(--text2)">(可选)</small></label>
+            <div class="upload-zone" id="refZone" onclick="document.getElementById('refInput').click()">
+              <input type="file" id="refInput" accept="image/*" multiple onchange="handleFiles(this,'ref')">
+              <div class="hint">点击上传参考图</div>
+              <div class="multi-preview" id="refPreview"></div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>产品卖点</label>
+          <input type="text" id="productSelling" placeholder="一句话描述核心优势">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>商品类别</label>
+            <select id="productCategory">
+              <option value="auto">🔍 自动识别</option>
+              <option value="服装">👗 服装</option>
+              <option value="美妆">💄 美妆</option>
+              <option value="汽车用品">🚗 汽车用品</option>
+              <option value="家居用品">🏠 家居用品</option>
+              <option value="电子产品">📱 电子产品</option>
+              <option value="食品">🍕 食品</option>
+              <option value="其他">📦 其他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>目标市场</label>
+            <select id="targetRegion">
+              <option value="">选择地区</option>
+              <option value="国内">国内</option>
+              <option value="北美">北美</option>
+              <option value="欧洲">欧洲</option>
+              <option value="东南亚">东南亚</option>
+              <option value="中东">中东</option>
+              <option value="日韩">日韩</option>
+              <option value="全球">全球</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>生成语言</label>
+          <select id="genLanguage">
+            <option value="auto">🌐 自动匹配目标市场</option>
+            <option value="中文">中文</option>
+            <option value="English">English</option>
+            <option value="Deutsch">Deutsch</option>
+            <option value="Français">Français</option>
+            <option value="Español">Español</option>
+            <option value="Italiano">Italiano</option>
+            <option value="日本語">日本語</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon">🎯</span> 营销策略</div>
+        <div class="form-group">
+          <label>海报用途</label>
+          <div class="chip-group" id="purposeChips">
+            <div class="chip" data-val="产品销售" onclick="selectChip(this,'purpose')">产品销售<span class="chip-desc">日常产品展示</span></div>
+            <div class="chip" data-val="限时促销" onclick="selectChip(this,'purpose')">限时促销<span class="chip-desc">折扣/优惠/限时</span></div>
+            <div class="chip" data-val="新品推广" onclick="selectChip(this,'purpose')">新品推广<span class="chip-desc">新品上市</span></div>
+            <div class="chip" data-val="买家评价" onclick="selectChip(this,'purpose')">买家评价<span class="chip-desc">真实好评</span></div>
+            <div class="chip" data-val="产品教程" onclick="selectChip(this,'purpose')">产品教程<span class="chip-desc">使用/安装说明</span></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>展示方式</label>
+          <div class="chip-group" id="displayChips">
+            <div class="chip" data-val="产品特写" onclick="selectChip(this,'display')">产品特写<span class="chip-desc">聚焦细节和质感</span></div>
+            <div class="chip" data-val="真人使用" onclick="selectChip(this,'display')">真人使用<span class="chip-desc">模特实际使用</span></div>
+            <div class="chip" data-val="生活场景" onclick="selectChip(this,'display')">生活场景<span class="chip-desc">融入日常生活</span></div>
+            <div class="chip" data-val="前后对比" onclick="selectChip(this,'display')">前后对比<span class="chip-desc">效果对比</span></div>
+            <div class="chip" data-val="多品组合" onclick="selectChip(this,'display')">多品组合<span class="chip-desc">多款组合展示</span></div>
+          </div>
+        </div>
+        <div class="form-group" id="clothingTypes" style="display:none">
+          <label>👗 服装专属类型</label>
+          <div class="chip-group" id="clothingChips">
+            <div class="chip" data-val="多身材模特" onclick="selectChip(this,'clothing')">多身材模特<span class="chip-desc">不同身高/体型模特穿同款</span></div>
+            <div class="chip" data-val="多色系合集" onclick="selectChip(this,'clothing')">多色系合集<span class="chip-desc">同款不同颜色组合</span></div>
+            <div class="chip" data-val="日常穿搭" onclick="selectChip(this,'clothing')">日常穿搭<span class="chip-desc">通勤/休闲/约会/旅行</span></div>
+            <div class="chip" data-val="叠穿搭配" onclick="selectChip(this,'clothing')">叠穿搭配<span class="chip-desc">外套+鞋+包+配饰完整搭配</span></div>
+            <div class="chip" data-val="版型对比" onclick="selectChip(this,'clothing')">版型对比<span class="chip-desc">长vs短/修身vs宽松</span></div>
+            <div class="chip" data-val="面料微距" onclick="selectChip(this,'clothing')">面料微距<span class="chip-desc">纹理/走线/拉链/纽扣</span></div>
+            <div class="chip" data-val="尺码指南" onclick="selectChip(this,'clothing')">尺码指南<span class="chip-desc">肩宽/胸围/腰围/臀围测量</span></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>图片布局</label>
+          <div class="chip-group" id="layoutChips">
+            <div class="chip" data-val="产品突出型" onclick="selectChip(this,'layout')">产品突出型<span class="chip-desc">产品占主画面60%+</span></div>
+            <div class="chip" data-val="场景沉浸型" onclick="selectChip(this,'layout')">场景沉浸型<span class="chip-desc">环境为主产品融入</span></div>
+            <div class="chip" data-val="买家秀风格" onclick="selectChip(this,'layout')">买家秀风格<span class="chip-desc">仿真实用户拍摄</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Generation Settings -->
+    <div>
+      <div class="card">
+        <div class="card-title"><span class="icon">⚡</span> 生成设置</div>
+        <div class="form-group">
+          <label>场景风格</label>
+          <div class="chip-group" id="styleChips">
+            <div class="chip active" data-val="studio" onclick="selectChip(this,'style')">棚拍白底<span class="chip-desc">纯白/纯色背景</span></div>
+            <div class="chip" data-val="lifestyle" onclick="selectChip(this,'style')">生活场景<span class="chip-desc">居家/办公室环境</span></div>
+            <div class="chip" data-val="model" onclick="selectChip(this,'style')">模特展示<span class="chip-desc">真人模特使用</span></div>
+            <div class="chip" data-val="closeup" onclick="selectChip(this,'style')">微距细节<span class="chip-desc">材质工艺特写</span></div>
+            <div class="chip" data-val="outdoor" onclick="selectChip(this,'style')">户外场景<span class="chip-desc">自然光户外</span></div>
+            <div class="chip" data-val="minimal" onclick="selectChip(this,'style')">极简高级<span class="chip-desc">大面积留白高端感</span></div>
+          </div>
+        </div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>海报尺寸</label>
+            <select id="imageSize">
+              <option value="1:1">1:1 正方</option>
+              <option value="16:9">16:9 横版</option>
+              <option value="9:16">9:16 竖版</option>
+              <option value="4:5">4:5 FB竖版</option>
+              <option value="3:4">3:4 图片</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>清晰度</label>
+            <select id="imageQuality">
+              <option value="2K">2K 标准</option>
+              <option value="4K" selected>4K 高清</option>
+              <option value="8K">8K 超清</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>生成张数</label>
+            <select id="imageCount">
+              <option value="1">1张</option>
+              <option value="2">2张</option>
+              <option value="3">3张</option>
+              <option value="4">4张</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>AI 模型</label>
+          <select id="modelSelect">
+            <option value="gpt-image-2-lite">Image2-低价版 (快速)</option>
+            <option value="gpt-image-2" selected>官方稳定版 (推荐)</option>
+            <option value="nano-banana-pro">Banana Pro (高质量)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>API Key</label>
+          <input type="password" id="apiKeyInput" placeholder="输入你的 APIMart API Key">
+        </div>
+        <button class="btn btn-primary" style="width:100%;padding:12px;font-size:14px" onclick="doGenerate()">🎨 生成海报</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon">🖼️</span> 生成结果</div>
+        <div id="resultArea" style="min-height:200px;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:12px">
+          生成的图片将显示在这里
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ State ============
+let currentUser = null;
+let productImages = [];
+let refImages = [];
+let selectedPurpose = '';
+let selectedDisplay = '';
+let selectedClothing = '';
+let selectedLayout = '';
+let selectedStyle = 'studio';
+
+// ============ Super Admin Account ============
+// 超级管理员账号（硬编码，不可删除）
+const SUPER_ADMIN = { username: 'admin', password: 'admin888', role: 'superadmin' };
+
+// ============ Auth ============
+function doLogin() {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  
+  if (!username || !password) {
+    alert('请输入用户名和密码');
+    return;
+  }
+  
+  // Check super admin first
+  if (username === SUPER_ADMIN.username && password === SUPER_ADMIN.password) {
+    currentUser = { ...SUPER_ADMIN };
+    sessionStorage.setItem('poster_session', JSON.stringify(currentUser));
+    showApp();
+    return;
+  }
+  
+  // Check other accounts in localStorage
+  const accounts = JSON.parse(localStorage.getItem('poster_accounts') || '[]');
+  const account = accounts.find(a => a.username === username && a.password === password);
+  
+  if (!account) {
+    alert('用户名或密码错误');
+    return;
+  }
+  
+  currentUser = account;
+  sessionStorage.setItem('poster_session', JSON.stringify(account));
+  showApp();
+}
+
+function doLogout() {
+  sessionStorage.removeItem('poster_session');
+  currentUser = null;
+  document.getElementById('mainApp').style.display = 'none';
+  document.getElementById('loginOverlay').classList.remove('hidden');
+  document.getElementById('adminPanel').style.display = 'none';
+  // Reset form
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+}
+
+function showApp() {
+  document.getElementById('loginOverlay').classList.add('hidden');
+  document.getElementById('mainApp').style.display = 'block';
+  document.getElementById('userInfo').textContent = '👤 ' + currentUser.username + (currentUser.role === 'superadmin' ? ' (超级管理员)' : '');
+  
+  // Show admin button only for admin roles
+  const adminBtn = document.getElementById('adminBtn');
+  if (currentUser.role === 'superadmin' || currentUser.role === 'admin') {
+    adminBtn.style.display = 'inline-block';
+  } else {
+    adminBtn.style.display = 'none';
+  }
+  
+  const key = localStorage.getItem('poster_apikey') || '';
+  document.getElementById('apiKeyInput').value = key;
+}
+
+function checkSession() {
+  const session = sessionStorage.getItem('poster_session');
+  if (session) {
+    currentUser = JSON.parse(session);
+    showApp();
+  }
+}
+
+// ============ Admin Functions ============
+function showAdmin() {
+  if (currentUser.role !== 'superadmin' && currentUser.role !== 'admin') {
+    alert('无权限访问管理面板');
+    return;
+  }
+  document.getElementById('adminPanel').style.display = 'block';
+  renderUserList();
+}
+
+function hideAdmin() {
+  document.getElementById('adminPanel').style.display = 'none';
+}
+
+function renderUserList() {
+  const accounts = JSON.parse(localStorage.getItem('poster_accounts') || '[]');
+  const roleNames = { superadmin: '超级管理员', admin: '普通管理员', operator: '运营人员', viewer: '查看人员' };
+  let html = '<div class="user-item" style="background:rgba(99,101,241,.1)"><div><strong>' + SUPER_ADMIN.username + '</strong> <span style="font-size:11px;color:var(--accent2)">[超级管理员·内置]</span></div><div style="font-size:11px;color:var(--text2)">不可删除</div></div>';
+  
+  accounts.forEach((acc, idx) => {
+    const roleName = roleNames[acc.role] || acc.role;
+    html += '<div class="user-item"><div><strong>' + acc.username + '</strong> <span style="font-size:11px;color:var(--text2)">[' + roleName + ']</span></div>';
+    if (currentUser.role === 'superadmin') {
+      html += '<button class="btn btn-danger btn-sm" onclick="deleteUser(' + idx + ')">删除</button>';
+    }
+    html += '</div>';
+  });
+  
+  document.getElementById('userList').innerHTML = html;
+}
+
+function addUser() {
+  if (currentUser.role !== 'superadmin') {
+    alert('只有超级管理员可以添加用户');
+    return;
+  }
+  const username = document.getElementById('newUsername').value.trim();
+  const password = document.getElementById('newPassword').value;
+  const role = document.getElementById('newRole').value;
+  
+  if (!username || !password) {
+    alert('用户名和密码不能为空');
+    return;
+  }
+  if (username === SUPER_ADMIN.username) {
+    alert('不能使用超级管理员用户名');
+    return;
+  }
+  
+  const accounts = JSON.parse(localStorage.getItem('poster_accounts') || '[]');
+  if (accounts.find(a => a.username === username)) {
+    alert('用户名已存在');
+    return;
+  }
+  
+  accounts.push({ username, password, role });
+  localStorage.setItem('poster_accounts', JSON.stringify(accounts));
+  
+  document.getElementById('newUsername').value = '';
+  document.getElementById('newPassword').value = '';
+  renderUserList();
+  alert('用户 ' + username + ' 添加成功');
+}
+
+function deleteUser(idx) {
+  if (currentUser.role !== 'superadmin') {
+    alert('只有超级管理员可以删除用户');
+    return;
+  }
+  if (!confirm('确定删除该用户？')) return;
+  
+  const accounts = JSON.parse(localStorage.getItem('poster_accounts') || '[]');
+  accounts.splice(idx, 1);
+  localStorage.setItem('poster_accounts', JSON.stringify(accounts));
+  renderUserList();
+}
+
+function changePassword() {
+  const newPass = document.getElementById('changePass').value;
+  if (!newPass || newPass.length < 6) {
+    alert('密码至少6位');
+    return;
+  }
+  
+  // If super admin, update session only (hardcoded)
+  if (currentUser.role === 'superadmin') {
+    alert('超级管理员密码为内置固定密码，如需修改请修改源代码');
+    return;
+  }
+  
+  const accounts = JSON.parse(localStorage.getItem('poster_accounts') || '[]');
+  const acc = accounts.find(a => a.username === currentUser.username);
+  if (acc) {
+    acc.password = newPass;
+    localStorage.setItem('poster_accounts', JSON.stringify(accounts));
+    currentUser.password = newPass;
+    sessionStorage.setItem('poster_session', JSON.stringify(currentUser));
+    document.getElementById('changePass').value = '';
+    alert('密码修改成功');
+  }
+}
+
+// ============ Category Change ============
+function onCategoryChange() {
+  const cat = document.getElementById('productCategory').value;
+  const clothingSection = document.getElementById('clothingTypes');
+  if (cat === '服装') {
+    clothingSection.style.display = 'block';
+    showAIRecommend(cat);
+  } else {
+    clothingSection.style.display = 'none';
+    document.getElementById('aiRecommend').style.display = 'none';
+  }
+}
+
+function showAIRecommend(cat) {
+  const panel = document.getElementById('aiRecommend');
+  const content = document.getElementById('recommendContent');
+  const recs = {
+    '服装': [
+      { type: '多身材模特', stars: '⭐⭐⭐⭐⭐', note: '提升购买信心' },
+      { type: '日常穿搭', stars: '⭐⭐⭐⭐⭐', note: '增强代入感' },
+      { type: '尺码指南', stars: '⭐⭐⭐⭐', note: '降低退货率' },
+      { type: '面料微距', stars: '⭐⭐⭐⭐', note: '增强品质感' }
+    ]
+  };
+  const items = recs[cat] || [];
+  let html = '';
+  items.forEach(r => {
+    html += '<div class="rec-item"><span>' + r.type + ' <span class="rec-stars">' + r.stars + '</span></span><span style="color:var(--text2)">' + r.note + '</span></div>';
+  });
+  content.innerHTML = html;
+  panel.style.display = 'block';
+}
+
+// ============ File Upload ============
+function handleFiles(input, type) {
+  const files = Array.from(input.files);
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      if (type === 'product') {
+        productImages.push(dataUrl);
+        renderPreview('product');
+      } else {
+        refImages.push(dataUrl);
+        renderPreview('ref');
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+}
+
+function renderPreview(type) {
+  const images = type === 'product' ? productImages : refImages;
+  const container = document.getElementById(type + 'Preview');
+  container.innerHTML = '';
+  images.forEach((img, idx) => {
+    const div = document.createElement('div');
+    div.style.position = 'relative';
+    div.style.display = 'inline-block';
+    div.innerHTML = `
+      <img src="${img}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--border)">
+      <button onclick="removeImage('${type}',${idx})" style="position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:16px;height:16px;cursor:pointer;font-size:10px">×</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function removeImage(type, idx) {
+  if (type === 'product') {
+    productImages.splice(idx, 1);
+    renderPreview('product');
+  } else {
+    refImages.splice(idx, 1);
+    renderPreview('ref');
+  }
+}
+
+// ============ Chip Selection ============
+function selectChip(el, group) {
+  const parent = el.parentElement;
+  parent.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  
+  const val = el.dataset.val;
+  if (group === 'purpose') selectedPurpose = val;
+  else if (group === 'display') selectedDisplay = val;
+  else if (group === 'clothing') selectedClothing = val;
+  else if (group === 'layout') selectedLayout = val;
+  else if (group === 'style') selectedStyle = val;
+}
+
+// ============ Generate ============
+function doGenerate() {
+  const name = document.getElementById('productName').value.trim();
+  const apiKey = document.getElementById('apiKeyInput').value.trim();
+  
+  if (!name) return setStatus('请填写产品名称', 'error');
+  if (productImages.length === 0) return setStatus('请上传产品图片', 'error');
+  if (!apiKey) return setStatus('请填写 API Key', 'error');
+  
+  localStorage.setItem('poster_apikey', apiKey);
+  
+  let prompt = buildPrompt(name);
+  setStatus('正在生成...', 'info');
+  submitTask(prompt, apiKey);
+}
+
+function buildPrompt(name) {
+  const category = document.getElementById('productCategory').value;
+  const region = document.getElementById('targetRegion').value;
+  const language = document.getElementById('genLanguage').value;
+  const selling = document.getElementById('productSelling').value.trim();
+  const size = document.getElementById('imageSize').value;
+  const quality = document.getElementById('imageQuality').value;
+  
+  let lang = language === 'auto' ? getLanguageByRegion(region) : language;
+  
+  let p = `为以下产品创建专业电商海报：「${name}」`;
+  if (selling) p += `\n产品卖点：${selling}`;
+  if (category !== 'auto') p += `\n商品类别：${category}`;
+  if (selectedPurpose) p += `\n海报用途：${selectedPurpose}`;
+  if (selectedDisplay) p += `\n展示方式：${selectedDisplay}`;
+  if (selectedClothing && category === '服装') p += `\n服装类型：${selectedClothing}`;
+  if (selectedLayout) p += `\n图片布局：${selectedLayout}`;
+  
+  const styleMap = {
+    studio: '棚拍白底，纯白/纯色背景，专业产品照',
+    lifestyle: '生活场景，居家/办公室等真实环境',
+    model: '模特展示，真人模特使用/穿戴',
+    closeup: '微距细节，材质/工艺/细节特写',
+    outdoor: '户外场景，自然光/户外环境',
+    minimal: '极简高级，大面积留白，高端感'
+  };
+  if (selectedStyle && styleMap[selectedStyle]) {
+    p += `\n场景风格：${styleMap[selectedStyle]}`;
+  }
+  
+  if (region) p += `\n目标市场：${region}`;
+  p += `\n海报尺寸：${size}`;
+  p += `\n图片清晰度：${quality}`;
+  
+  if (lang !== '中文') {
+    p += `\n\n【重要】所有海报文案、标题、描述必须使用 ${lang} 语言`;
+  }
+  
+  p += `\n要求效果逼真，如同真实电商海报，不要AI痕迹`;
+  
+  return p;
+}
+
+function getLanguageByRegion(region) {
+  const map = {
+    '北美': 'English',
+    '欧洲': 'English',
+    '东南亚': 'English',
+    '中东': 'English',
+    '日韩': '日本語',
+    '国内': '中文',
+    '全球': 'English'
+  };
+  return map[region] || 'English';
+}
+
+async function submitTask(prompt, apiKey) {
+  const model = document.getElementById('modelSelect').value;
+  const size = document.getElementById('imageSize').value;
+  const count = parseInt(document.getElementById('imageCount').value);
+  
+  const payload = {
+    model: model,
+    prompt: prompt,
+    n: count,
+    size: size,
+    image_urls: productImages
+  };
+  
+  if (refImages.length > 0) {
+    payload.image_urls = payload.image_urls.concat(refImages);
+  }
+  
+  try {
+    const response = await fetchWithProxy('https://api.apimart.ai/v1/images/generations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    if (!response.ok) {
+      const err = await response.text();
+      return setStatus(`❌ 提交失败 (${response.status})：${err.substring(0, 200)}`, 'error');
+    }
+    
+    const data = await response.json();
+    const taskId = data.task_id;
+    
+    if (!taskId) {
+      return setStatus('❌ 未返回任务ID：' + JSON.stringify(data).substring(0, 200), 'error');
+    }
+    
+    setStatus('✅ 已提交，任务ID：' + taskId + '，等待生成...', 'success');
+    pollTask(taskId, apiKey);
+  } catch (err) {
+    setStatus('❌ 提交失败：' + err.message, 'error');
+  }
+}
+
+async function pollTask(taskId, apiKey) {
+  const startTime = Date.now();
+  const maxTime = 5 * 60 * 1000;
+  
+  const poll = async () => {
+    if (Date.now() - startTime > maxTime) {
+      return setStatus('❌ 超时（5分钟），任务ID：' + taskId, 'error');
+    }
+    
+    try {
+      const response = await fetchWithProxy('https://api.apimart.ai/v1/tasks/' + taskId, {
+        headers: { 'Authorization': 'Bearer ' + apiKey }
+      });
+      
+      const data = await response.json();
+      const status = data.status || data.state || '';
+      
+      if (status === 'completed' || status === 'success') {
+        let url = '';
+        if (data.output && data.output.images && data.output.images.length > 0) {
+          url = data.output.images[0].url || data.output.images[0];
+        } else if (data.data && data.data.length > 0) {
+          url = data.data[0].url;
+        }
+        
+        if (!url) {
+          return setStatus('❌ 任务完成但未找到图片URL，任务ID：' + taskId, 'error');
+        }
+        
+        displayResult(url, taskId);
+        return;
+      }
+      
+      if (status === 'failed' || status === 'error') {
+        return setStatus(`❌ 生成失败，任务ID：${taskId}，错误：${data.error || data.message || '未知'}`, 'error');
+      }
+      
+      setStatus(`⏳ ${status === 'processing' ? '处理中' : '排队中'}...任务ID：${taskId}`, 'info');
+      setTimeout(poll, 3000);
+    } catch (err) {
+      setStatus('❌ 查询失败：' + err.message, 'error');
+    }
+  };
+  
+  poll();
+}
+
+function displayResult(url, taskId) {
+  const area = document.getElementById('resultArea');
+  area.innerHTML = `
+    <div style="width:100%">
+      <img src="${url}" style="width:100%;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer" onclick="window.open(this.src)">
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <a href="${url}" download="poster_${taskId}.png" class="btn btn-success" style="text-decoration:none;font-size:12px">⬇️ 下载</a>
+        <span style="font-size:11px;color:var(--text2);line-height:32px">任务ID：${taskId}</span>
+      </div>
+    </div>
+  `;
+  setStatus('✅ 生成完成！点击图片可放大查看', 'success');
+}
+
+function setStatus(msg, type) {
+  const bar = document.getElementById('statusBar');
+  bar.textContent = msg;
+  bar.className = 'status-bar ' + type;
+}
+
+// ============ Proxy ============
+async function fetchWithProxy(url, options) {
+  const proxies = [
+    'https://corsproxy.io/?',
+    'https://api.allorigins.win/raw?url=',
+    'https://corsproxy.org/?',
+    'https://thingproxy.freeboard.io/fetch/',
+    ''
+  ];
+  
+  for (const proxy of proxies) {
+    try {
+      const targetUrl = proxy ? proxy + url : url;
+      const resp = await fetch(targetUrl, options);
+      if (resp.ok || resp.status === 401) return resp;
+    } catch (e) {
+      continue;
+    }
+  }
+  throw new Error('All proxies failed');
+}
+
+// ============ Init ============
+checkSession();
+</script>
+
+</body>
+</html>
