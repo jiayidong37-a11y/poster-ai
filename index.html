@@ -579,17 +579,36 @@ function initAccounts() {
     const defaults = [{ username: 'admin', password: hashPassword('admin123'), role: 'super_admin', apiKey: '' }];
     localStorage.setItem('poster_ai_accounts', JSON.stringify(defaults));
   } else {
-    // Migration: ensure admin has super_admin role
-    const admin = accounts.find(a => a.username === 'admin');
-    if (admin && admin.role === 'admin') {
-      admin.role = 'super_admin';
+    // Migration V3: detect plain text passwords and re-hash them
+    let needsUpdate = false;
+    accounts.forEach(a => {
+      // Check if password is plain text (not hashed)
+      // Hashed passwords are short alphanumeric strings from hash.toString(36)
+      // Plain text passwords are typically longer or contain patterns that don't match hash output
+      if (a.password && !a.password.match(/^-?[a-z0-9]{1,8}$/)) {
+        // Looks like plain text, re-hash common known passwords
+        if (a.username === 'admin' && a.password === 'admin123') {
+          a.password = hashPassword('admin123');
+          needsUpdate = true;
+        } else if (a.password === 'admin' || a.password === '123456') {
+          a.password = hashPassword(a.password);
+          needsUpdate = true;
+        }
+      }
+      // Migration: ensure admin has super_admin role
+      if (a.username === 'admin' && (a.role === 'admin' || !a.role)) {
+        a.role = 'super_admin';
+        needsUpdate = true;
+      }
+      // Ensure all accounts have valid roles
+      if (!ROLES[a.role]) {
+        a.role = 'viewer';
+        needsUpdate = true;
+      }
+    });
+    if (needsUpdate) {
       localStorage.setItem('poster_ai_accounts', JSON.stringify(accounts));
     }
-    // Ensure all accounts have valid roles
-    accounts.forEach(a => {
-      if (!ROLES[a.role]) a.role = 'viewer';
-    });
-    localStorage.setItem('poster_ai_accounts', JSON.stringify(accounts));
   }
 }
 
