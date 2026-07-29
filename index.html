@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FB评论-海报生成器</title>
+<title>FB评论-海报生成器 v8</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html{background:#faf8f5!important;color-scheme:light!important}
-:root{--bg:#faf8f5;--card:#ffffff;--border:#e8e4df;--text:#2d2a26;--text2:#78716c;--accent:#6366f1;--accent2:#818cf8;--success:#22c55e;--warn:#f59e0b;--danger:#ef4444;--radius:8px;--pink:#ec4899;--cyan:#06b6d4;--orange:#f97316;--purple:#a855f7;color-scheme:light!important}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#faf8f5!important;color:#2d2a26!important;min-height:100vh;font-size:13px;line-height:1.5}
-.container{max-width:1400px;margin:0 auto;padding:10px}
-header{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px}
+:root{--bg:#faf8f5;--card:#ffffff;--border:#e8e4df;--text:#2d2a26;--text2:#78716c;--accent:#6366f1;--accent2:#818cf8;--success:#22c55e;--warn:#f59e0b;--danger:#ef4444;--radius:8px;--pink:#ec4899;--cyan:#06b6d4;--orange:#f97316;--purple:#a855f7}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5}
+.container{max-width:1280px;margin:0 auto;padding:10px}
+header{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px}
 header h1{font-size:15px;font-weight:600;background:linear-gradient(135deg,var(--accent),var(--pink),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 header .actions{display:flex;gap:6px;align-items:center}
 header .actions span{font-size:11px;color:var(--text2)}
@@ -22,65 +21,75 @@ header .actions span{font-size:11px;color:var(--text2)}
 .btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{opacity:.9}
 .btn-sm{padding:3px 8px;font-size:10px}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-.main-grid{display:grid;grid-template-columns:260px 1fr 280px;gap:8px}
-@media(max-width:1100px){.main-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:768px){.main-grid{grid-template-columns:1fr}}
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.card-title{font-size:12px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.grid{display:grid;grid-template-columns:1fr 1fr 300px;gap:10px}
+@media(max-width:1024px){.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.card-title{font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:5px}
 .card-title .icon{font-size:14px}
-.form-group{margin-bottom:6px}
-.form-group label{display:block;font-size:11px;color:var(--text2);margin-bottom:2px;font-weight:500}
-.form-group input,.form-group select,.form-group textarea{width:100%;padding:5px 8px;background:#f5f3f0;border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;outline:none;transition:border-color .2s}
+.form-group{margin-bottom:8px}
+.form-group label{display:block;font-size:11px;color:var(--text2);margin-bottom:3px;font-weight:500}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:6px 8px;background:#f5f3f0;border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;outline:none;transition:border-color .2s}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
-.form-group textarea{resize:vertical;min-height:36px}
-.chip-group{display:flex;flex-wrap:wrap;gap:4px}
-.chip{padding:3px 8px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:10px;transition:all .15s;position:relative;white-space:nowrap}
+.form-group textarea{resize:vertical;min-height:40px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.chip-group{display:flex;flex-wrap:wrap;gap:5px}
+.chip{padding:4px 9px;border-radius:14px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:10px;transition:all .2s;position:relative;white-space:nowrap}
 .chip:hover{border-color:var(--accent);color:var(--accent)}
 .chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.chip-pink.active{background:var(--pink);border-color:var(--pink);color:#fff}
-.chip-pink{border-color:#f9a8d4;color:#ec4899}
-.chip-pink:hover{border-color:var(--pink);color:var(--pink)}
-.chip-orange.active{background:var(--orange);border-color:var(--orange);color:#fff}
-.chip-orange{border-color:#fdba74;color:#f97316}
-.chip-orange:hover{border-color:var(--orange);color:var(--orange)}
-.chip-cyan.active{background:var(--cyan);border-color:var(--cyan);color:#fff}
-.chip-cyan{border-color:#67e8f9;color:#06b6d4}
-.chip-cyan:hover{border-color:var(--cyan);color:var(--cyan)}
-.chip-purple.active{background:var(--purple);border-color:var(--purple);color:#fff}
-.chip-purple{border-color:#d8b4fe;color:#a855f7}
-.chip-purple:hover{border-color:var(--purple);color:var(--purple)}
-.chip-warn.active{background:var(--warn);border-color:var(--warn);color:#000}
-.chip-warn{border-color:#fcd34d;color:#d97706}
-.chip-warn:hover{border-color:var(--warn);color:#d97706}
-.chip-success.active{background:var(--success);border-color:var(--success);color:#fff}
-.chip-success{border-color:#86efac;color:#16a34a}
-.chip-success:hover{border-color:var(--success);color:var(--success)}
-.dim-section{margin-bottom:8px;padding-bottom:6px;border-bottom:1px dashed var(--border)}
-.dim-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
-.dim-label{font-size:10px;font-weight:600;color:var(--accent2);margin-bottom:3px;display:flex;align-items:center;gap:3px}
-.dim-label .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
-.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:10px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.chip .chip-desc{display:none;position:absolute;top:100%;left:0;background:#fffbeb;color:var(--text2);padding:5px 7px;border-radius:4px;font-size:9px;width:150px;z-index:10;margin-top:3px}
+.chip:hover .chip-desc{display:block}
+.chip-pink{border-color:var(--pink);color:#f472b6}.chip-pink.active{background:var(--pink);border-color:var(--pink);color:#fff}.chip-pink:hover{border-color:var(--pink);color:var(--pink)}
+.chip-orange{border-color:var(--orange);color:#fb923c}.chip-orange.active{background:var(--orange);border-color:var(--orange);color:#fff}.chip-orange:hover{border-color:var(--orange);color:var(--orange)}
+.chip-cyan{border-color:var(--cyan);color:#22d3ee}.chip-cyan.active{background:var(--cyan);border-color:var(--cyan);color:#fff}.chip-cyan:hover{border-color:var(--cyan);color:var(--cyan)}
+.chip-purple{border-color:var(--purple);color:var(--purple)}.chip-purple.active{background:var(--purple);border-color:var(--purple);color:#fff}.chip-purple:hover{border-color:var(--purple);color:var(--purple)}
+.chip-success{border-color:var(--success);color:#16a34a}.chip-success.active{background:var(--success);border-color:var(--success);color:#fff}.chip-success:hover{border-color:var(--success);color:var(--success)}
+.chip-danger{border-color:var(--danger);color:var(--danger)}.chip-danger.active{background:var(--danger);border-color:var(--danger);color:#fff}.chip-danger:hover{border-color:var(--danger);color:var(--danger)}
+.chip-cloth{border-color:var(--pink);color:#f472b6}.chip-cloth.active{background:var(--pink);border-color:var(--pink);color:#fff}.chip-cloth:hover{border-color:var(--pink);color:var(--pink)}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:12px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
 .upload-zone:hover{border-color:var(--accent)}
 .upload-zone.has-image{border-style:solid;border-color:var(--accent)}
 .upload-zone input{display:none}
 .upload-zone .hint{font-size:10px;color:var(--text2)}
 .upload-zone .multi-preview{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
-.upload-zone .multi-preview img{width:45px;height:45px;object-fit:cover;border-radius:3px;border:1px solid var(--border)}
+.upload-zone .multi-preview img{width:50px;height:50px;object-fit:cover;border-radius:3px;border:1px solid var(--border)}
 .collapsible{cursor:pointer;user-select:none}
 .collapsible::after{content:'▼';font-size:9px;margin-left:3px;transition:transform .2s}
 .collapsible.collapsed::after{transform:rotate(-90deg)}
-.collapse-content{overflow:hidden;transition:max-height .3s;max-height:600px}
+.collapse-content{overflow:hidden;transition:max-height .3s;max-height:500px}
 .collapse-content.collapsed{max-height:0}
-.prompt-preview{background:#f5f3f0;border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:10px;color:var(--text2);max-height:80px;overflow-y:auto;white-space:pre-wrap;margin-top:5px;line-height:1.6}
+.dim-section{margin-bottom:8px;padding-bottom:6px;border-bottom:1px dashed var(--border)}
+.dim-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.dim-label{font-size:10px;font-weight:600;color:var(--accent2);margin-bottom:3px;display:flex;align-items:center;gap:3px}
+.dim-label .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.selection-summary{background:linear-gradient(135deg,#eff6ff,#f0f9ff);border:1px solid #bfdbfe;border-radius:6px;padding:6px 8px;margin-top:4px;font-size:10px;color:#1e40af}
+.selection-summary b{color:var(--accent)}
+.auto-badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:9px;background:linear-gradient(135deg,var(--accent),var(--pink));color:#fff;margin-left:4px}
+.quality-panel{background:linear-gradient(135deg,#fffdf7,#f5f0ea);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:10px}
+.quality-panel.hidden{display:none}
+.score-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:8px 0}
+.score-item{text-align:center}
+.score-item .label{font-size:10px;color:var(--text2);margin-bottom:3px}
+.score-item .score{font-size:20px;font-weight:700}
+.score-item .bar{height:3px;background:var(--border);border-radius:2px;margin-top:3px;overflow:hidden}
+.score-item .bar-fill{height:100%;border-radius:2px;transition:width .5s}
+.overall-score{text-align:center;padding:8px;margin-bottom:8px;border-radius:var(--radius)}
+.overall-score .number{font-size:26px;font-weight:700}
+.overall-score .status{font-size:11px;margin-top:2px}
+.suggestions{margin:6px 0}
+.suggestions li{font-size:10px;color:var(--text2);margin-bottom:2px;padding-left:3px}
+.quality-actions{display:flex;gap:6px;margin-top:8px}
+.result-area{margin-top:10px}
+.result-area .images{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:8px}
+.result-area .images img{width:100%;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer}
+.result-area .images img:hover{border-color:var(--accent)}
 .status-bar{padding:6px 10px;border-radius:6px;margin-bottom:8px;font-size:11px;display:none}
 .status-bar.info{background:rgba(99,101,241,.1);border:1px solid rgba(99,101,241,.3);color:var(--accent2);display:block}
 .status-bar.success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--success);display:block}
 .status-bar.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--danger);display:block}
 .status-bar.warn{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:var(--warn);display:block}
-.result-area{margin-top:8px}
-.result-area .images{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:6px}
-.result-area .images img{width:100%;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer}
-.result-area .images img:hover{border-color:var(--accent)}
+.prompt-preview{background:#f5f3f0;border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:10px;color:var(--text2);max-height:80px;overflow-y:auto;white-space:pre-wrap;margin-top:5px;line-height:1.6}
 /* Login */
 .login-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(250,248,245,.95);display:flex;align-items:center;justify-content:center;z-index:1000}
 .login-overlay.hidden{display:none}
@@ -89,20 +98,20 @@ header .actions span{font-size:11px;color:var(--text2)}
 .login-box .form-group{margin-bottom:10px}
 .login-box .btn{width:100%;padding:10px}
 /* Modals */
-.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:999}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:999}
 .modal-overlay.hidden{display:none}
-.modal-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;width:100%;max-width:720px;max-height:90vh;overflow-y:auto}
-.modal-box h2{font-size:15px;margin-bottom:8px}
-.modal-box h3{font-size:12px;margin:8px 0 5px;color:var(--accent2)}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;width:100%;max-width:640px;max-height:90vh;overflow-y:auto}
+.modal-box h2{font-size:15px;margin-bottom:10px}
+.modal-box h3{font-size:12px;margin:10px 0 6px;color:var(--accent2)}
 /* Tabs */
-.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:8px}
-.tab{padding:5px 10px;cursor:pointer;font-size:11px;color:var(--text2);border-bottom:2px solid transparent;transition:all .2s}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:10px}
+.tab{padding:6px 12px;cursor:pointer;font-size:11px;color:var(--text2);border-bottom:2px solid transparent;transition:all .2s}
 .tab:hover{color:var(--text)}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 .tab-content{display:none}.tab-content.active{display:block}
 /* Admin table */
-.admin-table{width:100%;border-collapse:collapse;margin-top:5px;font-size:11px}
-.admin-table th,.admin-table td{padding:4px 6px;text-align:left;border-bottom:1px solid var(--border)}
+.admin-table{width:100%;border-collapse:collapse;margin-top:6px;font-size:11px}
+.admin-table th,.admin-table td{padding:5px 7px;text-align:left;border-bottom:1px solid var(--border)}
 .admin-table th{color:var(--text2);font-weight:500;font-size:10px}
 /* Tags */
 .tag{display:inline-block;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:600}
@@ -111,7 +120,32 @@ header .actions span{font-size:11px;color:var(--text2)}
 .tag-operator{background:rgba(6,182,212,.2);color:var(--cyan)}
 .tag-viewer{background:rgba(245,158,11,.2);color:var(--warn)}
 /* Category badge */
-.cat-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;margin-left:4px;cursor:default}
+.cat-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;margin-left:6px;cursor:default}
+.cat-服装{background:rgba(236,72,153,.15);color:#f472b6}
+.cat-美妆{background:rgba(168,85,247,.15);color:#c084fc}
+.cat-汽车用品{background:rgba(245,158,11,.15);color:#fbbf24}
+.cat-家居用品{background:rgba(34,197,94,.15);color:#4ade80}
+.cat-电子产品{background:rgba(6,182,212,.15);color:#22d3ee}
+.cat-食品{background:rgba(249,115,22,.15);color:#fb923c}
+.cat-其他{background:rgba(156,163,175,.15);color:#9ca3af}
+/* Recommendation panel */
+.rec-item{padding:6px 0;border-bottom:1px solid var(--border)}
+.rec-item:last-child{border-bottom:none}
+.rec-label{font-size:10px;color:var(--text2);margin-bottom:2px}
+.rec-value{font-size:12px;font-weight:600}
+.rec-stars{color:var(--warn);font-size:11px;letter-spacing:1px}
+.rec-desc{font-size:10px;color:var(--text2);margin-top:1px}
+/* Inline edit */
+.inline-row{display:flex;gap:4px;align-items:center;margin-bottom:4px}
+.inline-row input,.inline-row select{flex:1;padding:5px 7px;background:#f5f3f0;border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:11px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:768px){.two-col{grid-template-columns:1fr}}
+.required::after{content:'*';color:var(--danger);margin-left:2px}
+.lang-auto{font-size:10px;color:var(--cyan);margin-top:2px}
+/* Image viewer */
+.img-viewer{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;z-index:1001;cursor:pointer}
+.img-viewer.hidden{display:none}
+.img-viewer img{max-width:90%;max-height:90%;border-radius:8px}
 /* Tag management */
 .tag-mgmt-group{margin-bottom:10px;padding:8px;background:#f5f3f0;border-radius:6px}
 .tag-mgmt-group h4{font-size:11px;margin-bottom:4px;color:var(--text)}
@@ -120,34 +154,11 @@ header .actions span{font-size:11px;color:var(--text2)}
 .tag-mgmt-item .del{cursor:pointer;color:var(--danger);font-size:11px;margin-left:2px}
 .tag-mgmt-add{display:flex;gap:4px;margin-top:4px}
 .tag-mgmt-add input{flex:1;padding:3px 6px;border:1px solid var(--border);border-radius:4px;font-size:10px;background:#fff}
-/* Clothing expand */
-.clothing-expand{background:linear-gradient(135deg,#fdf2f8,#fce7f3);border:1px solid #f9a8d4;border-radius:6px;padding:8px;margin-top:4px;display:none}
-.clothing-expand.show{display:block}
-.clothing-expand .dim-label{color:var(--pink)}
-.clothing-chip{border-color:#f9a8d4;color:#ec4899}
-.clothing-chip:hover{border-color:var(--pink);color:var(--pink)}
-.clothing-chip.active{background:var(--pink);border-color:var(--pink);color:#fff}
-/* Auto prompt badge */
-.auto-badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:9px;background:linear-gradient(135deg,var(--accent),var(--pink));color:#fff;margin-left:4px}
-/* Inline edit */
-.inline-row{display:flex;gap:4px;align-items:center;margin-bottom:4px}
-.inline-row input,.inline-row select{flex:1;padding:4px 6px;background:#f5f3f0;border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:11px}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-@media(max-width:768px){.two-col{grid-template-columns:1fr}}
-.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-.required::after{content:'*';color:var(--danger);margin-left:2px}
-/* Selection summary */
-.selection-summary{background:linear-gradient(135deg,#eff6ff,#f0f9ff);border:1px solid #bfdbfe;border-radius:6px;padding:6px 8px;margin-top:4px;font-size:10px;color:#1e40af}
-.selection-summary b{color:var(--accent)}
-/* Image viewer */
-.img-viewer{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;z-index:1001;cursor:pointer}
-.img-viewer img{max-width:90%;max-height:90%;border-radius:8px}
 </style>
 </head>
-<body style="background:#faf8f5!important;color:#2d2a26!important">
-<script>document.documentElement.style.background='#faf8f5';</script>
+<body>
 
-<!-- Login Overlay -->
+<!-- Login Overlay (hidden - free login mode) -->
 <div class="login-overlay hidden" id="loginOverlay">
   <div class="login-box">
     <h2>🎨 FB评论-海报生成器</h2>
@@ -180,8 +191,8 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- Admin Overlay -->
 <div class="modal-overlay hidden" id="adminOverlay">
   <div class="modal-box">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <h2>⚙️ 管理后台</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h2>⚙️ 管理员后台</h2>
       <button class="btn btn-outline btn-sm" onclick="closeAdmin()">关闭</button>
     </div>
     <div class="tabs" id="adminTabs">
@@ -217,15 +228,13 @@ header .actions span{font-size:11px;color:var(--text2)}
     <div class="tab-content" id="adminTab2">
       <h3>自定义提示词模板</h3>
       <textarea id="customPromptText" rows="4" placeholder="自定义提示词模板，留空使用默认自动组合。支持变量：{产品名称} {核心卖点} {用户痛点} {使用场景} {氛围风格} {品牌调性} {目标人群} {服装类型}" style="width:100%;padding:7px;background:#f5f3f0;border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;resize:vertical"></textarea>
-      <button class="btn btn-primary btn-sm" onclick="saveCustomPrompt()" style="margin-top:4px">保存模板</button>
-      <h3>Prompt组合规则</h3>
-      <p style="font-size:10px;color:var(--text2)">系统根据7维度选择自动组合Prompt，无需手动编写。模板优先级：自定义模板 > 自动组合</p>
+      <button class="btn btn-primary btn-sm" onclick="saveCustomPrompt()" style="margin-top:5px">保存模板</button>
     </div>
     <!-- Tab 3: Data Management -->
     <div class="tab-content" id="adminTab3">
       <h3>生成记录</h3>
       <div id="dataRecords" style="font-size:11px;color:var(--text2)">暂无记录</div>
-      <div style="margin-top:6px;display:flex;gap:6px">
+      <div style="margin-top:8px;display:flex;gap:6px">
         <button class="btn btn-outline btn-sm" onclick="exportRecords()">导出记录</button>
         <button class="btn btn-danger btn-sm" onclick="clearRecords()">清空记录</button>
       </div>
@@ -238,20 +247,52 @@ header .actions span{font-size:11px;color:var(--text2)}
   <img id="imgViewerSrc" src="">
 </div>
 
-<!-- Main App -->
+<!-- Main App (display:block for free login) -->
 <div class="container" id="mainApp" style="display:block">
   <header>
     <h1>🎨 FB评论-海报生成器</h1>
     <div class="actions">
-      <span id="userInfo" style="font-size:11px;color:var(--text2);margin-right:8px"></span>
-      <span id="roleInfo" class="tag" style="margin-right:8px"></span>
-      <button class="btn btn-outline btn-sm" id="adminBtn" style="display:inline-block" onclick="openAdmin()">⚙️ 管理</button>
+      <span id="userInfo"></span>
+      <span id="roleInfo" class="tag" style="margin-right:4px"></span>
+      <button class="btn btn-outline btn-sm" id="adminBtn" onclick="openAdmin()">⚙️ 管理</button>
     </div>
   </header>
 
-  <div class="main-grid">
-    <!-- Left Column: 7 Dimensions Selection -->
+  <div class="grid">
+    <!-- Left Column -->
     <div>
+      <!-- Card 1: Product Info -->
+      <div class="card">
+        <div class="card-title"><span class="icon">📦</span> 产品信息 <span id="catBadge" class="cat-badge cat-其他" style="display:none"></span></div>
+        <div class="form-group">
+          <label class="required">产品名称</label>
+          <input type="text" id="productName" placeholder="如：女士直筒裤、车载风扇..." oninput="onProductChange()">
+        </div>
+        <div class="two-col">
+          <div class="form-group">
+            <label class="required">产品图 <small style="color:var(--text2)">(多张/粘贴)</small></label>
+            <div class="upload-zone" id="productZone" onclick="document.getElementById('productInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleDrop(event,'product')">
+              <input type="file" id="productInput" accept="image/*" multiple onchange="handleFileSelect(this,'product')">
+              <div class="hint">点击上传 / Ctrl+V 粘贴</div>
+              <div class="multi-preview" id="productPreview"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>参考图 <small style="color:var(--text2)">(可选多张)</small></label>
+            <div class="upload-zone" id="refZone" onclick="document.getElementById('refInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleDrop(event,'ref')">
+              <input type="file" id="refInput" accept="image/*" multiple onchange="handleFileSelect(this,'ref')">
+              <div class="hint">点击上传 / Ctrl+V 粘贴</div>
+              <div class="multi-preview" id="refPreview"></div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>补充说明 <small style="color:var(--text2)">(可选，附加到AI Prompt)</small></label>
+          <textarea id="extraNote" rows="2" placeholder="如：需要展示细节、颜色偏暖调..." oninput="updatePreview()"></textarea>
+        </div>
+      </div>
+
+      <!-- Card 2: Smart Tag Config (7 Dimensions from v7) -->
       <div class="card">
         <div class="card-title"><span class="icon">🏷️</span> 智能标签配置 <span class="auto-badge">AI自动组合</span></div>
 
@@ -265,13 +306,13 @@ header .actions span{font-size:11px;color:var(--text2)}
           </div>
         </div>
 
-        <!-- Dim 2: 核心卖点 -->
+        <!-- Dim 2: 核心卖点 (多选) -->
         <div class="dim-section">
           <div class="dim-label"><span class="dot" style="background:var(--orange)"></span> 2. 核心卖点 <small style="color:var(--text2)">(多选)</small></div>
           <div class="chip-group" id="dimSellingPoint"></div>
         </div>
 
-        <!-- Dim 3: 用户痛点 -->
+        <!-- Dim 3: 用户痛点 (多选) -->
         <div class="dim-section">
           <div class="dim-label"><span class="dot" style="background:var(--danger)"></span> 3. 用户痛点 <small style="color:var(--text2)">(多选)</small></div>
           <div class="chip-group" id="dimPainPoint"></div>
@@ -295,7 +336,7 @@ header .actions span{font-size:11px;color:var(--text2)}
           <div class="chip-group" id="dimBrandTone"></div>
         </div>
 
-        <!-- Dim 7: 目标人群 -->
+        <!-- Dim 7: 目标人群 (多选) -->
         <div class="dim-section">
           <div class="dim-label"><span class="dot" style="background:var(--success)"></span> 7. 目标人群 <small style="color:var(--text2)">(多选)</small></div>
           <div class="chip-group" id="dimTargetAudience"></div>
@@ -308,42 +349,56 @@ header .actions span{font-size:11px;color:var(--text2)}
       </div>
     </div>
 
-    <!-- Center Column: Product & Settings -->
+    <!-- Center Column -->
     <div>
-      <!-- Product Info -->
-      <div class="card">
-        <div class="card-title"><span class="icon">📦</span> 产品信息</div>
-        <div class="form-group">
-          <label class="required">产品名称</label>
-          <input type="text" id="productName" placeholder="如：女士高腰直筒裤、车载无线风扇..." oninput="onProductChange()">
-        </div>
-        <div class="two-col">
-          <div class="form-group">
-            <label class="required">产品图 <small style="color:var(--text2)">(多张)</small></label>
-            <div class="upload-zone" id="productZone" onclick="document.getElementById('productInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleDrop(event,'product')">
-              <input type="file" id="productInput" accept="image/*" multiple onchange="handleFileSelect(this,'product')">
-              <div class="hint">点击上传 / Ctrl+V 粘贴</div>
-              <div class="multi-preview" id="productPreview"></div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>参考图 <small style="color:var(--text2)">(可选)</small></label>
-            <div class="upload-zone" id="refZone" onclick="document.getElementById('refInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleDrop(event,'ref')">
-              <input type="file" id="refInput" accept="image/*" multiple onchange="handleFileSelect(this,'ref')">
-              <div class="hint">点击上传 / Ctrl+V 粘贴</div>
-              <div class="multi-preview" id="refPreview"></div>
-            </div>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>补充说明 <small style="color:var(--text2)">(可选，附加到AI Prompt)</small></label>
-          <textarea id="extraNote" rows="2" placeholder="如：需要展示细节、颜色偏暖调..." oninput="updatePreview()"></textarea>
-        </div>
-      </div>
-
-      <!-- Generation Settings -->
+      <!-- Card 3: Generation Settings -->
       <div class="card">
         <div class="card-title"><span class="icon">⚡</span> 生成设置</div>
+        <!-- Country/Language Selector (from v7) -->
+        <div class="form-group">
+          <label>🌍 目标国家/地区 <small style="color:var(--text2)">(决定生成语言)</small></label>
+          <select id="genLanguage" onchange="onLanguageChange()">
+            <optgroup label="欧洲">
+              <option value="en-GB">🇬🇧 英国 English</option>
+              <option value="en-US">🇺🇸 美国 English</option>
+              <option value="nl">🇳🇱 荷兰 Nederlands</option>
+              <option value="fr">🇫🇷 法国 Français</option>
+              <option value="de">🇩🇪 德国 Deutsch</option>
+              <option value="es">🇪🇸 西班牙 Español</option>
+              <option value="it">🇮🇹 意大利 Italiano</option>
+              <option value="pt">🇵🇹 葡萄牙 Português</option>
+              <option value="pl">🇵🇱 波兰 Polski</option>
+              <option value="sv">🇸🇪 瑞典 Svenska</option>
+              <option value="da">🇩🇰 丹麦 Dansk</option>
+              <option value="no">🇳🇴 挪威 Norsk</option>
+              <option value="fi">🇫🇮 芬兰 Suomi</option>
+              <option value="el">🇬🇷 希腊 Ελληνικά</option>
+              <option value="cs">🇨🇿 捷克 Čeština</option>
+              <option value="ro">🇷🇴 罗马尼亚 Română</option>
+              <option value="hu">🇭🇺 匈牙利 Magyar</option>
+              <option value="bg">🇧🇬 保加利亚 Български</option>
+              <option value="hr">🇭🇷 克罗地亚 Hrvatski</option>
+              <option value="sk">🇸🇰 斯洛伐克 Slovenčina</option>
+              <option value="uk">🇺🇦 乌克兰 Українська</option>
+              <option value="ru">🇷🇺 俄罗斯 Русский</option>
+            </optgroup>
+            <optgroup label="中东/非洲">
+              <option value="he">🇮🇱 以色列 עברית</option>
+              <option value="ar">🇸🇦 阿拉伯 العربية</option>
+              <option value="tr">🇹🇷 土耳其 Türkçe</option>
+              <option value="fa">🇮🇷 伊朗 فارسی</option>
+            </optgroup>
+            <optgroup label="亚太">
+              <option value="ja">🇯🇵 日本 日本語</option>
+              <option value="ko">🇰🇷 韩国 한국어</option>
+              <option value="th">🇹🇭 泰国 ไทย</option>
+              <option value="vi">🇻🇳 越南 Tiếng Việt</option>
+              <option value="id">🇮🇩 印尼 Bahasa Indonesia</option>
+              <option value="ms">🇲🇾 马来 Bahasa Malaysia</option>
+            </optgroup>
+          </select>
+          <div class="lang-auto" id="langHint">↳ 当前语言: English (UK)</div>
+        </div>
         <div class="form-row-3">
           <div class="form-group">
             <label>海报尺寸</label>
@@ -377,131 +432,106 @@ header .actions span{font-size:11px;color:var(--text2)}
           <div class="form-group">
             <label>AI 模型</label>
             <select id="aiModel">
-              <option value="gpt-image-2-lite">Image2-低价版</option>
-              <option value="gpt-image-2" selected>官方稳定版</option>
-              <option value="nano-banana-pro">Banana Pro</option>
+              <option value="gpt-image-2-lite">Image2-低价版 (快速)</option>
+              <option value="gpt-image-2" selected>官方稳定版 (推荐)</option>
+              <option value="nano-banana-pro">Banana Pro (高质量)</option>
             </select>
           </div>
           <div class="form-group">
-            <label>🌍 目标国家/地区（决定语言）</label>
-            <select id="genLanguage" onchange="updatePreview()">
-              <optgroup label="欧洲">
-                <option value="en-GB">🇬🇧 英国 English</option>
-                <option value="en-US">🇺🇸 美国 English</option>
-                <option value="nl">🇳🇱 荷兰 Nederlands</option>
-                <option value="fr">🇫🇷 法国 Français</option>
-                <option value="de">🇩🇪 德国 Deutsch</option>
-                <option value="es">🇪🇸 西班牙 Español</option>
-                <option value="it">🇮🇹 意大利 Italiano</option>
-                <option value="pt">🇵🇹 葡萄牙 Português</option>
-                <option value="pl">🇵🇱 波兰 Polski</option>
-                <option value="sv">🇸🇪 瑞典 Svenska</option>
-                <option value="da">🇩🇰 丹麦 Dansk</option>
-                <option value="no">🇳🇴 挪威 Norsk</option>
-                <option value="fi">🇫🇮 芬兰 Suomi</option>
-                <option value="el">🇬🇷 希腊 Ελληνικά</option>
-                <option value="cs">🇨🇿 捷克 Čeština</option>
-                <option value="ro">🇷🇴 罗马尼亚 Română</option>
-                <option value="hu">🇭🇺 匈牙利 Magyar</option>
-                <option value="bg">🇧🇬 保加利亚 Български</option>
-                <option value="hr">🇭🇷 克罗地亚 Hrvatski</option>
-                <option value="sk">🇸🇰 斯洛伐克 Slovenčina</option>
-                <option value="uk">🇺🇦 乌克兰 Українська</option>
-                <option value="ru">🇷🇺 俄罗斯 Русский</option>
-              </optgroup>
-              <optgroup label="中东/非洲">
-                <option value="he">🇮🇱 以色列 עברית</option>
-                <option value="ar">🇸🇦 阿拉伯 العربية</option>
-                <option value="tr">🇹🇷 土耳其 Türkçe</option>
-                <option value="fa">🇮🇷 伊朗 فارسی</option>
-              </optgroup>
-              <optgroup label="亚太">
-                <option value="ja">🇯🇵 日本 日本語</option>
-                <option value="ko">🇰🇷 韩国 한국어</option>
-                <option value="th">🇹🇭 ไทย</option>
-                <option value="vi">🇻🇳 越南 Tiếng Việt</option>
-                <option value="id">🇮🇩 印尼 Bahasa Indonesia</option>
-                <option value="ms">🇲🇾 马来 Bahasa Malaysia</option>
-              </optgroup>
-            </select>
+            <label>服装模板 <small style="color:var(--text2)">(可多选)</small></label>
+            <div id="clothingTemplates" style="font-size:10px;color:var(--text2)">
+              选择"服装"品类后自动展示
+            </div>
           </div>
         </div>
-        <!-- API Key (collapsible) -->
+        <!-- API Key -->
         <div class="form-group">
           <label class="collapsible collapsed" onclick="toggleCollapse(this)"> API Key / 代理设置</label>
           <div class="collapse-content collapsed">
-            <div style="margin-top:4px">
-              <input type="password" id="apiKeyInput" placeholder="输入 APIMart API Key" style="margin-bottom:3px">
-              <button class="btn btn-outline btn-sm" onclick="saveApiKey()">保存Key</button>
-              <select id="proxySelect" style="width:100%;margin-top:4px;padding:4px 6px;background:#f5f3f0;border:1px solid var(--border);border-radius:4px;font-size:10px">
-                <option value="auto">自动切换代理</option>
+            <div style="margin-top:5px">
+              <input type="password" id="apiKeyInput" placeholder="输入 APIMart API Key">
+              <button class="btn btn-outline btn-sm" onclick="saveApiKey()" style="margin-top:3px">保存</button>
+              <select id="proxySelect" style="width:100%;margin-top:4px;padding:5px 7px;background:#f5f3f0;border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:11px">
+                <option value="auto">自动切换代理 (推荐)</option>
                 <option value="https://corsproxy.io/?">corsproxy.io</option>
                 <option value="https://api.allorigins.win/raw?url=">allorigins</option>
                 <option value="https://corsproxy.org/?">corsproxy.org</option>
                 <option value="https://thingproxy.freeboard.io/fetch/">thingproxy</option>
                 <option value="">直接请求</option>
               </select>
-              <div style="display:flex;gap:4px;margin-top:3px;align-items:center">
-                <button class="btn btn-outline btn-sm" onclick="testProxy()">测试</button>
-                <span id="proxyStatus" style="font-size:9px;color:var(--text2)"></span>
+              <div style="display:flex;gap:5px;margin-top:5px;align-items:center">
+                <button class="btn btn-outline btn-sm" onclick="testProxy()">测试代理</button>
+                <span id="proxyStatus" style="font-size:10px;color:var(--text2)"></span>
               </div>
             </div>
           </div>
         </div>
+        <!-- Prompt Preview -->
+        <div class="form-group">
+          <label>📝 提示词预览 <span class="auto-badge">自动组合</span></label>
+          <div class="prompt-preview" id="promptPreview">填写产品信息后自动显示...</div>
+        </div>
       </div>
 
-      <!-- AI Prompt Preview -->
-      <div class="card">
-        <div class="card-title"><span class="icon">📝</span> AI自动组合提示词 <span class="auto-badge">无需手写</span></div>
-        <div class="prompt-preview" id="promptPreview">选择标签后自动生成完整Prompt...</div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div style="display:flex;gap:6px;justify-content:center;margin:6px 0">
-        <button class="btn btn-outline" id="autoFillBtn" onclick="aiAutoFill()">🪄 AI智能填充</button>
-        <button class="btn btn-primary" id="generateBtn" onclick="onGenerate()">🚀 生成图片</button>
-      </div>
-
-      <!-- Status -->
-      <div class="status-bar" id="statusBar"></div>
-
-      <!-- Results -->
-      <div class="result-area" id="resultArea" style="display:none">
-        <div class="card-title"><span class="icon">🖼️</span> 生成结果</div>
-        <div class="images" id="resultImages"></div>
+      <!-- Quality Panel -->
+      <div class="quality-panel hidden" id="qualityPanel">
+        <div class="card-title"><span class="icon">🔍</span> AI生成质量检测</div>
+        <div class="overall-score" id="overallScore">
+          <div class="number" id="overallNumber">--</div>
+          <div class="status" id="overallStatus">点击"AI智能分析"开始检测</div>
+        </div>
+        <div class="score-grid">
+          <div class="score-item"><div class="label">信息完整度(40%)</div><div class="score" id="scoreInfo">--</div><div class="bar"><div class="bar-fill" id="barInfo" style="width:0;background:var(--accent)"></div></div></div>
+          <div class="score-item"><div class="label">视觉匹配度(30%)</div><div class="score" id="scoreVisual">--</div><div class="bar"><div class="bar-fill" id="barVisual" style="width:0;background:var(--success)"></div></div></div>
+          <div class="score-item"><div class="label">转化潜力(30%)</div><div class="score" id="scoreConvert">--</div><div class="bar"><div class="bar-fill" id="barConvert" style="width:0;background:var(--warn)"></div></div></div>
+        </div>
+        <div class="suggestions" id="suggestions"></div>
+        <div class="quality-actions">
+          <button class="btn btn-primary btn-sm" onclick="aiOptimize()">🪄 AI优化</button>
+          <button class="btn btn-success btn-sm" onclick="proceedGenerate()">🚀 继续生成</button>
+          <button class="btn btn-outline btn-sm" onclick="closeQuality()">📝 重新编辑</button>
+        </div>
       </div>
     </div>
 
-    <!-- Right Column: Preview & History -->
+    <!-- Right Column: AI Analysis & History -->
     <div>
       <div class="card">
         <div class="card-title"><span class="icon">🤖</span> AI配置分析</div>
         <div id="aiAnalysis">
-          <div style="text-align:center;padding:15px 0;color:var(--text2);font-size:11px">
+          <div style="text-align:center;padding:20px 0;color:var(--text2);font-size:11px">
             选择标签后<br>自动分析配置方案
           </div>
         </div>
       </div>
-
-      <div class="card">
-        <div class="card-title"><span class="icon">👗</span> 服装专属模板(可多选)</div>
-        <div id="clothingTemplates" style="color:var(--text2);font-size:10px">
-          选择"服装"品类后自动展示
-        </div>
-      </div>
-
       <div class="card">
         <div class="card-title"><span class="icon">📋</span> 最近生成</div>
-        <div id="historyList" style="max-height:180px;overflow-y:auto;font-size:11px;color:var(--text2)">
+        <div id="historyList" style="max-height:200px;overflow-y:auto;font-size:11px;color:var(--text2)">
           暂无记录
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Action Buttons -->
+  <div style="display:flex;gap:8px;justify-content:center;margin:10px 0">
+    <button class="btn btn-outline" id="analyzeBtn" onclick="runQualityCheck()">🔍 AI智能分析</button>
+    <button class="btn btn-outline" id="autoFillBtn" onclick="aiAutoFill()">🪄 AI智能填充</button>
+    <button class="btn btn-primary" id="generateBtn" onclick="onGenerate()">🚀 生成图片</button>
+  </div>
+
+  <!-- Status -->
+  <div class="status-bar" id="statusBar"></div>
+
+  <!-- Results -->
+  <div class="result-area" id="resultArea" style="display:none">
+    <div class="card-title"><span class="icon">🖼️</span> 生成结果</div>
+    <div class="images" id="resultImages"></div>
+  </div>
 </div>
 
 <script>
-// ============ DEFAULT TAG DATA (loaded into localStorage on first run) ============
+// ============ DEFAULT TAG DATA ============
 const DEFAULT_TAGS = {
   category: [
     {name:'服装', children:['女装','男装','童装','鞋类','配饰']},
@@ -513,68 +543,20 @@ const DEFAULT_TAGS = {
   ],
   clothingType: ['连衣裙','T恤','衬衫','牛仔裤','休闲裤','外套','毛衣','运动服','半身裙','卫衣','风衣','羽绒服','吊带','短裤','西服','针织衫'],
   sellingPoint: {
-    '服装': {
-      '面料优势': ['柔软亲肤','高弹舒适','透气轻薄','抗菌防臭','速干排汗','保暖锁温','冰丝凉爽'],
-      '版型优势': ['显瘦修身','修饰身材','高腰提臀','宽松遮肉','A字显瘦','直筒显腿长','收腰设计'],
-      '功能优势': ['百搭实用','通勤利器','运动自由','防水防污','可机洗','免烫抗皱','多穿法']
-    },
-    '智能电子': {
-      '性能优势': ['高性能芯片','大容量存储','长续航','快充技术','低功耗'],
-      '功能优势': ['智能互联','语音控制','多设备兼容','自动调节','远程操控'],
-      '设计优势': ['轻薄便携','简约设计','人机工学','防水设计','高清屏幕']
-    },
-    '家居用品': {
-      '品质优势': ['环保材质','耐用持久','易清洁','静音设计','安全防护'],
-      '功能优势': ['节省空间','多功能','智能控制','收纳便捷','可折叠'],
-      '设计优势': ['简约现代','北欧风格','温馨舒适','多色可选','模块化']
-    },
-    '汽车工具': {
-      '品质优势': ['耐用材质','安全认证','防水防尘','耐高温','抗冲击'],
-      '功能优势': ['即插即用','多场景适用','智能感应','无线设计','折叠收纳'],
-      '设计优势': ['小巧便携','隐形安装','多色可选','通用适配','人体工学']
-    },
-    '美妆': {
-      '效果优势': ['持久不脱妆','自然轻薄','遮瑕力强','显白提亮','滋润不拔干'],
-      '成分优势': ['天然植物','无添加','敏感肌可用','含防晒','保湿成分'],
-      '体验优势': ['易推开','速干','不卡粉','不搓泥','方便携带']
-    },
-    '食品': {
-      '品质优势': ['天然无添加','新鲜直采','有机认证','产地直供','低脂低糖'],
-      '口感优势': ['酥脆可口','香浓顺滑','鲜嫩多汁','清爽不腻','回味甘甜'],
-      '便利优势': ['即食方便','独立包装','常温保存','便携出行','多种吃法']
-    }
+    '服装': {'面料优势':['柔软亲肤','高弹舒适','透气轻薄','抗菌防臭','速干排汗','保暖锁温','冰丝凉爽'],'版型优势':['显瘦修身','修饰身材','高腰提臀','宽松遮肉','A字显瘦','直筒显腿长','收腰设计'],'功能优势':['百搭实用','通勤利器','运动自由','防水防污','可机洗','免烫抗皱','多穿法']},
+    '智能电子': {'性能优势':['高性能芯片','大容量存储','长续航','快充技术','低功耗'],'功能优势':['智能互联','语音控制','多设备兼容','自动调节','远程操控'],'设计优势':['轻薄便携','简约设计','人机工学','防水设计','高清屏幕']},
+    '家居用品': {'品质优势':['环保材质','耐用持久','易清洁','静音设计','安全防护'],'功能优势':['节省空间','多功能','智能控制','收纳便捷','可折叠'],'设计优势':['简约现代','北欧风格','温馨舒适','多色可选','模块化']},
+    '汽车工具': {'品质优势':['耐用材质','安全认证','防水防尘','耐高温','抗冲击'],'功能优势':['即插即用','多场景适用','智能感应','无线设计','折叠收纳'],'设计优势':['小巧便携','隐形安装','多色可选','通用适配','人体工学']},
+    '美妆': {'效果优势':['持久不脱妆','自然轻薄','遮瑕力强','显白提亮','滋润不拔干'],'成分优势':['天然植物','无添加','敏感肌可用','含防晒','保湿成分'],'体验优势':['易推开','速干','不卡粉','不搓泥','方便携带']},
+    '食品': {'品质优势':['天然无添加','新鲜直采','有机认证','产地直供','低脂低糖'],'口感优势':['酥脆可口','香浓顺滑','鲜嫩多汁','清爽不腻','回味甘甜'],'便利优势':['即食方便','独立包装','常温保存','便携出行','多种吃法']}
   },
   painPoint: {
-    '服装': {
-      '身材问题': ['担心显胖','腿型不完美','腰腹有赘肉','肩宽背厚','个子矮小'],
-      '穿着问题': ['面料闷热不透气','容易起球','掉色严重','尺码不准','穿着不舒服'],
-      '购买问题': ['不知道怎么搭配','担心质量差','怕不合适','不知道什么风格适合']
-    },
-    '智能电子': {
-      '使用问题': ['操作复杂','连接不稳定','续航不足','兼容性差','发热严重'],
-      '体验问题': ['携带不便','外观不美观','功能鸡肋','学习成本高','售后困难'],
-      '决策问题': ['型号太多选择困难','担心买到落后产品','怕参数虚标']
-    },
-    '家居用品': {
-      '使用问题': ['占用空间大','清洁麻烦','噪音大','使用寿命短','安装复杂'],
-      '体验问题': ['材质不环保','设计不美观','功能单一','质量差','安全性差'],
-      '决策问题': ['不知道选什么风格','担心不搭配','尺寸不合适']
-    },
-    '汽车工具': {
-      '使用问题': ['安装困难','占用车内空间','充电不便','信号不稳定','操作复杂'],
-      '体验问题': ['不美观','有异响','耐久性差','通用性差','影响驾驶'],
-      '决策问题': ['怕不兼容车型','担心质量','怕买贵了']
-    },
-    '美妆': {
-      '效果问题': ['脱妆快','不自然','卡粉','过敏','遮不住'],
-      '体验问题': ['油腻','难推开','味道刺鼻','包装差','不方便补妆'],
-      '决策问题': ['不知道选什么色号','怕假货','不适合自己肤质']
-    },
-    '食品': {
-      '品质问题': ['不新鲜','添加剂多','保质期短','分量少','口感差'],
-      '体验问题': ['不好吃','太甜太咸','包装差','不方便食用','有异味'],
-      '决策问题': ['不知道好不好吃','怕浪费','不知道怎么选']
-    }
+    '服装': {'身材问题':['担心显胖','腿型不完美','腰腹有赘肉','肩宽背厚','个子矮小'],'穿着问题':['面料闷热不透气','容易起球','掉色严重','尺码不准','穿着不舒服'],'购买问题':['不知道怎么搭配','担心质量差','怕不合适','不知道什么风格适合']},
+    '智能电子': {'使用问题':['操作复杂','连接不稳定','续航不足','兼容性差','发热严重'],'体验问题':['携带不便','外观不美观','功能鸡肋','学习成本高','售后困难'],'决策问题':['型号太多选择困难','担心买到落后产品','怕参数虚标']},
+    '家居用品': {'使用问题':['占用空间大','清洁麻烦','噪音大','使用寿命短','安装复杂'],'体验问题':['材质不环保','设计不美观','功能单一','质量差','安全性差'],'决策问题':['不知道选什么风格','担心不搭配','尺寸不合适']},
+    '汽车工具': {'使用问题':['安装困难','占用车内空间','充电不便','信号不稳定','操作复杂'],'体验问题':['不美观','有异响','耐久性差','通用性差','影响驾驶'],'决策问题':['怕不兼容车型','担心质量','怕买贵了']},
+    '美妆': {'效果问题':['脱妆快','不自然','卡粉','过敏','遮不住'],'体验问题':['油腻','难推开','味道刺鼻','包装差','不方便补妆'],'决策问题':['不知道选什么色号','怕假货','不适合自己肤质']},
+    '食品': {'品质问题':['不新鲜','添加剂多','保质期短','分量少','口感差'],'体验问题':['不好吃','太甜太咸','包装差','不方便食用','有异味'],'决策问题':['不知道好不好吃','怕浪费','不知道怎么选']}
   },
   scene: ['日常生活','工作通勤','休闲聚会','运动健身','旅行出游','节日庆典','居家办公','户外探索','约会社交','亲子时光'],
   atmosphere: ['销售型-强促销感','高端型-质感奢华','温馨生活型-亲切自然','节日型-喜庆热闹','年轻潮流型-活力时尚','专业可信型-权威感','清新自然型-纯净简约'],
@@ -586,7 +568,7 @@ const DEFAULT_TAGS = {
   }
 };
 
-// ============ CLOTHING TEMPLATES ============
+// ============ CLOTHING TEMPLATES (multi-select) ============
 const CLOTHING_TEMPLATES = [
   {name:'多身材模特展示', desc:'不同身高/体型模特穿同款', prompt:'showing the same clothing on models of different body types and heights'},
   {name:'多色合集展示', desc:'同款不同颜色组合', prompt:'displaying the same clothing style in multiple color options together'},
@@ -598,437 +580,13 @@ const CLOTHING_TEMPLATES = [
 
 // ============ ROLES ============
 const ROLES = {
-  super_admin: { label: '超级管理员', tag: 'tag-super', canConfig:true, canManageUsers:true, canManageTags:true, canManageData:true },
-  admin: { label: '普通管理员', tag: 'tag-admin', canConfig:true, canManageUsers:false, canManageTags:true, canManageData:true },
-  operator: { label: '运营人员', tag: 'tag-operator', canConfig:false, canManageUsers:false, canManageTags:false, canManageData:false },
-  viewer: { label: '查看人员', tag: 'tag-viewer', canConfig:false, canManageUsers:false, canManageTags:false, canManageData:false }
+  super_admin: {label:'超级管理员',tag:'tag-super',canConfig:true,canManageUsers:true,canManageTags:true,canManageData:true},
+  admin: {label:'普通管理员',tag:'tag-admin',canConfig:true,canManageUsers:false,canManageTags:true,canManageData:true},
+  operator: {label:'运营人员',tag:'tag-operator',canConfig:false,canManageUsers:false,canManageTags:false,canManageData:false},
+  viewer: {label:'查看人员',tag:'tag-viewer',canConfig:false,canManageUsers:false,canManageTags:false,canManageData:false}
 };
 
-// ============ STATE ============
-let currentUser = null;
-let productImages = [];
-let refImages = [];
-let qualityScore = null;
-let genRecords = JSON.parse(localStorage.getItem('poster_ai_records') || '[]');
-// Selected tags
-let selectedTags = {
-  category: '',
-  clothingType: '',
-  sellingPoints: [],
-  painPoints: [],
-  scene: '',
-  atmosphere: '',
-  brandTone: '',
-  targetAges: [],
-  targetGenders: [],
-  targetIdentities: [],
-  clothingTemplates: []
-};
-// Tags data from localStorage
-let tagData = null;
-
-// ============ TAG MANAGEMENT ============
-function loadTags() {
-  const stored = localStorage.getItem('poster_v6_tags');
-  if (stored) {
-    tagData = JSON.parse(stored);
-  } else {
-    tagData = JSON.parse(JSON.stringify(DEFAULT_TAGS));
-    localStorage.setItem('poster_v6_tags', JSON.stringify(tagData));
-  }
-}
-
-function saveTags() {
-  localStorage.setItem('poster_v6_tags', JSON.stringify(tagData));
-}
-
-function getCategoryNames() {
-  return tagData.category.map(c => c.name);
-}
-
-function getSellingPointsForCategory(cat) {
-  return tagData.sellingPoint[cat] || {};
-}
-
-function getPainPointsForCategory(cat) {
-  return tagData.painPoint[cat] || {};
-}
-
-// ============ RENDER DIMENSION CHIPS ============
-function renderAllDimensions() {
-  renderCategoryChips();
-  renderSellingPointChips();
-  renderPainPointChips();
-  renderSceneChips();
-  renderAtmosphereChips();
-  renderBrandToneChips();
-  renderTargetAudienceChips();
-  updateClothingVisibility();
-}
-
-function renderCategoryChips() {
-  const el = document.getElementById('dimCategory');
-  el.innerHTML = tagData.category.map(c =>
-    `<div class="chip chip-pink${selectedTags.category===c.name?' active':''}" data-val="${c.name}" onclick="selectCategory('${c.name}')">${c.name}${c.children.length?' ('+c.children.join('/')+')':''}</div>`
-  ).join('');
-}
-
-function renderClothingTypeChips() {
-  const el = document.getElementById('dimClothingType');
-  const types = tagData.clothingType || [];
-  el.innerHTML = types.map(t =>
-    `<div class="chip clothing-chip${selectedTags.clothingType===t?' active':''}" onclick="selectClothingType('${t}')">${t}</div>`
-  ).join('');
-}
-
-function renderSellingPointChips() {
-  const el = document.getElementById('dimSellingPoint');
-  const cat = selectedTags.category || '服装';
-  const groups = getSellingPointsForCategory(cat);
-  if (!groups || Object.keys(groups).length === 0) {
-    el.innerHTML = '<span style="font-size:10px;color:var(--text2)">请先选择品类</span>';
-    return;
-  }
-  let html = '';
-  for (const [group, items] of Object.entries(groups)) {
-    html += `<div style="font-size:9px;color:var(--text2);margin:3px 0 1px;font-weight:600">${group}</div><div class="chip-group">`;
-    items.forEach(item => {
-      const active = selectedTags.sellingPoints.includes(item) ? ' active' : '';
-      html += `<div class="chip chip-orange${active}" onclick="toggleSellingPoint('${item}')">${item}</div>`;
-    });
-    html += '</div>';
-  }
-  el.innerHTML = html;
-}
-
-function renderPainPointChips() {
-  const el = document.getElementById('dimPainPoint');
-  const cat = selectedTags.category || '服装';
-  const groups = getPainPointsForCategory(cat);
-  if (!groups || Object.keys(groups).length === 0) {
-    el.innerHTML = '<span style="font-size:10px;color:var(--text2)">请先选择品类</span>';
-    return;
-  }
-  let html = '';
-  for (const [group, items] of Object.entries(groups)) {
-    html += `<div style="font-size:9px;color:var(--text2);margin:3px 0 1px;font-weight:600">${group}</div><div class="chip-group">`;
-    items.forEach(item => {
-      const active = selectedTags.painPoints.includes(item) ? ' active' : '';
-      html += `<div class="chip${active}" style="border-color:#fca5a5;color:#dc2626" onclick="togglePainPoint('${item}')">${item}</div>`;
-    });
-    html += '</div>';
-  }
-  el.innerHTML = html;
-}
-
-function renderSceneChips() {
-  const el = document.getElementById('dimScene');
-  el.innerHTML = tagData.scene.map(s =>
-    `<div class="chip chip-cyan${selectedTags.scene===s?' active':''}" onclick="selectScene('${s}')">${s}</div>`
-  ).join('');
-}
-
-function renderAtmosphereChips() {
-  const el = document.getElementById('dimAtmosphere');
-  el.innerHTML = tagData.atmosphere.map(a =>
-    `<div class="chip chip-purple${selectedTags.atmosphere===a?' active':''}" onclick="selectAtmosphere('${a}')">${a}</div>`
-  ).join('');
-}
-
-function renderBrandToneChips() {
-  const el = document.getElementById('dimBrandTone');
-  el.innerHTML = tagData.brandTone.map(b =>
-    `<div class="chip${selectedTags.brandTone===b?' active':''}" onclick="selectBrandTone('${b}')">${b}</div>`
-  ).join('');
-}
-
-function renderTargetAudienceChips() {
-  const el = document.getElementById('dimTargetAudience');
-  const aud = tagData.targetAudience;
-  let html = '<div style="font-size:9px;color:var(--text2);margin-bottom:1px;font-weight:600">年龄(可多选)</div><div class="chip-group">';
-  aud.age.forEach(a => {
-    html += `<div class="chip chip-success${selectedTags.targetAges&&selectedTags.targetAges.includes(a)?' active':''}" onclick="toggleTargetAge('${a}')">${a}</div>`;
-  });
-  html += '</div><div style="font-size:9px;color:var(--text2);margin:3px 0 1px;font-weight:600">性别(可多选)</div><div class="chip-group">';
-  aud.gender.forEach(g => {
-    html += `<div class="chip chip-pink${selectedTags.targetGenders&&selectedTags.targetGenders.includes(g)?' active':''}" onclick="toggleTargetGender('${g}')">${g}</div>`;
-  });
-  html += '</div><div style="font-size:9px;color:var(--text2);margin:3px 0 1px;font-weight:600">身份(可多选)</div><div class="chip-group">';
-  aud.identity.forEach(i => {
-    const active = selectedTags.targetIdentities&&selectedTags.targetIdentities.includes(i) ? ' active' : '';
-    html += `<div class="chip${active}" onclick="toggleTargetIdentity('${i}')">${i}</div>`;
-  });
-  html += '</div>';
-  el.innerHTML = html;
-}
-
-// ============ TAG SELECTION HANDLERS ============
-function selectCategory(name) {
-  if (selectedTags.category === name) {
-    selectedTags.category = '';
-    selectedTags.clothingType = '';
-    selectedTags.sellingPoints = [];
-    selectedTags.painPoints = [];
-  } else {
-    selectedTags.category = name;
-    selectedTags.clothingType = '';
-    selectedTags.sellingPoints = [];
-    selectedTags.painPoints = [];
-  }
-  renderAllDimensions();
-  updatePreview();
-  updateAnalysis();
-}
-
-function selectClothingType(name) {
-  selectedTags.clothingType = selectedTags.clothingType === name ? '' : name;
-  renderClothingTypeChips();
-  updatePreview();
-  updateAnalysis();
-}
-
-function toggleSellingPoint(name) {
-  const idx = selectedTags.sellingPoints.indexOf(name);
-  if (idx >= 0) selectedTags.sellingPoints.splice(idx, 1);
-  else { if (selectedTags.sellingPoints.length >= 5) selectedTags.sellingPoints.shift(); selectedTags.sellingPoints.push(name); }
-  renderSellingPointChips();
-  updatePreview();
-  updateAnalysis();
-}
-
-function togglePainPoint(name) {
-  const idx = selectedTags.painPoints.indexOf(name);
-  if (idx >= 0) selectedTags.painPoints.splice(idx, 1);
-  else { if (selectedTags.painPoints.length >= 3) selectedTags.painPoints.shift(); selectedTags.painPoints.push(name); }
-  renderPainPointChips();
-  updatePreview();
-  updateAnalysis();
-}
-
-function selectScene(name) {
-  selectedTags.scene = selectedTags.scene === name ? '' : name;
-  renderSceneChips();
-  updatePreview();
-  updateAnalysis();
-}
-
-function selectAtmosphere(name) {
-  selectedTags.atmosphere = selectedTags.atmosphere === name ? '' : name;
-  renderAtmosphereChips();
-  updatePreview();
-  updateAnalysis();
-}
-
-function selectBrandTone(name) {
-  selectedTags.brandTone = selectedTags.brandTone === name ? '' : name;
-  renderBrandToneChips();
-  updatePreview();
-  updateAnalysis();
-}
-
-function toggleTargetAge(name) {
-  if (!selectedTags.targetAges) selectedTags.targetAges = [];
-  const idx = selectedTags.targetAges.indexOf(name);
-  if (idx >= 0) selectedTags.targetAges.splice(idx, 1);
-  else selectedTags.targetAges.push(name);
-  renderTargetAudienceChips();
-  updatePreview();
-  updateAnalysis();
-}
-
-function toggleTargetGender(name) {
-  if (!selectedTags.targetGenders) selectedTags.targetGenders = [];
-  const idx = selectedTags.targetGenders.indexOf(name);
-  if (idx >= 0) selectedTags.targetGenders.splice(idx, 1);
-  else selectedTags.targetGenders.push(name);
-  renderTargetAudienceChips();
-  updatePreview();
-  updateAnalysis();
-}
-
-function toggleTargetIdentity(name) {
-  if (!selectedTags.targetIdentities) selectedTags.targetIdentities = [];
-  const idx = selectedTags.targetIdentities.indexOf(name);
-  if (idx >= 0) selectedTags.targetIdentities.splice(idx, 1);
-  else selectedTags.targetIdentities.push(name);
-  renderTargetAudienceChips();
-  updatePreview();
-  updateAnalysis();
-}
-
-function updateClothingVisibility() {
-  const isClothing = selectedTags.category === '服装';
-  document.getElementById('clothingSubTypes').style.display = isClothing ? 'block' : 'none';
-  document.getElementById('clothingTemplates').innerHTML = isClothing
-    ? CLOTHING_TEMPLATES.map(t =>
-        `<div class="chip clothing-chip${selectedTags.clothingTemplates&&selectedTags.clothingTemplates.includes(t.name)?' active':''}" style="margin:2px" onclick="toggleClothingTemplate('${t.name}')">${t.name}<span style="font-size:8px;color:var(--text2);margin-left:3px">${t.desc}</span></div>`
-      ).join('')
-    : '<span style="font-size:10px;color:var(--text2)">选择"服装"品类后自动展示</span>';
-  if (isClothing) renderClothingTypeChips();
-}
-
-function toggleClothingTemplate(name) {
-  if (!selectedTags.clothingTemplates) selectedTags.clothingTemplates = [];
-  const idx = selectedTags.clothingTemplates.indexOf(name);
-  if (idx >= 0) selectedTags.clothingTemplates.splice(idx, 1);
-  else selectedTags.clothingTemplates.push(name);
-  updateClothingVisibility();
-  updatePreview();
-  updateAnalysis();
-}
-
-// ============ SELECTION SUMMARY ============
-function updateSelectionSummary() {
-  const parts = [];
-  if (selectedTags.category) parts.push(`<b>品类:</b> ${selectedTags.category}${selectedTags.clothingType?' / '+selectedTags.clothingType:''}`);
-  if (selectedTags.sellingPoints.length) parts.push(`<b>卖点:</b> ${selectedTags.sellingPoints.join('、')}`);
-  if (selectedTags.painPoints.length) parts.push(`<b>痛点:</b> ${selectedTags.painPoints.join('、')}`);
-  if (selectedTags.scene) parts.push(`<b>场景:</b> ${selectedTags.scene}`);
-  if (selectedTags.atmosphere) parts.push(`<b>氛围:</b> ${selectedTags.atmosphere}`);
-  if (selectedTags.brandTone) parts.push(`<b>调性:</b> ${selectedTags.brandTone}`);
-  const aud = [...(selectedTags.targetAges||[]), ...(selectedTags.targetGenders||[]), ...(selectedTags.targetIdentities||[])];
-  if (aud.length) parts.push(`<b>人群:</b> ${aud.join(' ')}`);
-  if (selectedTags.clothingTemplates && selectedTags.clothingTemplates.length) parts.push(`<b>模板:</b> ${selectedTags.clothingTemplates.join('+')}`);
-  document.getElementById('selectionSummary').innerHTML = parts.length
-    ? parts.join(' &nbsp;|&nbsp; ')
-    : '请从左侧选择标签，AI将自动组合生成提示词';
-}
-
-// ============ TRANSLATION MAPS (CN→EN for prompts) ============
-const TRANS = {
-  category: {'服装':'Clothing','智能电子':'Smart Electronics','家居用品':'Home Goods','汽车工具':'Car Tools','美妆':'Beauty','食品':'Food'},
-  clothingType: {'连衣裙':'Dress','T恤':'T-Shirt','衬衫':'Shirt','牛仔裤':'Jeans','休闲裤':'Casual Pants','外套':'Jacket','毛衣':'Sweater','运动服':'Sportswear','POLO':'Polo Shirt','裤子':'Pants','运动鞋':'Sneakers','靴子':'Boots','凉鞋':'Sandals'},
-  sellingPoints: {'柔软亲肤':'Soft & skin-friendly','高弹舒适':'High-stretch comfort','透气轻薄':'Breathable & lightweight','保暖锁温':'Heat-retaining','防皱免烫':'Wrinkle-free','不缩水':'Non-shrink','不易变形':'Shape-retaining','显瘦版型':'Slimming fit','修饰身材':'Figure-flattering','宽松舒适':'Loose & comfortable','高腰设计':'High-waist design','长腿比例':'Leg-elongating','包容不同身材':'Fits all body types','日常百搭':'Versatile everyday','通勤适合':'Office-ready','运动舒适':'Sport-comfortable','防风':'Windproof','防晒':'UV-protective','快干':'Quick-dry','抗皱防臭':'Anti-wrinkle & odor-resistant','速干排汗':'Quick-dry & moisture-wicking','保暖锁温':'Heat-locking warmth','冰丝凉爽':'Ice-silk cool'},
-  painPoints: {'担心显胖':'Worried about looking bulky','腿型不好看':'Unflattering leg shape','腰腹赘肉明显':'Visible belly fat','不知道尺码选择':'Unsure about sizing','穿着不舒服':'Uncomfortable to wear','容易皱':'Wrinkles easily','不透气':'Not breathable','搭配困难':'Hard to style','不知道怎么搭配':'Doesnt know how to style','担心质量不好':'Worried about quality','担心颜色不适合':'Worried color wont match','不好吃':'Not tasty','太甜太咸':'Too sweet or salty','包装差':'Poor packaging','不方便食用':'Inconvenient to eat','有异味':'Has odor','不知道好不好吃':'Not sure if tasty','怕浪费':'Afraid of waste','不知道怎么选':'Doesnt know how to choose','面料闷热不透气':'Fabric too hot & not breathable','容易起球':'Pills easily','掉色严重':'Fades badly','尺码不准':'Inaccurate sizing','穿着不舒服':'Uncomfortable fit','肩宽背厚':'Broad shoulders & thick back','个子矮小':'Petite/short stature'},
-  scene: {'日常生活':'Daily life','工作通勤':'Work commute','休闲聚会':'Casual gathering','运动健身':'Sports & fitness','旅行出游':'Travel','节日庆典':'Festival celebration','居家办公':'Work from home','户外探索':'Outdoor adventure','约会社交':'Date & social','亲子时光':'Family time'},
-  atmosphere: {'销售型-强促销感':'Professional e-commerce style','高端型-质感奢华':'Luxury premium feel','温馨生活型-亲切自然':'Warm & natural lifestyle','节日型-喜庆热闹':'Festive & vibrant','年轻潮流型-活力时尚':'Youthful trendy fashion','专业可信型-权威感':'Professional & authoritative','清新自然型-纯净简约':'Fresh clean & minimal'},
-  brandTone: {'简约高级':'Minimal premium','年轻活泼':'Young & vibrant','专业可信':'Professional trustworthy','温暖生活':'Warm lifestyle','强销售转化':'Professional commercial','时尚前卫':'Fashion-forward','可靠实用':'Reliable practical','精致优雅':'Refined elegant'},
-  age: {'18-25岁':'18-25 years old','25-35岁':'25-35 years old','35-45岁':'35-45 years old','45岁以上':'45+ years old','全年龄段':'All ages'},
-  gender: {'女性':'female','男性':'male','男女皆宜':'unisex'},
-  identity: {'上班族':'office workers','学生':'students','宝妈':'moms','户外爱好者':'outdoor enthusiasts','时尚消费者':'fashion consumers','家庭主妇':'housewives','商务人士':'business professionals','运动达人':'fitness enthusiasts','宅家人士':'homebodies'},
-  clothingTemplate: {'多身材模特展示':'models of different body types wearing the same piece','多色合集展示':'same style in multiple colors together','场景穿搭展示':'styled for different daily scenarios','搭配推荐展示':'complete outfit coordination with accessories','面料细节图':'macro close-up of fabric texture and stitching','尺码指南图':'size guide with measurement points'}
-};
-function T(map, val) { return (map && map[val]) ? map[val] : val; }
-
-// ============ FB BANNED WORDS FILTER ============
-const FB_BANNED_CN = /限时|折扣|秒杀|抢购|特价|促销|打折|优惠|买一送一|清仓|跳楼价|疯抢|秒杀价|超低价|史低|最低价|免费领|0元|一元|包邮|返现|返佣|返点/g;
-const FB_BANNED_EN = /limited\s*time|flash\s*sale|discount|clearance|free\s*shipping|buy\s*one\s*get\s*one|BOGO|lowest\s*price|free\s*gift|cashback|zero\s*dollar/gi;
-function filterBannedWords(text) {
-  if (!text) return text;
-  return text.replace(FB_BANNED_CN, '').replace(FB_BANNED_EN, '');
-}
-
-// ============ AI AUTO PROMPT BUILDER ============
-function buildAutoPrompt() {
-  const name = document.getElementById('productName').value.trim();
-  const extra = document.getElementById('extraNote').value.trim();
-  const size = document.getElementById('imageSize').value;
-  const quality = document.getElementById('imageQuality').value;
-  const lang = getDetectedLanguage();
-
-  // Check custom template first
-  const customTemplate = localStorage.getItem('poster_ai_custom_prompts') || '';
-  if (customTemplate && customTemplate.trim()) {
-    let prompt = customTemplate
-      .replace('{产品名称}', name || 'product')
-      .replace('{核心卖点}', selectedTags.sellingPoints.map(s=>TL('sellingPoints',s)).join(', '))
-      .replace('{用户痛点}', selectedTags.painPoints.map(p=>TL('painPoints',p)).join(', '))
-      .replace('{使用场景}', TL('scene', selectedTags.scene) || '')
-      .replace('{氛围风格}', TL('atmosphere', selectedTags.atmosphere) || '')
-      .replace('{品牌调性}', TL('brandTone', selectedTags.brandTone) || '')
-      .replace('{目标人群}', buildAudienceText())
-      .replace('{服装类型}', TL('clothingType', selectedTags.clothingType) || '');
-    return filterBannedWords(prompt);
-  }
-
-  if (!selectedTags.category && !name) {
-    return 'Please select tags or enter product name...';
-  }
-
-  // Always use English prompt builder to avoid Chinese in generated images
-  let prompt = buildEnglishAutoPrompt(name, extra, size, quality, lang);
-  return filterBannedWords(prompt);
-}
-
-function buildAudienceText() {
-  const parts = [];
-  if (selectedTags.targetAges && selectedTags.targetAges.length) parts.push(selectedTags.targetAges.map(a=>TL('age',a)).join(', '));
-  if (selectedTags.targetGenders && selectedTags.targetGenders.length) parts.push(selectedTags.targetGenders.map(g=>TL('gender',g)).join(', '));
-  if (selectedTags.targetIdentities && selectedTags.targetIdentities.length) parts.push(selectedTags.targetIdentities.map(i=>TL('identity',i)).join(', '));
-  return parts.join(', ');
-}
-
-function buildChineseAutoPrompt(name, extra, size, quality) {
-  // Redirect to English builder to avoid Chinese text in generated images
-  return buildEnglishAutoPrompt(name, extra, size, quality, 'English');
-}
-
-function buildEnglishAutoPrompt(name, extra, size, quality, lang) {
-  const lines = [];
-  let subject = name || 'product';
-  if (selectedTags.category === '服装' && selectedTags.clothingType) {
-    subject = TL('clothingType', selectedTags.clothingType) + (name ? ' "'+name+'"' : '');
-  }
-  lines.push(`Create a professional e-commerce poster for: "${subject}"`);
-
-  if (selectedTags.category) lines.push(`Category: ${TL('category', selectedTags.category) || selectedTags.category}`);
-  if (selectedTags.sellingPoints.length) lines.push(`Key selling points: ${selectedTags.sellingPoints.map(s=>TL('sellingPoints',s)).join(', ')}`);
-
-  if (selectedTags.painPoints.length) {
-    lines.push(`Addresses pain points: ${selectedTags.painPoints.map(p=>TL('painPoints',p)).join(', ')} - demonstrate how ${TL('sellingPoints',selectedTags.sellingPoints[0])||'the product'} solves these concerns`);
-  }
-
-  if (selectedTags.scene) lines.push(`Usage scene: ${TL('scene', selectedTags.scene) || selectedTags.scene}`);
-
-  const styleParts = [];
-  if (selectedTags.atmosphere) styleParts.push(TL('atmosphere', selectedTags.atmosphere) || selectedTags.atmosphere.split('-')[0]);
-  if (selectedTags.brandTone) styleParts.push(TL('brandTone', selectedTags.brandTone) || selectedTags.brandTone);
-  if (styleParts.length) lines.push(`Visual style: ${styleParts.join(', ')}`);
-
-  const audience = buildAudienceText();
-  if (audience) lines.push(`Target audience: ${audience}`);
-
-  // Multi-select clothing templates
-  if (selectedTags.category === '服装' && selectedTags.clothingTemplates && selectedTags.clothingTemplates.length) {
-    selectedTags.clothingTemplates.forEach(tplName => {
-      const tpl = CLOTHING_TEMPLATES.find(t => t.name === tplName);
-      if (tpl) lines.push(`Clothing display: ${tpl.prompt}`);
-    });
-  }
-
-  // Scene description - support multi-select audience
-  if (selectedTags.category === '服装') {
-    const genders = (selectedTags.targetGenders && selectedTags.targetGenders.length) ? selectedTags.targetGenders : ['女性'];
-    const genderText = genders.includes('女性') ? TL('gender','女性') : genders.includes('男性') ? TL('gender','男性') : 'model';
-    const ages = (selectedTags.targetAges && selectedTags.targetAges.length) ? selectedTags.targetAges.map(a=>TL('age',a)).join(', ') : '';
-    const sceneText = TL('scene', selectedTags.scene) || 'daily life';
-    const sellText = selectedTags.sellingPoints.slice(0,2).map(s=>TL('sellingPoints',s)).join(' and ');
-    const clothingEn = TL('clothingType', selectedTags.clothingType) || subject;
-    lines.push(`\nScene: ${ages} ${genderText} in ${sceneText} setting wearing ${clothingEn}, showcasing ${sellText||'the fit and quality'}, realistic commercial photography style`);
-  } else if (audience && selectedTags.scene) {
-    const sceneEn = TL('scene', selectedTags.scene) || selectedTags.scene;
-    lines.push(`\nScene: ${audience} using ${subject} in ${sceneEn} setting, showing ${TL('sellingPoints',selectedTags.sellingPoints[0])||'product benefits'}`);
-  }
-
-  const targetLang = getTargetLangName();
-  const langCode = getDetectedLanguage();
-  lines.push(`\nIMPORTANT: All visible text on the poster MUST be in ${targetLang}. No other languages allowed. NO Chinese characters anywhere.`);
-  lines.push(`No watermarks. No logos. No text overlays. Pure visual imagery with text only in ${targetLang}.`);
-  // Use appropriate model faces based on target region
-  const westernLangs = ['en','nl','fr','de','es','it','pt','pl','sv','da','no','fi','el','cs','ro','hu','bg','hr','sk','uk','ru','he','ar','tr','fa'];
-  const asianLangs = ['ja','ko','th','vi','id','ms'];
-  if (asianLangs.includes(langCode)) {
-    lines.push('Use Asian models appropriate for the target market.');
-  } else {
-    lines.push('Use Western/European models appropriate for the target market.');
-  }
-
-  if (extra) lines.push(`Additional: ${extra}`);
-  lines.push(`Aspect ratio: ${size}, Quality: ${quality}, highly detailed professional commercial photography, not AI-looking`);
-  return lines.join('\n');
-}
-
-// Country code → Language mapping
+// ============ COUNTRY_LANG (30+ countries) ============
 const COUNTRY_LANG = {
   'en-GB':{name:'English (UK)',code:'en',flag:'🇬🇧'},
   'en-US':{name:'English (US)',code:'en',flag:'🇺🇸'},
@@ -1064,10 +622,271 @@ const COUNTRY_LANG = {
   'ms':{name:'Bahasa Malaysia',code:'ms',flag:'🇲🇾'}
 };
 
+// ============ ENGLISH TRANSLATION MAP (fallback) ============
+const TRANS = {
+  category:{'服装':'Clothing','智能电子':'Smart Electronics','家居用品':'Home Goods','汽车工具':'Car Tools','美妆':'Beauty','食品':'Food'},
+  clothingType:{'连衣裙':'Dress','T恤':'T-Shirt','衬衫':'Shirt','牛仔裤':'Jeans','休闲裤':'Casual Pants','外套':'Jacket','毛衣':'Sweater','运动服':'Sportswear','半身裙':'Skirt','卫衣':'Hoodie','风衣':'Trench Coat','羽绒服':'Down Jacket','吊带':'Camisole','短裤':'Shorts','西服':'Suit','针织衫':'Knitwear'},
+  sellingPoints:{'柔软亲肤':'Soft & skin-friendly','高弹舒适':'High-stretch comfort','透气轻薄':'Breathable & lightweight','抗菌防臭':'Antibacterial & odor-resistant','速干排汗':'Quick-dry & moisture-wicking','保暖锁温':'Heat-locking warmth','冰丝凉爽':'Ice-silk cool','显瘦修身':'Slimming fit','修饰身材':'Figure-flattering','高腰提臀':'High-waist lifting','宽松遮肉':'Loose & forgiving','A字显瘦':'A-line slimming','直筒显腿长':'Straight-leg elongating','收腰设计':'Waist-defining design','百搭实用':'Versatile everyday','通勤利器':'Office-ready','运动自由':'Sport-comfortable','防水防污':'Waterproof & stain-resistant','可机洗':'Machine washable','免烫抗皱':'Wrinkle-free','多穿法':'Multi-way wear'},
+  painPoints:{'担心显胖':'Worried about looking bulky','腿型不完美':'Unflattering leg shape','腰腹有赘肉':'Visible belly fat','肩宽背厚':'Broad shoulders & thick back','个子矮小':'Petite/short stature','面料闷热不透气':'Fabric too hot & not breathable','容易起球':'Pills easily','掉色严重':'Fades badly','尺码不准':'Inaccurate sizing','穿着不舒服':'Uncomfortable to wear','不知道怎么搭配':'Doesnt know how to style','担心质量差':'Worried about quality','怕不合适':'Worried it wont fit','不知道什么风格适合':'Unsure what style suits'},
+  scene:{'日常生活':'Daily life','工作通勤':'Work commute','休闲聚会':'Casual gathering','运动健身':'Sports & fitness','旅行出游':'Travel','节日庆典':'Festival celebration','居家办公':'Work from home','户外探索':'Outdoor adventure','约会社交':'Date & social','亲子时光':'Family time'},
+  atmosphere:{'销售型-强促销感':'Professional e-commerce style','高端型-质感奢华':'Luxury premium feel','温馨生活型-亲切自然':'Warm & natural lifestyle','节日型-喜庆热闹':'Festive & vibrant','年轻潮流型-活力时尚':'Youthful trendy fashion','专业可信型-权威感':'Professional & authoritative','清新自然型-纯净简约':'Fresh clean & minimal'},
+  brandTone:{'简约高级':'Minimal premium','年轻活泼':'Young & vibrant','专业可信':'Professional trustworthy','温暖生活':'Warm lifestyle','强销售转化':'Professional commercial','时尚前卫':'Fashion-forward','可靠实用':'Reliable practical','精致优雅':'Refined elegant'},
+  age:{'18-25岁':'18-25 years old','25-35岁':'25-35 years old','35-45岁':'35-45 years old','45岁以上':'45+ years old','全年龄段':'All ages'},
+  gender:{'女性':'female','男性':'male','男女皆宜':'unisex'},
+  identity:{'上班族':'office workers','学生':'students','宝妈':'moms','户外爱好者':'outdoor enthusiasts','时尚消费者':'fashion consumers','家庭主妇':'housewives','商务人士':'business professionals','运动达人':'fitness enthusiasts','宅家人士':'homebodies'},
+  clothingTemplate:{'多身材模特展示':'models of different body types wearing the same piece','多色合集展示':'same style in multiple colors together','场景穿搭展示':'styled for different daily scenarios','搭配推荐展示':'complete outfit coordination with accessories','面料细节图':'macro close-up of fabric texture and stitching','尺码指南图':'size guide with measurement points'}
+};
+
+// ============ MULTI-LANGUAGE TRANSLATION MAP (LANG_MAP) ============
+const LANG_MAP = {
+  nl:{sellingPoints:{'柔软亲肤':'Zacht & huidvriendelijk','高弹舒适':'Elastisch comfort','透气轻薄':'Ademend & licht','显瘦修身':'Slankmakend model','百搭实用':'Universeel combineerbaar','高腰提臀':'Hoge taille'},painPoints:{'担心显胖':'Bezorgd over breder uiterlijk','腿型不完美':'Onflatterende beenvorm','不知道怎么搭配':'Onzeker over stylen'},scene:{'日常生活':'Dagelijks leven','工作通勤':'Woon-werkverkeer','休闲聚会':'Casual samenzijn','运动健身':'Sport & fitness'},atmosphere:{'销售型-强促销感':'Professionele e-commerce stijl','高端型-质感奢华':'Luxe premium uitstraling','温馨生活型-亲切自然':'Warm & natuurlijk leven','节日型-喜庆热闹':'Festief & levendig','年轻潮流型-活力时尚':'Jeugdige trendy mode'},brandTone:{'简约高级':'Minimaal premium','年轻活泼':'Jong & levendig','专业可信':'Professioneel betrouwbaar'},category:{'服装':'Kleding','智能电子':'Slimme elektronica','家居用品':'Huisartikelen'},age:{'18-25岁':'18-25 jaar','25-35岁':'25-35 jaar','35-45岁':'35-45 jaar','45岁以上':'45+ jaar'},gender:{'女性':'vrouw','男性':'man','男女皆宜':'unisex'},identity:{'上班族':'kantoormedewerkers','学生':'studenten','宝妈':'moeders','时尚消费者':'modebewuste consumenten'}},
+  fr:{sellingPoints:{'柔软亲肤':'Doux & agréable pour la peau','高弹舒适':'Confort extensible','透气轻薄':'Respirant & léger','显瘦修身':'Coupe amincissante','百搭实用':'Polyvalent au quotidien','高腰提臀':'Taille haute'},painPoints:{'担心显胖':'Inquiétude de paraître plus gros','腿型不完美':'Jambes peu flatteuses','不知道怎么搭配':'Incertain sur le style'},scene:{'日常生活':'Vie quotidienne','工作通勤':'Trajet travail','休闲聚会':'Rassemblement décontracté','运动健身':'Sport & fitness'},atmosphere:{'销售型-强促销感':'Style e-commerce professionnel','高端型-质感奢华':'Luxe premium','温馨生活型-亲切自然':'Vie chaleureuse & naturelle','节日型-喜庆热闹':'Festif & animé','年轻潮流型-活力时尚':'Mode tendance jeune'},brandTone:{'简约高级':'Premium minimaliste','年轻活泼':'Jeune & dynamique','专业可信':'Professionnel fiable'},category:{'服装':'Vêtements','智能电子':'Électronique intelligente','家居用品':'Articles ménagers'},age:{'18-25岁':'18-25 ans','25-35岁':'25-35 ans','35-45岁':'35-45 ans','45岁以上':'45 ans et plus'},gender:{'女性':'femme','男性':'homme','男女皆宜':'unisexe'},identity:{'上班族':'employés de bureau','学生':'étudiants','宝妈':'mamans','时尚消费者':'consommatrices mode'}},
+  de:{sellingPoints:{'柔软亲肤':'Weich & hautfreundlich','高弹舒适':'Elastischer Komfort','透气轻薄':'Atmungsaktiv & leicht','显瘦修身':'Schlankmachende Passform','百搭实用':'Vielseitig kombinierbar','高腰提臀':'Hohe Taille'},painPoints:{'担心显胖':'Sorge breiter zu wirken','腿型不完美':'Unvorteilhafte Beinform','不知道怎么搭配':'Unsicher beim Styling'},scene:{'日常生活':'Täglicher Alltag','工作通勤':'Arbeitsweg','休闲聚会':'Gemütliches Beisammensein','运动健身':'Sport & Fitness'},atmosphere:{'销售型-强促销感':'Professioneller E-Commerce-Stil','高端型-质感奢华':'Luxuriöses Premium','温馨生活型-亲切自然':'Warmes natürliches Leben','节日型-喜庆热闹':'Festlich & lebhaft','年轻潮流型-活力时尚':'Jugendliche Trendmode'},brandTone:{'简约高级':'Minimalistisch Premium','年轻活泼':'Jung & dynamisch','专业可信':'Professionell vertrauenswürdig'},category:{'服装':'Kleidung','智能电子':'Smarte Elektronik','家居用品':'Haushaltswaren'},age:{'18-25岁':'18-25 Jahre','25-35岁':'25-35 Jahre','35-45岁':'35-45 Jahre','45岁以上':'45+ Jahre'},gender:{'女性':'Frau','男性':'Mann','男女皆宜':'Unisex'},identity:{'上班族':'Büroangestellte','学生':'Studenten','宝妈':'Mütter','时尚消费者':'Modebewusste'}},
+  es:{sellingPoints:{'柔软亲肤':'Suave y agradable para la piel','高弹舒适':'Comodidad elástica','透气轻薄':'Transpirable y ligero','显瘦修身':'Corte adelgazante','百搭实用':'Versátil para diario','高腰提臀':'Talle alto'},painPoints:{'担心显胖':'Preocupación por verse más grande','腿型不完美':'Piernas poco favorecedoras'},scene:{'日常生活':'Vida diaria','工作通勤':'Desplazamiento al trabajo','休闲聚会':'Reunión casual','运动健身':'Deporte y fitness'},category:{'服装':'Ropa','智能电子':'Electrónica inteligente','家居用品':'Artículos para el hogar'},age:{'18-25岁':'18-25 años','25-35岁':'25-35 años'},gender:{'女性':'mujer','男性':'hombre','男女皆宜':'unisex'}},
+  it:{sellingPoints:{'柔软亲肤':'Morbido e delicato sulla pelle','高弹舒适':'Comfort elastico','透气轻薄':'Traspirante e leggero','显瘦修身':'Modellante snellente'},category:{'服装':'Abbigliamento'},age:{'18-25岁':'18-25 anni','25-35岁':'25-35 anni'},gender:{'女性':'donna','男性':'uomo'},scene:{'日常生活':'Vita quotidiana'}},
+  pt:{sellingPoints:{'柔软亲肤':'Macio e suave para a pele','高弹舒适':'Conforto elástico','透气轻薄':'Respirável e leve'},category:{'服装':'Roupas'},age:{'18-25岁':'18-25 anos'},gender:{'女性':'mulher','男性':'homem'}},
+  pl:{sellingPoints:{'柔软亲肤':'Miękki i przyjazny dla skóry','高弹舒适':'Elastyczny komfort','透气轻薄':'Oddychający i lekki'},category:{'服装':'Odzież'},age:{'18-25岁':'18-25 lat'},gender:{'女性':'kobieta','男性':'mężczyzna'}},
+  sv:{sellingPoints:{'柔软亲肤':'Mjuk och hudvänlig','高弹舒适':'Elastisk komfort'},category:{'服装':'Kläder'},age:{'18-25岁':'18-25 år'},gender:{'女性':'kvinna','男性':'man'}},
+  da:{category:{'服装':'Tøj'},age:{'18-25岁':'18-25 år'},gender:{'女性':'kvinde','男性':'mand'}},
+  no:{category:{'服装':'Klær'},age:{'18-25岁':'18-25 år'},gender:{'女性':'kvinne','男性':'mann'}},
+  fi:{category:{'服装':'Vaatteet'},age:{'18-25岁':'18-25 vuotta'},gender:{'女性':'nainen','男性':'mies'}},
+  el:{category:{'服装':'Ρούχα'},age:{'18-25岁':'18-25 ετών'},gender:{'女性':'γυναίκα','男性':'άνδρας'}},
+  cs:{category:{'服装':'Oblečení'},age:{'18-25岁':'18-25 let'},gender:{'女性':'žena','男性':'muž'}},
+  ro:{category:{'服装':'Îmbrăcăminte'},age:{'18-25岁':'18-25 ani'},gender:{'女性':'femeie','男性':'bărbat'}},
+  hu:{category:{'服装':'Ruházat'},age:{'18-25岁':'18-25 év'},gender:{'女性':'nő','男性':'férfi'}},
+  bg:{category:{'服装':'Облекло'},age:{'18-25岁':'18-25 години'},gender:{'女性':'жена','男性':'мъж'}},
+  hr:{category:{'服装':'Odjeća'},age:{'18-25岁':'18-25 godina'},gender:{'女性':'žena','男性':'muškarac'}},
+  sk:{category:{'服装':'Oblečenie'},age:{'18-25岁':'18-25 rokov'},gender:{'女性':'žena','男性':'muž'}},
+  uk:{category:{'服装':'Одяг'},age:{'18-25岁':'18-25 років'},gender:{'女性':'жінка','男性':'чоловік'}},
+  ru:{category:{'服装':'Одежда'},age:{'18-25岁':'18-25 лет','25-35岁':'25-35 лет'},gender:{'女性':'женщина','男性':'мужчина'},sellingPoints:{'柔软亲肤':'Мягкий и приятный для кожи','高弹舒适':'Эластичный комфорт','透气轻薄':'Дышащий и лёгкий','显瘦修身':'Стройнящий крой'},atmosphere:{'销售型-强促销感':'Профессиональный стиль e-commerce','高端型-质感奢华':'Люкс премиум','温馨生活型-亲切自然':'Тёплая естественная жизнь'},brandTone:{'简约高级':'Минималистичный премиум','年轻活泼':'Молодой и динамичный','专业可信':'Профессиональный надёжный'}},
+  he:{category:{'服装':'בגדים'},age:{'18-25岁':'18-25 שנים','25-35岁':'25-35 שנים'},gender:{'女性':'אישה','男性':'גבר'},sellingPoints:{'柔软亲肤':'רך וידידותי לעור','高弹舒适':'נוחות אלסטית','透气轻薄':'נושם וקל','显瘦修身':'גזרה מחטבת'}},
+  ar:{category:{'服装':'ملابس'},age:{'18-25岁':'18-25 سنة','25-35岁':'25-35 سنة'},gender:{'女性':'امرأة','男性':'رجل'},sellingPoints:{'柔软亲肤':'ناعم ولطيف على البشرة','高弹舒适':'راحة مرنة','透气轻薄':'قابل للتنفس وخفيف'}},
+  tr:{category:{'服装':'Giyim'},age:{'18-25岁':'18-25 yaş','25-35岁':'25-35 yaş'},gender:{'女性':'kadın','男性':'erkek'},sellingPoints:{'柔软亲肤':'Yumuşak ve cilt dostu','高弹舒适':'Elastik konfor','透气轻薄':'Nefes alabilir ve hafif'}},
+  fa:{category:{'服装':'لباس'},age:{'18-25岁':'۱۸-۲۵ سال','25-35岁':'۲۵-۳۵ سال'},gender:{'女性':'زن','男性':'مرد'}},
+  ja:{category:{'服装':'衣類','智能电子':'スマート電子機器','家居用品':'家庭用品'},age:{'18-25岁':'18-25歳','25-35岁':'25-35歳','35-45岁':'35-45歳','45岁以上':'45歳以上'},gender:{'女性':'女性','男性':'男性','男女皆宜':'ユニセックス'},identity:{'上班族':'会社員','学生':'学生','宝妈':'ママ','时尚消费者':'ファッションコンシャス'},scene:{'日常生活':'日常生活','工作通勤':'通勤','休闲聚会':'カジュアルな集い','运动健身':'スポーツ＆フィットネス'},atmosphere:{'销售型-强促销感':'プロeコマーススタイル','高端型-质感奢华':'ラグジュアリープレミアム','温馨生活型-亲切自然':'温かく自然なライフスタイル','年轻潮流型-活力时尚':'若々しいトレンドファッション'},brandTone:{'简约高级':'ミニマルプレミアム','年轻活泼':'若々しく活発','专业可信':'プロフェッショナル信頼'},sellingPoints:{'柔软亲肤':'柔らかく肌に優しい','高弹舒适':'伸縮性コンフォート','透气轻薄':'通気性＆軽量','显瘦修身':'スリムフィット','百搭实用':'デイリー百搭','高腰提臀':'ハイウエスト'}},
+  ko:{category:{'服装':'의류','智能电子':'스마트 전자제품','家居用品':'가정용품'},age:{'18-25岁':'18-25세','25-35岁':'25-35세','35-45岁':'35-45세','45岁以上':'45세 이상'},gender:{'女性':'여성','男性':'남성','男女皆宜':'유니섹스'},identity:{'上班族':'직장인','学生':'학생','宝妈':'엄마','时尚消费者':'패션 소비자'},scene:{'日常生活':'일상생활','工作通勤':'출퇴근','休闲聚会':'캐주얼 모임','运动健身':'스포츠&피트니스'},atmosphere:{'销售型-强促销感':'전문 이커머스 스타일','高端型-质感奢华':'럭셔리 프리미엄','温馨生活型-亲切自然':'따뜻하고 자연스러운 라이프스타일'},brandTone:{'简约高级':'미니멀 프리미엄','年轻活泼':'젊고 활기찬','专业可信':'전문적이고 신뢰감'},sellingPoints:{'柔软亲肤':'부드럽고 피부 친화적','高弹舒适':'탄성 편안함','透气轻薄':'통기성＆경량','显瘦修身':'슬림핏'}},
+  th:{category:{'服装':'เสื้อผ้า'},age:{'18-25岁':'18-25 ปี'},gender:{'女性':'ผู้หญิง','男性':'ผู้ชาย'},sellingPoints:{'柔软亲肤':'นุ่มสบายผิว','高弹舒适':'ยืดหยุ่นสบาย','透气轻薄':'ระบายอากาศและเบา'}},
+  vi:{category:{'服装':'Quần áo'},age:{'18-25岁':'18-25 tuổi'},gender:{'女性':'phụ nữ','男性':'đàn ông'},sellingPoints:{'柔软亲肤':'Mềm mại và thân thiện với da','高弹舒适':'Thoải mái co giãn','透气轻薄':'Thoáng khí và nhẹ'}},
+  id:{category:{'服装':'Pakaian'},age:{'18-25岁':'18-25 tahun'},gender:{'女性':'wanita','男性':'pria'},sellingPoints:{'柔软亲肤':'Lembut dan ramah kulit','高弹舒适':'Kenyamanan elastis','透气轻薄':'Bernapas dan ringan'}},
+  ms:{category:{'服装':'Pakaian'},age:{'18-25岁':'18-25 tahun'},gender:{'女性':'wanita','男性':'lelaki'},sellingPoints:{'柔软亲肤':'Lembut dan mesra kulit','高弹舒适':'Keselesaan elastik','透气轻薄':'Bernafas dan ringan'}}
+};
+
+// ============ FB BANNED WORDS FILTER ============
+const FB_BANNED_CN = /限时|折扣|秒杀|抢购|特价|促销|打折|优惠|买一送一|清仓|跳楼价|疯抢|秒杀价|超低价|史低|最低价|免费领|0元|一元|包邮|返现|返佣|返点/g;
+const FB_BANNED_EN = /limited\s*time|flash\s*sale|discount|clearance|free\s*shipping|buy\s*one\s*get\s*one|BOGO|lowest\s*price|free\s*gift|cashback|zero\s*dollar/gi;
+
+function filterBannedWords(text) {
+  if (!text) return text;
+  return text.replace(FB_BANNED_CN, '').replace(FB_BANNED_EN, '');
+}
+
+// ============ TL() - Translation helper ============
+function TL(category, val) {
+  const langCode = getDetectedLanguage();
+  const langMap = LANG_MAP[langCode];
+  if (langMap && langMap[category] && langMap[category][val]) {
+    return langMap[category][val];
+  }
+  // Fallback to English TRANS map
+  return (TRANS[category] && TRANS[category][val]) ? TRANS[category][val] : val;
+}
+
+// ============ STATE ============
+let currentUser = null;
+let productImages = [];
+let refImages = [];
+let qualityScore = null;
+let genRecords = JSON.parse(localStorage.getItem('poster_ai_records') || '[]');
+let selectedTags = {
+  category: '',
+  clothingType: '',
+  sellingPoints: [],
+  painPoints: [],
+  scene: '',
+  atmosphere: '',
+  brandTone: '',
+  targetAges: [],
+  targetGenders: [],
+  targetIdentities: [],
+  clothingTemplates: []
+};
+let tagData = null;
+
+// ============ TAG MANAGEMENT ============
+function loadTags() {
+  const stored = localStorage.getItem('poster_v8_tags');
+  if (stored) { tagData = JSON.parse(stored); }
+  else { tagData = JSON.parse(JSON.stringify(DEFAULT_TAGS)); localStorage.setItem('poster_v8_tags', JSON.stringify(tagData)); }
+}
+function saveTags() { localStorage.setItem('poster_v8_tags', JSON.stringify(tagData)); }
+function getCategoryNames() { return tagData.category.map(c => c.name); }
+function getSellingPointsForCategory(cat) { return tagData.sellingPoint[cat] || {}; }
+function getPainPointsForCategory(cat) { return tagData.painPoint[cat] || {}; }
+
+// ============ RENDER DIMENSION CHIPS ============
+function renderAllDimensions() {
+  renderCategoryChips(); renderSellingPointChips(); renderPainPointChips();
+  renderSceneChips(); renderAtmosphereChips(); renderBrandToneChips();
+  renderTargetAudienceChips(); updateClothingVisibility();
+}
+
+function renderCategoryChips() {
+  const el = document.getElementById('dimCategory');
+  el.innerHTML = tagData.category.map(c =>
+    `<div class="chip chip-pink${selectedTags.category===c.name?' active':''}" data-val="${c.name}" onclick="selectCategory('${c.name}')">${c.name}${c.children.length?' ('+c.children.join('/')+')':''}</div>`
+  ).join('');
+}
+
+function renderClothingTypeChips() {
+  const el = document.getElementById('dimClothingType');
+  el.innerHTML = (tagData.clothingType||[]).map(t =>
+    `<div class="chip chip-cloth${selectedTags.clothingType===t?' active':''}" onclick="selectClothingType('${t}')">${t}</div>`
+  ).join('');
+}
+
+function renderSellingPointChips() {
+  const el = document.getElementById('dimSellingPoint');
+  const cat = selectedTags.category || '服装';
+  const groups = getSellingPointsForCategory(cat);
+  if (!groups || !Object.keys(groups).length) { el.innerHTML = '<span style="font-size:10px;color:var(--text2)">请先选择品类</span>'; return; }
+  let html = '';
+  for (const [group, items] of Object.entries(groups)) {
+    html += `<div style="font-size:9px;color:var(--text2);margin:3px 0 1px;font-weight:600">${group}</div><div class="chip-group">`;
+    items.forEach(item => {
+      html += `<div class="chip chip-orange${selectedTags.sellingPoints.includes(item)?' active':''}" onclick="toggleSellingPoint('${item}')">${item}</div>`;
+    });
+    html += '</div>';
+  }
+  el.innerHTML = html;
+}
+
+function renderPainPointChips() {
+  const el = document.getElementById('dimPainPoint');
+  const cat = selectedTags.category || '服装';
+  const groups = getPainPointsForCategory(cat);
+  if (!groups || !Object.keys(groups).length) { el.innerHTML = '<span style="font-size:10px;color:var(--text2)">请先选择品类</span>'; return; }
+  let html = '';
+  for (const [group, items] of Object.entries(groups)) {
+    html += `<div style="font-size:9px;color:var(--text2);margin:3px 0 1px;font-weight:600">${group}</div><div class="chip-group">`;
+    items.forEach(item => {
+      html += `<div class="chip chip-danger${selectedTags.painPoints.includes(item)?' active':''}" onclick="togglePainPoint('${item}')">${item}</div>`;
+    });
+    html += '</div>';
+  }
+  el.innerHTML = html;
+}
+
+function renderSceneChips() {
+  document.getElementById('dimScene').innerHTML = tagData.scene.map(s =>
+    `<div class="chip chip-cyan${selectedTags.scene===s?' active':''}" onclick="selectScene('${s}')">${s}</div>`
+  ).join('');
+}
+
+function renderAtmosphereChips() {
+  document.getElementById('dimAtmosphere').innerHTML = tagData.atmosphere.map(a =>
+    `<div class="chip chip-purple${selectedTags.atmosphere===a?' active':''}" onclick="selectAtmosphere('${a}')">${a}</div>`
+  ).join('');
+}
+
+function renderBrandToneChips() {
+  document.getElementById('dimBrandTone').innerHTML = tagData.brandTone.map(b =>
+    `<div class="chip${selectedTags.brandTone===b?' active':''}" onclick="selectBrandTone('${b}')">${b}</div>`
+  ).join('');
+}
+
+function renderTargetAudienceChips() {
+  const el = document.getElementById('dimTargetAudience');
+  const aud = tagData.targetAudience;
+  let html = '<div style="font-size:9px;color:var(--text2);margin-bottom:1px;font-weight:600">年龄(可多选)</div><div class="chip-group">';
+  aud.age.forEach(a => { html += `<div class="chip chip-success${(selectedTags.targetAges||[]).includes(a)?' active':''}" onclick="toggleTargetAge('${a}')">${a}</div>`; });
+  html += '</div><div style="font-size:9px;color:var(--text2);margin:3px 0 1px;font-weight:600">性别(可多选)</div><div class="chip-group">';
+  aud.gender.forEach(g => { html += `<div class="chip chip-pink${(selectedTags.targetGenders||[]).includes(g)?' active':''}" onclick="toggleTargetGender('${g}')">${g}</div>`; });
+  html += '</div><div style="font-size:9px;color:var(--text2);margin:3px 0 1px;font-weight:600">身份(可多选)</div><div class="chip-group">';
+  aud.identity.forEach(i => { html += `<div class="chip${(selectedTags.targetIdentities||[]).includes(i)?' active':''}" onclick="toggleTargetIdentity('${i}')">${i}</div>`; });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// ============ TAG SELECTION HANDLERS ============
+function selectCategory(name) {
+  if (selectedTags.category === name) { selectedTags.category = ''; selectedTags.clothingType = ''; selectedTags.sellingPoints = []; selectedTags.painPoints = []; }
+  else { selectedTags.category = name; selectedTags.clothingType = ''; selectedTags.sellingPoints = []; selectedTags.painPoints = []; }
+  renderAllDimensions(); updatePreview(); updateAnalysis();
+}
+function selectClothingType(name) { selectedTags.clothingType = selectedTags.clothingType === name ? '' : name; renderClothingTypeChips(); updatePreview(); updateAnalysis(); }
+function toggleSellingPoint(name) {
+  const idx = selectedTags.sellingPoints.indexOf(name);
+  if (idx >= 0) selectedTags.sellingPoints.splice(idx, 1);
+  else { if (selectedTags.sellingPoints.length >= 5) selectedTags.sellingPoints.shift(); selectedTags.sellingPoints.push(name); }
+  renderSellingPointChips(); updatePreview(); updateAnalysis();
+}
+function togglePainPoint(name) {
+  const idx = selectedTags.painPoints.indexOf(name);
+  if (idx >= 0) selectedTags.painPoints.splice(idx, 1);
+  else { if (selectedTags.painPoints.length >= 3) selectedTags.painPoints.shift(); selectedTags.painPoints.push(name); }
+  renderPainPointChips(); updatePreview(); updateAnalysis();
+}
+function selectScene(name) { selectedTags.scene = selectedTags.scene === name ? '' : name; renderSceneChips(); updatePreview(); updateAnalysis(); }
+function selectAtmosphere(name) { selectedTags.atmosphere = selectedTags.atmosphere === name ? '' : name; renderAtmosphereChips(); updatePreview(); updateAnalysis(); }
+function selectBrandTone(name) { selectedTags.brandTone = selectedTags.brandTone === name ? '' : name; renderBrandToneChips(); updatePreview(); updateAnalysis(); }
+function toggleTargetAge(name) {
+  if (!selectedTags.targetAges) selectedTags.targetAges = [];
+  const idx = selectedTags.targetAges.indexOf(name);
+  if (idx >= 0) selectedTags.targetAges.splice(idx, 1); else selectedTags.targetAges.push(name);
+  renderTargetAudienceChips(); updatePreview(); updateAnalysis();
+}
+function toggleTargetGender(name) {
+  if (!selectedTags.targetGenders) selectedTags.targetGenders = [];
+  const idx = selectedTags.targetGenders.indexOf(name);
+  if (idx >= 0) selectedTags.targetGenders.splice(idx, 1); else selectedTags.targetGenders.push(name);
+  renderTargetAudienceChips(); updatePreview(); updateAnalysis();
+}
+function toggleTargetIdentity(name) {
+  if (!selectedTags.targetIdentities) selectedTags.targetIdentities = [];
+  const idx = selectedTags.targetIdentities.indexOf(name);
+  if (idx >= 0) selectedTags.targetIdentities.splice(idx, 1); else selectedTags.targetIdentities.push(name);
+  renderTargetAudienceChips(); updatePreview(); updateAnalysis();
+}
+
+function updateClothingVisibility() {
+  const isClothing = selectedTags.category === '服装';
+  document.getElementById('clothingSubTypes').style.display = isClothing ? 'block' : 'none';
+  document.getElementById('clothingTemplates').innerHTML = isClothing
+    ? CLOTHING_TEMPLATES.map(t =>
+        `<div class="chip chip-cloth${(selectedTags.clothingTemplates||[]).includes(t.name)?' active':''}" style="margin:2px" onclick="toggleClothingTemplate('${t.name}')">${t.name}<span style="font-size:8px;color:var(--text2);margin-left:3px">${t.desc}</span></div>`
+      ).join('')
+    : '<span style="font-size:10px;color:var(--text2)">选择"服装"品类后自动展示</span>';
+  if (isClothing) renderClothingTypeChips();
+}
+
+function toggleClothingTemplate(name) {
+  if (!selectedTags.clothingTemplates) selectedTags.clothingTemplates = [];
+  const idx = selectedTags.clothingTemplates.indexOf(name);
+  if (idx >= 0) selectedTags.clothingTemplates.splice(idx, 1); else selectedTags.clothingTemplates.push(name);
+  updateClothingVisibility(); updatePreview(); updateAnalysis();
+}
+
+// ============ SELECTION SUMMARY ============
+function updateSelectionSummary() {
+  const parts = [];
+  if (selectedTags.category) parts.push(`<b>品类:</b> ${selectedTags.category}${selectedTags.clothingType?' / '+selectedTags.clothingType:''}`);
+  if (selectedTags.sellingPoints.length) parts.push(`<b>卖点:</b> ${selectedTags.sellingPoints.join('、')}`);
+  if (selectedTags.painPoints.length) parts.push(`<b>痛点:</b> ${selectedTags.painPoints.join('、')}`);
+  if (selectedTags.scene) parts.push(`<b>场景:</b> ${selectedTags.scene}`);
+  if (selectedTags.atmosphere) parts.push(`<b>氛围:</b> ${selectedTags.atmosphere}`);
+  if (selectedTags.brandTone) parts.push(`<b>调性:</b> ${selectedTags.brandTone}`);
+  const aud = [...(selectedTags.targetAges||[]), ...(selectedTags.targetGenders||[]), ...(selectedTags.targetIdentities||[])];
+  if (aud.length) parts.push(`<b>人群:</b> ${aud.join(' ')}`);
+  if (selectedTags.clothingTemplates && selectedTags.clothingTemplates.length) parts.push(`<b>模板:</b> ${selectedTags.clothingTemplates.join('+')}`);
+  const langInfo = COUNTRY_LANG[getDetectedLanguage()];
+  if (langInfo) parts.push(`<b>语言:</b> ${langInfo.flag} ${langInfo.name}`);
+  document.getElementById('selectionSummary').innerHTML = parts.length ? parts.join(' &nbsp;|&nbsp; ') : '请从上方选择标签，AI将自动组合生成提示词';
+}
+
+// ============ LANGUAGE ============
 function getDetectedLanguage() {
   const val = document.getElementById('genLanguage').value;
-  if (val === 'auto') return 'en-GB';
-  return val;
+  return val || 'en-GB';
 }
 
 function getTargetLangName() {
@@ -1075,51 +894,113 @@ function getTargetLangName() {
   return COUNTRY_LANG[val] ? COUNTRY_LANG[val].name : 'English';
 }
 
-// Multi-language translation map for key terms
-const LANG_MAP = {
-  nl:{sellingPoints:{'柔软亲肤':'Zacht & huidvriendelijk','高弹舒适':'Elastisch comfort','透气轻薄':'Ademend & licht','显瘦版型':'Slankmakend model','日常百搭':'Universeel combineerbaar','高腰设计':'Hoge taille'},painPoints:{'担心显胖':'Bezorgd over breder uiterlijk','腿型不好看':'Onflatterende beenvorm','不知道尺码选择':'Onzeker over maat'},scene:{'日常生活':'Dagelijks leven','工作通勤':'Woon-werkverkeer','休闲聚会':'Casual samenzijn','运动健身':'Sport & fitness'},atmosphere:{'销售型-强促销感':'Professionele e-commerce stijl','高端型-质感奢华':'Luxe premium uitstraling','温馨生活型-亲切自然':'Warm & natuurlijk leven','节日型-喜庆热闹':'Festief & levendig','年轻潮流型-活力时尚':'Jeugdige trendy mode'},brandTone:{'简约高级':'Minimaal premium','年轻活泼':'Jong & levendig','专业可信':'Professioneel betrouwbaar'},category:{'服装':'Kleding','智能电子':'Slimme elektronica','家居用品':'Huisartikelen'},age:{'18-25岁':'18-25 jaar','25-35岁':'25-35 jaar','35-45岁':'35-45 jaar','45岁以上':'45+ jaar'},gender:{'女性':'vrouw','男性':'man','男女皆宜':'unisex'},identity:{'上班族':'kantoormedewerkers','学生':'studenten','宝妈':'moeders','时尚消费者':'modebewuste consumenten'}},
-  fr:{sellingPoints:{'柔软亲肤':'Doux & agréable pour la peau','高弹舒适':'Confort extensible','透气轻薄':'Respirant & léger','显瘦版型':'Coupe amincissante','日常百搭':'Polyvalent au quotidien','高腰设计':'Taille haute'},painPoints:{'担心显胖':'Inquiétude de paraître plus gros','腿型不好看':'Jambes peu flatteuses','不知道尺码选择':'Incertain sur la taille'},scene:{'日常生活':'Vie quotidienne','工作通勤':'Trajet travail','休闲聚会':'Rassemblement décontracté','运动健身':'Sport & fitness'},atmosphere:{'销售型-强促销感':'Style e-commerce professionnel','高端型-质感奢华':'Luxe premium','温馨生活型-亲切自然':'Vie chaleureuse & naturelle','节日型-喜庆热闹':'Festif & animé','年轻潮流型-活力时尚':'Mode tendance jeune'},brandTone:{'简约高级':'Premium minimaliste','年轻活泼':'Jeune & dynamique','专业可信':'Professionnel fiable'},category:{'服装':'Vêtements','智能电子':'Électronique intelligente','家居用品':'Articles ménagers'},age:{'18-25岁':'18-25 ans','25-35岁':'25-35 ans','35-45岁':'35-45 ans','45岁以上':'45 ans et plus'},gender:{'女性':'femme','男性':'homme','男女皆宜':'unisexe'},identity:{'上班族':'employés de bureau','学生':'étudiants','宝妈':'mamans','时尚消费者':'consommatrices mode'}},
-  de:{sellingPoints:{'柔软亲肤':'Weich & hautfreundlich','高弹舒适':'Elastischer Komfort','透气轻薄':'Atmungsaktiv & leicht','显瘦版型':'Schlankmachende Passform','日常百搭':'Vielseitig kombinierbar','高腰设计':'Hohe Taille'},painPoints:{'担心显胖':'Sorge breiter zu wirken','腿型不好看':'Unvorteilhafte Beinform','不知道尺码选择':'Unsicher bei der Größenauswahl'},scene:{'日常生活':'Täglicher Alltag','工作通勤':'Arbeitsweg','休闲聚会':'Gemütliches Beisammensein','运动健身':'Sport & Fitness'},atmosphere:{'销售型-强促销感':'Professioneller E-Commerce-Stil','高端型-质感奢华':'Luxuriöses Premium','温馨生活型-亲切自然':'Warmes natürliches Leben','节日型-喜庆热闹':'Festlich & lebhaft','年轻潮流型-活力时尚':'Jugendliche Trendmode'},brandTone:{'简约高级':'Minimalistisch Premium','年轻活泼':'Jung & dynamisch','专业可信':'Professionell vertrauenswürdig'},category:{'服装':'Kleidung','智能电子':'Smarte Elektronik','家居用品':'Haushaltswaren'},age:{'18-25岁':'18-25 Jahre','25-35岁':'25-35 Jahre','35-45岁':'35-45 Jahre','45岁以上':'45+ Jahre'},gender:{'女性':'Frau','男性':'Mann','男女皆宜':'Unisex'},identity:{'上班族':'Büroangestellte','学生':'Studenten','宝妈':'Mütter','时尚消费者':'Modebewusste'}},
-  es:{sellingPoints:{'柔软亲肤':'Suave y agradable para la piel','高弹舒适':'Comodidad elástica','透气轻薄':'Transpirable y ligero','显瘦版型':'Corte adelgazante','日常百搭':'Versátil para diario','高腰设计':'Talle alto'},painPoints:{'担心显胖':'Preocupación por verse más grande','腿型不好看':'Piernas poco favorecedoras','不知道尺码选择':'Inseguro sobre la talla'},scene:{'日常生活':'Vida diaria','工作通勤':'Desplazamiento al trabajo','休闲聚会':'Reunión casual','运动健身':'Deporte y fitness'},atmosphere:{'销售型-强促销感':'Estilo e-commerce profesional','高端型-质感奢华':'Lujo premium','温馨生活型-亲切自然':'Vida cálida y natural','节日型-喜庆热闹':'Festivo y animado','年轻潮流型-活力时尚':'Moda juvenil trendy'},brandTone:{'简约高级':'Minimalista premium','年轻活泼':'Joven y dinámico','专业可信':'Profesional confiable'},category:{'服装':'Ropa','智能电子':'Electrónica inteligente','家居用品':'Artículos para el hogar'},age:{'18-25岁':'18-25 años','25-35岁':'25-35 años','35-45岁':'35-45 años','45岁以上':'45+ años'},gender:{'女性':'mujer','男性':'hombre','男女皆宜':'unisex'},identity:{'上班族':'oficinistas','学生':'estudiantes','宝妈':'mamás','时尚消费者':'consumidoras de moda'}},
-  it:{sellingPoints:{'柔软亲肤':'Morbido e delicato sulla pelle','高弹舒适':'Comfort elastico','透气轻薄':'Traspirante e leggero','显瘦版型':'Modellante snellente'},category:{'服装':'Abbigliamento'},age:{'18-25岁':'18-25 anni','25-35岁':'25-35 anni'},gender:{'女性':'donna','男性':'uomo'},scene:{'日常生活':'Vita quotidiana'}},
-  pt:{sellingPoints:{'柔软亲肤':'Macio e suave para a pele','高弹舒适':'Conforto elástico','透气轻薄':'Respirável e leve','显瘦版型':'Modelo emagrecedor'},category:{'服装':'Roupas'},age:{'18-25岁':'18-25 anos','25-35岁':'25-35 anos'},gender:{'女性':'mulher','男性':'homem'},scene:{'日常生活':'Vida diária'}},
-  pl:{sellingPoints:{'柔软亲肤':'Miękki i przyjazny dla skóry','高弹舒适':'Elastyczny komfort','透气轻薄':'Oddychający i lekki'},category:{'服装':'Odzież'},age:{'18-25岁':'18-25 lat','25-35岁':'25-35 lat'},gender:{'女性':'kobieta','男性':'mężczyzna'},scene:{'日常生活':'Życie codzienne'}},
-  sv:{sellingPoints:{'柔软亲肤':'Mjuk och hudvänlig','高弹舒适':'Elastisk komfort'},category:{'服装':'Kläder'},age:{'18-25岁':'18-25 år','25-35岁':'25-35 år'},gender:{'女性':'kvinna','男性':'man'},scene:{'日常生活':'Vardagsliv'}},
-  da:{category:{'服装':'Tøj'},age:{'18-25岁':'18-25 år'},gender:{'女性':'kvinde','男性':'mand'},scene:{'日常生活':'Dagligdag'}},
-  no:{category:{'服装':'Klær'},age:{'18-25岁':'18-25 år'},gender:{'女性':'kvinne','男性':'mann'},scene:{'日常生活':'Hverdagsliv'}},
-  fi:{category:{'服装':'Vaatteet'},age:{'18-25岁':'18-25 vuotta'},gender:{'女性':'nainen','男性':'mies'},scene:{'日常生活':'Arkielämä'}},
-  el:{category:{'服装':'Ρούχα'},age:{'18-25岁':'18-25 ετών'},gender:{'女性':'γυναίκα','男性':'άνδρας'},scene:{'日常生活':'Καθημερινή ζωή'}},
-  cs:{category:{'服装':'Oblečení'},age:{'18-25岁':'18-25 let'},gender:{'女性':'žena','男性':'muž'},scene:{'日常生活':'Každodenní život'}},
-  ro:{category:{'服装':'Îmbrăcăminte'},age:{'18-25岁':'18-25 ani'},gender:{'女性':'femeie','男性':'bărbat'},scene:{'日常生活':'Viața de zi cu zi'}},
-  hu:{category:{'服装':'Ruházat'},age:{'18-25岁':'18-25 év'},gender:{'女性':'nő','男性':'férfi'},scene:{'日常生活':'Napi élet'}},
-  bg:{category:{'服装':'Облекло'},age:{'18-25岁':'18-25 години'},gender:{'女性':'жена','男性':'мъж'},scene:{'日常生活':'Ежедневен живот'}},
-  hr:{category:{'服装':'Odjeća'},age:{'18-25岁':'18-25 godina'},gender:{'女性':'žena','男性':'muškarac'},scene:{'日常生活':'Svakodnevni život'}},
-  sk:{category:{'服装':'Oblečenie'},age:{'18-25岁':'18-25 rokov'},gender:{'女性':'žena','男性':'muž'},scene:{'日常生活':'Každodenný život'}},
-  uk:{category:{'服装':'Одяг'},age:{'18-25岁':'18-25 років'},gender:{'女性':'жінка','男性':'чоловік'},scene:{'日常生活':'Повсякденне життя'}},
-  ru:{category:{'服装':'Одежда'},age:{'18-25岁':'18-25 лет','25-35岁':'25-35 лет'},gender:{'女性':'женщина','男性':'мужчина'},scene:{'日常生活':'Повседневная жизнь'},sellingPoints:{'柔软亲肤':'Мягкий и приятный для кожи','高弹舒适':'Эластичный комфорт','透气轻薄':'Дышащий и лёгкий','显瘦版型':'Стройнящий крой'},atmosphere:{'销售型-强促销感':'Профессиональный стиль e-commerce','高端型-质感奢华':'Люкс премиум','温馨生活型-亲切自然':'Тёплая естественная жизнь'},brandTone:{'简约高级':'Минималистичный премиум','年轻活泼':'Молодой и динамичный','专业可信':'Профессиональный надёжный'}},
-  he:{category:{'服装':'בגדים'},age:{'18-25岁':'18-25 שנים','25-35岁':'25-35 שנים'},gender:{'女性':'אישה','男性':'גבר'},scene:{'日常生活':'חיי יומיום'},sellingPoints:{'柔软亲肤':'רך וידידותי לעור','高弹舒适':'נוחות אלסטית','透气轻薄':'נושם וקל','显瘦版型':'גזרה מחטבת'}},
-  ar:{category:{'服装':'ملابس'},age:{'18-25岁':'18-25 سنة','25-35岁':'25-35 سنة'},gender:{'女性':'امرأة','男性':'رجل'},scene:{'日常生活':'الحياة اليومية'},sellingPoints:{'柔软亲肤':'ناعم ولطيف على البشرة','高弹舒适':'راحة مرنة','透气轻薄':'قابل للتنفس وخفيف'}},
-  tr:{category:{'服装':'Giyim'},age:{'18-25岁':'18-25 yaş','25-35岁':'25-35 yaş'},gender:{'女性':'kadın','男性':'erkek'},scene:{'日常生活':'Günlük yaşam'},sellingPoints:{'柔软亲肤':'Yumuşak ve cilt dostu','高弹舒适':'Elastik konfor','透气轻薄':'Nefes alabilir ve hafif'}},
-  fa:{category:{'服装':'لباس'},age:{'18-25岁':'۱۸-۲۵ سال','25-35岁':'۲۵-۳۵ سال'},gender:{'女性':'زن','男性':'مرد'},scene:{'日常生活':'زندگی روزمره'}},
-  ja:{category:{'服装':'衣類','智能电子':'スマート電子機器','家居用品':'家庭用品'},age:{'18-25岁':'18-25歳','25-35岁':'25-35歳','35-45岁':'35-45歳','45岁以上':'45歳以上'},gender:{'女性':'女性','男性':'男性','男女皆宜':'ユニセックス'},identity:{'上班族':'会社員','学生':'学生','宝妈':'ママ','时尚消费者':'ファッションコンシャス'},scene:{'日常生活':'日常生活','工作通勤':'通勤','休闲聚会':'カジュアルな集い','运动健身':'スポーツ＆フィットネス'},atmosphere:{'销售型-强促销感':'プロeコマーススタイル','高端型-质感奢华':'ラグジュアリープレミアム','温馨生活型-亲切自然':'温かく自然なライフスタイル','节日型-喜庆热闹':'お祭り＆賑やか','年轻潮流型-活力时尚':'若々しいトレンドファッション'},brandTone:{'简约高级':'ミニマルプレミアム','年轻活泼':'若々しく活発','专业可信':'プロフェッショナル信頼'},sellingPoints:{'柔软亲肤':'柔らかく肌に優しい','高弹舒适':'伸縮性コンフォート','透气轻薄':'通気性＆軽量','显瘦版型':'スリムフィット','日常百搭':'デイリー百搭','高腰设计':'ハイウエスト'}},
-  ko:{category:{'服装':'의류','智能电子':'스마트 전자제품','家居用品':'가정용품'},age:{'18-25岁':'18-25세','25-35岁':'25-35세','35-45岁':'35-45세','45岁以上':'45세 이상'},gender:{'女性':'여성','男性':'남성','男女皆宜':'유니섹스'},identity:{'上班族':'직장인','学生':'학생','宝妈':'엄마','时尚消费者':'패션 소비자'},scene:{'日常生活':'일상생활','工作通勤':'출퇴근','休闲聚会':'캐주얼 모임','运动健身':'스포츠&피트니스'},atmosphere:{'销售型-强促销感':'전문 이커머스 스타일','高端型-质感奢华':'럭셔리 프리미엄','温馨生活型-亲切自然':'따뜻하고 자연스러운 라이프스타일'},brandTone:{'简约高级':'미니멀 프리미엄','年轻活泼':'젊고 활기찬','专业可信':'전문적이고 신뢰감'},sellingPoints:{'柔软亲肤':'부드럽고 피부 친화적','高弹舒适':'탄성 편안함','透气轻薄':'통기성＆경량','显瘦版型':'슬림핏'}},
-  th:{category:{'服装':'เสื้อผ้า'},age:{'18-25岁':'18-25 ปี','25-35岁':'25-35 ปี'},gender:{'女性':'ผู้หญิง','男性':'ผู้ชาย'},scene:{'日常生活':'ชีวิตประจำวัน'},sellingPoints:{'柔软亲肤':'นุ่มสบายผิว','高弹舒适':'ยืดหยุ่นสบาย','透气轻薄':'ระบายอากาศและเบา'}},
-  vi:{category:{'服装':'Quần áo'},age:{'18-25岁':'18-25 tuổi','25-35岁':'25-35 tuổi'},gender:{'女性':'phụ nữ','男性':'đàn ông'},scene:{'日常生活':'Đời sống hàng ngày'},sellingPoints:{'柔软亲肤':'Mềm mại và thân thiện với da','高弹舒适':'Thoải mái co giãn','透气轻薄':'Thoáng khí và nhẹ'}},
-  id:{category:{'服装':'Pakaian'},age:{'18-25岁':'18-25 tahun','25-35岁':'25-35 tahun'},gender:{'女性':'wanita','男性':'pria'},scene:{'日常生活':'Kehidupan sehari-hari'},sellingPoints:{'柔软亲肤':'Lembut dan ramah kulit','高弹舒适':'Kenyamanan elastis','透气轻薄':'Bernapas dan ringan'}},
-  ms:{category:{'服装':'Pakaian'},age:{'18-25岁':'18-25 tahun','25-35岁':'25-35 tahun'},gender:{'女性':'wanita','男性':'lelaki'},scene:{'日常生活':'Kehidupan harian'},sellingPoints:{'柔软亲肤':'Lembut dan mesra kulit','高弹舒适':'Keselesaan elastik','透气轻薄':'Bernafas dan ringan'}}
-};
-
-// Translation helper: try language-specific map first, fallback to English
-function TL(category, val) {
-  const langCode = getDetectedLanguage();
-  const langMap = LANG_MAP[langCode];
-  if (langMap && langMap[category] && langMap[category][val]) {
-    return langMap[category][val];
-  }
-  // Fallback to English
-  return (TRANS[category] && TRANS[category][val]) ? TRANS[category][val] : val;
+function onLanguageChange() {
+  const langInfo = COUNTRY_LANG[getDetectedLanguage()];
+  document.getElementById('langHint').textContent = '↳ 当前语言: ' + (langInfo ? langInfo.flag + ' ' + langInfo.name : 'English');
+  updatePreview();
+  updateAnalysis();
 }
 
+// ============ PROMPT BUILDING (with TL() and banned words filter) ============
+function buildAutoPrompt() {
+  const name = document.getElementById('productName').value.trim();
+  const extra = document.getElementById('extraNote').value.trim();
+  const size = document.getElementById('imageSize').value;
+  const quality = document.getElementById('imageQuality').value;
+
+  // Custom template check
+  const customTemplate = localStorage.getItem('poster_ai_custom_prompts') || '';
+  if (customTemplate && customTemplate.trim()) {
+    let prompt = customTemplate
+      .replace('{产品名称}', name || 'product')
+      .replace('{核心卖点}', selectedTags.sellingPoints.map(s=>TL('sellingPoints',s)).join(', '))
+      .replace('{用户痛点}', selectedTags.painPoints.map(p=>TL('painPoints',p)).join(', '))
+      .replace('{使用场景}', TL('scene', selectedTags.scene) || '')
+      .replace('{氛围风格}', TL('atmosphere', selectedTags.atmosphere) || '')
+      .replace('{品牌调性}', TL('brandTone', selectedTags.brandTone) || '')
+      .replace('{目标人群}', buildAudienceText())
+      .replace('{服装类型}', TL('clothingType', selectedTags.clothingType) || '');
+    prompt += `\n\nIMPORTANT: All visible text on the poster MUST be in ${getTargetLangName()}. No Chinese characters anywhere. No watermarks. No logos.`;
+    return filterBannedWords(prompt);
+  }
+
+  if (!selectedTags.category && !name) return 'Please select tags or enter product name...';
+
+  const lines = [];
+  let subject = name || 'product';
+  if (selectedTags.category === '服装' && selectedTags.clothingType) {
+    subject = TL('clothingType', selectedTags.clothingType) + (name ? ' "'+name+'"' : '');
+  }
+  lines.push(`Create a professional e-commerce poster for: "${subject}"`);
+
+  if (selectedTags.category) lines.push(`Category: ${TL('category', selectedTags.category) || selectedTags.category}`);
+  if (selectedTags.sellingPoints.length) lines.push(`Key selling points: ${selectedTags.sellingPoints.map(s=>TL('sellingPoints',s)).join(', ')}`);
+
+  if (selectedTags.painPoints.length) {
+    lines.push(`Addresses pain points: ${selectedTags.painPoints.map(p=>TL('painPoints',p)).join(', ')} - demonstrate how ${TL('sellingPoints',selectedTags.sellingPoints[0])||'the product'} solves these concerns`);
+  }
+
+  if (selectedTags.scene) lines.push(`Usage scene: ${TL('scene', selectedTags.scene) || selectedTags.scene}`);
+
+  const styleParts = [];
+  if (selectedTags.atmosphere) styleParts.push(TL('atmosphere', selectedTags.atmosphere) || selectedTags.atmosphere.split('-')[0]);
+  if (selectedTags.brandTone) styleParts.push(TL('brandTone', selectedTags.brandTone) || selectedTags.brandTone);
+  if (styleParts.length) lines.push(`Visual style: ${styleParts.join(', ')}`);
+
+  const audience = buildAudienceText();
+  if (audience) lines.push(`Target audience: ${audience}`);
+
+  // Multi-select clothing templates
+  if (selectedTags.category === '服装' && selectedTags.clothingTemplates && selectedTags.clothingTemplates.length) {
+    selectedTags.clothingTemplates.forEach(tplName => {
+      const tpl = CLOTHING_TEMPLATES.find(t => t.name === tplName);
+      if (tpl) lines.push(`Clothing display: ${tpl.prompt}`);
+    });
+  }
+
+  // Scene description for clothing
+  if (selectedTags.category === '服装') {
+    const genders = (selectedTags.targetGenders && selectedTags.targetGenders.length) ? selectedTags.targetGenders : ['女性'];
+    const genderText = genders.includes('女性') ? TL('gender','女性') : genders.includes('男性') ? TL('gender','男性') : 'model';
+    const ages = (selectedTags.targetAges && selectedTags.targetAges.length) ? selectedTags.targetAges.map(a=>TL('age',a)).join(', ') : '';
+    const sceneText = TL('scene', selectedTags.scene) || 'daily life';
+    const sellText = selectedTags.sellingPoints.slice(0,2).map(s=>TL('sellingPoints',s)).join(' and ');
+    const clothingEn = TL('clothingType', selectedTags.clothingType) || subject;
+    lines.push(`\nScene: ${ages} ${genderText} in ${sceneText} setting wearing ${clothingEn}, showcasing ${sellText||'the fit and quality'}, realistic commercial photography style`);
+  } else if (audience && selectedTags.scene) {
+    const sceneEn = TL('scene', selectedTags.scene) || selectedTags.scene;
+    lines.push(`\nScene: ${audience} using ${subject} in ${sceneEn} setting, showing ${TL('sellingPoints',selectedTags.sellingPoints[0])||'product benefits'}`);
+  }
+
+  // STRICT: No Chinese + target language enforcement
+  const targetLang = getTargetLangName();
+  const langCode = getDetectedLanguage();
+  lines.push(`\nIMPORTANT: All visible text on the poster MUST be in ${targetLang}. No other languages allowed. NO Chinese characters anywhere.`);
+  lines.push(`No watermarks. No logos. No text overlays. Pure visual imagery with text only in ${targetLang}.`);
+
+  // Model faces based on target region
+  const asianLangs = ['ja','ko','th','vi','id','ms'];
+  if (asianLangs.includes(langCode)) {
+    lines.push('Use Asian models appropriate for the target market.');
+  } else {
+    lines.push('Use Western/European models appropriate for the target market.');
+  }
+
+  if (extra) lines.push(`Additional: ${extra}`);
+  lines.push(`Aspect ratio: ${size}, Quality: ${quality}, highly detailed professional commercial photography, not AI-looking`);
+
+  return filterBannedWords(lines.join('\n'));
+}
+
+function buildAudienceText() {
+  const parts = [];
+  if (selectedTags.targetAges && selectedTags.targetAges.length) parts.push(selectedTags.targetAges.map(a=>TL('age',a)).join(', '));
+  if (selectedTags.targetGenders && selectedTags.targetGenders.length) parts.push(selectedTags.targetGenders.map(g=>TL('gender',g)).join(', '));
+  if (selectedTags.targetIdentities && selectedTags.targetIdentities.length) parts.push(selectedTags.targetIdentities.map(i=>TL('identity',i)).join(', '));
+  return parts.join(', ');
+}
+
+// ============ PREVIEW ============
 function updatePreview() {
   document.getElementById('promptPreview').textContent = buildAutoPrompt();
   updateSelectionSummary();
@@ -1128,14 +1009,10 @@ function updatePreview() {
 // ============ AI ANALYSIS PANEL ============
 function updateAnalysis() {
   const el = document.getElementById('aiAnalysis');
-  const parts = [];
-
   if (!selectedTags.category) {
-    el.innerHTML = '<div style="text-align:center;padding:15px 0;color:var(--text2);font-size:11px">选择标签后<br>自动分析配置方案</div>';
+    el.innerHTML = '<div style="text-align:center;padding:20px 0;color:var(--text2);font-size:11px">选择标签后<br>自动分析配置方案</div>';
     return;
   }
-
-  // Coverage analysis
   const dims = [
     {name:'品类', filled:!!selectedTags.category},
     {name:'卖点', filled:selectedTags.sellingPoints.length>0},
@@ -1147,97 +1024,60 @@ function updateAnalysis() {
   ];
   const filledCount = dims.filter(d=>d.filled).length;
   const coverage = Math.round(filledCount / dims.length * 100);
-
-  let html = `<div style="text-align:center;margin-bottom:6px">
-    <div style="font-size:22px;font-weight:700;color:${coverage>=80?'var(--success)':coverage>=50?'var(--accent2)':'var(--warn)'}">${coverage}%</div>
-    <div style="font-size:10px;color:var(--text2)">配置完整度</div>
-  </div>`;
-
-  // Dimension checklist
+  let html = `<div style="text-align:center;margin-bottom:6px"><div style="font-size:22px;font-weight:700;color:${coverage>=80?'var(--success)':coverage>=50?'var(--accent2)':'var(--warn)'}">${coverage}%</div><div style="font-size:10px;color:var(--text2)">配置完整度</div></div>`;
   html += '<div style="font-size:10px">';
-  dims.forEach(d => {
-    html += `<div style="padding:1px 0">${d.filled?'✅':'⬜'} ${d.name}</div>`;
-  });
+  dims.forEach(d => { html += `<div style="padding:1px 0">${d.filled?'✅':'⬜'} ${d.name}</div>`; });
   html += '</div>';
-
-  // Suggestions
   const suggestions = [];
   if (!selectedTags.sellingPoints.length) suggestions.push('💡 建议选择2-3个核心卖点');
   if (!selectedTags.scene) suggestions.push('💡 选择使用场景增强代入感');
   if (!selectedTags.atmosphere) suggestions.push('💡 选择氛围风格确定视觉方向');
   if (selectedTags.category === '服装' && !selectedTags.clothingType) suggestions.push('💡 选择服装类型提升精准度');
   if (selectedTags.category === '服装' && !(selectedTags.clothingTemplates && selectedTags.clothingTemplates.length)) suggestions.push('💡 选择服装模板获得更好效果');
-
   if (suggestions.length) {
     html += '<div style="margin-top:6px;padding-top:4px;border-top:1px dashed var(--border)">';
     suggestions.forEach(s => { html += `<div style="font-size:9px;color:var(--text2);padding:1px 0">${s}</div>`; });
     html += '</div>';
   }
-
-  // Quick action
-  if (coverage < 50) {
-    html += '<button class="btn btn-primary btn-sm" style="width:100%;margin-top:6px" onclick="aiAutoFill()">🪄 一键智能填充</button>';
-  }
-
+  if (coverage < 50) html += '<button class="btn btn-primary btn-sm" style="width:100%;margin-top:6px" onclick="aiAutoFill()">🪄 一键智能填充</button>';
   el.innerHTML = html;
 }
 
 // ============ AI AUTO FILL ============
 function aiAutoFill() {
   const name = document.getElementById('productName').value.trim();
-
-  // Auto-detect category from product name
   if (!selectedTags.category && name) {
     const catKeywords = {
-      '服装': /衣|裤|裙|衫|外套|T恤|衬衫|连衣裙|牛仔裤|运动服|毛衣|卫衣|风衣|羽绒服|针织|棉服|短裤|吊带|背心|hoodie|shirt|dress|pant|jacket|coat|sweater|fashion|wear/i,
-      '智能电子': /充电|蓝牙|耳机|手机壳|数据线|鼠标|键盘|智能|电子|手表|音箱|charger|bluetooth|earphone|cable|keyboard|electronic|gadget/i,
-      '家居用品': /枕|被|毯|杯|碗|收纳|清洁|拖把|灯|挂画|花瓶|窗帘|地毯|沙发|home|kitchen|decor|household|furniture/i,
-      '汽车工具': /车载|汽车|车用|车品|坐垫|方向盘|行车记录|car|auto|vehicle|dashboard/i,
-      '美妆': /口红|粉底|眼影|面膜|精华|乳液|防晒|化妆|护肤|lipstick|foundation|skincare|beauty|cosmetic|makeup/i,
-      '食品': /零食|茶|咖啡|坚果|水果|面包|巧克力|snack|tea|coffee|food|chocolate/i
+      '服装':/衣|裤|裙|衫|外套|T恤|衬衫|连衣裙|牛仔裤|运动服|毛衣|卫衣|风衣|羽绒服|针织|短裤|吊带|hoodie|shirt|dress|pant|jacket|coat|sweater|fashion|wear/i,
+      '智能电子':/充电|蓝牙|耳机|手机壳|数据线|鼠标|键盘|智能|电子|手表|音箱|charger|bluetooth|earphone|cable|keyboard|electronic|gadget/i,
+      '家居用品':/枕|被|毯|杯|碗|收纳|清洁|拖把|灯|窗帘|地毯|沙发|home|kitchen|decor|household|furniture/i,
+      '汽车工具':/车载|汽车|方向盘|行车记录|car|auto|vehicle|dashboard/i,
+      '美妆':/口红|粉底|眼影|面膜|精华|乳液|防晒|化妆|护肤|lipstick|foundation|skincare|beauty|cosmetic|makeup/i,
+      '食品':/零食|茶|咖啡|坚果|水果|面包|巧克力|snack|tea|coffee|food|chocolate/i
     };
-    for (const [cat, regex] of Object.entries(catKeywords)) {
-      if (regex.test(name)) { selectedTags.category = cat; break; }
-    }
-    if (!selectedTags.category) selectedTags.category = '服装'; // default
+    for (const [cat, regex] of Object.entries(catKeywords)) { if (regex.test(name)) { selectedTags.category = cat; break; } }
+    if (!selectedTags.category) selectedTags.category = '服装';
   }
   if (!selectedTags.category) selectedTags.category = '服装';
-
-  // Auto-fill selling points
   if (!selectedTags.sellingPoints.length) {
     const sp = getSellingPointsForCategory(selectedTags.category);
     const groups = Object.values(sp);
-    if (groups.length > 0) {
-      selectedTags.sellingPoints = groups[0].slice(0, 2);
-      if (groups.length > 1) selectedTags.sellingPoints.push(groups[1][0]);
-    }
+    if (groups.length > 0) { selectedTags.sellingPoints = groups[0].slice(0, 2); if (groups.length > 1) selectedTags.sellingPoints.push(groups[1][0]); }
   }
-
-  // Auto-fill pain points
   if (!selectedTags.painPoints.length) {
     const pp = getPainPointsForCategory(selectedTags.category);
     const groups = Object.values(pp);
-    if (groups.length > 0) {
-      selectedTags.painPoints = [groups[0][0]];
-    }
+    if (groups.length > 0) selectedTags.painPoints = [groups[0][0]];
   }
-
-  // Auto-fill scene
   if (!selectedTags.scene) selectedTags.scene = '日常生活';
-
-  // Auto-fill atmosphere
   if (!selectedTags.atmosphere) {
     const atmoMap = {'服装':'温馨生活型-亲切自然','智能电子':'专业可信型-权威感','家居用品':'温馨生活型-亲切自然','美妆':'高端型-质感奢华','食品':'温馨生活型-亲切自然','汽车工具':'专业可信型-权威感'};
     selectedTags.atmosphere = atmoMap[selectedTags.category] || '温馨生活型-亲切自然';
   }
-
-  // Auto-fill brand tone
   if (!selectedTags.brandTone) {
     const toneMap = {'服装':'温暖生活','智能电子':'专业可信','家居用品':'温暖生活','美妆':'精致优雅','食品':'可靠实用','汽车工具':'可靠实用'};
     selectedTags.brandTone = toneMap[selectedTags.category] || '简约高级';
   }
-
-  // Auto-fill audience (multi-select)
   if (!selectedTags.targetAges || !selectedTags.targetAges.length) selectedTags.targetAges = ['25-35岁'];
   if (!selectedTags.targetGenders || !selectedTags.targetGenders.length) {
     const genderMap = {'服装':'女性','美妆':'女性','汽车工具':'男性'};
@@ -1247,529 +1087,154 @@ function aiAutoFill() {
     const idMap = {'服装':'时尚消费者','智能电子':'上班族','家居用品':'家庭主妇','美妆':'时尚消费者','食品':'家庭主妇','汽车工具':'上班族'};
     selectedTags.targetIdentities = [idMap[selectedTags.category] || '上班族'];
   }
-
-  // Auto clothing type
-  if (selectedTags.category === '服装' && !selectedTags.clothingType) {
-    selectedTags.clothingType = '连衣裙';
-  }
-
-  renderAllDimensions();
-  updatePreview();
-  updateAnalysis();
+  if (selectedTags.category === '服装' && !selectedTags.clothingType) selectedTags.clothingType = '连衣裙';
+  renderAllDimensions(); updatePreview(); updateAnalysis();
   setStatus('✅ AI已智能填充标签配置', 'success');
 }
 
-// ============ INIT & AUTH ============
-function init() {
-  loadTags();
-  initAccounts();
-  checkSession();
-  setupPasteHandlers();
-}
-
-function initAccounts() {
-  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || 'null');
-  if (!accounts) {
-    const defaults = [{ username: 'admin', password: hashPassword('admin888'), role: 'super_admin', apiKey: '' }];
-    localStorage.setItem('poster_v5_accounts', JSON.stringify(defaults));
-  }
-}
-
-function hashPassword(pwd) {
-  let hash = 0;
-  const str = pwd + '_poster_ai_v3_salt';
-  for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash = hash & hash; }
-  return hash.toString(36);
-}
-
-function checkSession() {
-  // 免登录模式：直接以超级管理员身份进入
-  currentUser = { username: 'admin', role: 'super_admin' };
-  showApp();
-}
-
-function doLogin() {
-  const username = document.getElementById('loginUser').value.trim();
-  const password = document.getElementById('loginPass').value;
-  if (!username || !password) return;
-  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
-  const account = accounts.find(a => a.username === username && a.password === hashPassword(password));
-  if (!account) { alert('用户名或密码错误'); return; }
-  currentUser = { username: account.username, role: account.role };
-  sessionStorage.setItem('poster_ai_session', JSON.stringify(currentUser));
-  showApp();
-}
-
-function doLogout() {
-  sessionStorage.removeItem('poster_ai_session');
-  currentUser = null;
-  document.getElementById('loginOverlay').classList.remove('hidden');
-  document.getElementById('mainApp').style.display = 'none';
-}
-
-function showApp() {
-  document.getElementById('loginOverlay').classList.add('hidden');
-  document.getElementById('mainApp').style.display = 'block';
-  const role = ROLES[currentUser.role] || ROLES.viewer;
-  const userInfoEl = document.getElementById('userInfo');
-  if (userInfoEl) userInfoEl.textContent = `👤 ${currentUser.username}`;
-  // 免登录模式下不显示角色标签
-  if (document.getElementById('roleInfo')) {
-    document.getElementById('roleInfo').textContent = role.label;
-    document.getElementById('roleInfo').className = 'tag ' + role.tag;
-  }
-  const canAdmin = role.canConfig || role.canManageUsers || role.canManageTags || role.canManageData;
-  document.getElementById('adminBtn').style.display = canAdmin ? '' : 'none';
-  const isViewer = currentUser.role === 'viewer';
-  document.getElementById('generateBtn').style.display = isViewer ? 'none' : '';
-  document.getElementById('autoFillBtn').style.display = isViewer ? 'none' : '';
-  // Load API key
-  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
-  const acc = accounts.find(a => a.username === currentUser.username);
-  if (acc && acc.apiKey) document.getElementById('apiKeyInput').value = acc.apiKey;
-  const cp = localStorage.getItem('poster_ai_custom_prompts') || '';
-  if (cp) document.getElementById('customPromptText').value = cp;
-  renderAllDimensions();
-  renderHistory();
-}
-
-// ============ Password ============
-function openPwdModal() { document.getElementById('pwdModal').classList.remove('hidden'); }
-function closePwdModal() { document.getElementById('pwdModal').classList.add('hidden'); }
-function changePassword() {
-  const old = document.getElementById('pwdOld').value, newP = document.getElementById('pwdNew').value, confirm = document.getElementById('pwdConfirm').value;
-  if (!old || !newP) return alert('请填写完整');
-  if (newP !== confirm) return alert('两次密码不一致');
-  if (newP.length < 4) return alert('密码至少4位');
-  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
-  const acc = accounts.find(a => a.username === currentUser.username);
-  if (!acc) return alert('账号异常');
-  if (acc.password !== hashPassword(old)) return alert('当前密码错误');
-  acc.password = hashPassword(newP);
-  localStorage.setItem('poster_v5_accounts', JSON.stringify(accounts));
-  closePwdModal();
-  alert('密码修改成功');
-}
-function resetUserPassword(idx) {
-  const newP = prompt('请输入新密码（至少4位）:');
-  if (!newP || newP.length < 4) return alert('密码无效');
-  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
-  accounts[idx].password = hashPassword(newP);
-  localStorage.setItem('poster_v5_accounts', JSON.stringify(accounts));
-  renderAccountTable();
-  alert('密码已重置');
-}
-
-// ============ Admin ============
-function openAdmin() {
-  document.getElementById('adminOverlay').classList.remove('hidden');
-  renderAccountTable();
-  renderDataRecords();
-  renderTagManagement();
-  const role = ROLES[currentUser.role];
-  const tabs = document.querySelectorAll('#adminTabs .tab');
-  if (!role.canManageTags) tabs[0].style.display = 'none'; else tabs[0].style.display = '';
-  if (!role.canManageUsers && !role.canConfig) tabs[1].style.display = 'none'; else tabs[1].style.display = '';
-  if (!role.canConfig) tabs[2].style.display = 'none'; else tabs[2].style.display = '';
-  if (!role.canManageData) tabs[3].style.display = 'none'; else tabs[3].style.display = '';
-}
-function closeAdmin() { document.getElementById('adminOverlay').classList.add('hidden'); }
-function switchAdminTab(idx) {
-  document.querySelectorAll('#adminTabs .tab').forEach((t,i) => t.classList.toggle('active', i === idx));
-  document.querySelectorAll('#adminOverlay .tab-content').forEach((t,i) => t.classList.toggle('active', i === idx));
-  if (idx === 0) renderTagManagement();
-}
-
-// ============ Tag Management UI ============
-function renderTagManagement() {
-  const el = document.getElementById('tagMgmtContent');
-  let html = '';
-
-  // 1. Category
-  html += '<div class="tag-mgmt-group"><h4>📦 产品品类</h4>';
-  html += '<div class="tag-mgmt-list">';
-  tagData.category.forEach((c, i) => {
-    html += `<span class="tag-mgmt-item">${c.name}${c.children.length?' ('+c.children.join('/')+')':''} <span class="del" onclick="deleteCategory(${i})">✕</span></span>`;
-  });
-  html += '</div>';
-  html += '<div class="tag-mgmt-add"><input id="addCatInput" placeholder="品类名（如：汽车工具）"><button class="btn btn-primary btn-sm" onclick="addCategory()">添加</button></div></div>';
-
-  // 2. Selling Points (by category)
-  html += '<div class="tag-mgmt-group"><h4>🔥 核心卖点（按品类）</h4>';
-  const catNames = getCategoryNames();
-  catNames.forEach(cat => {
-    const groups = tagData.sellingPoint[cat] || {};
-    html += `<div style="margin:4px 0;font-size:10px;font-weight:600;color:var(--pink)">${cat}</div>`;
-    for (const [group, items] of Object.entries(groups)) {
-      html += `<div style="margin-left:8px;font-size:9px;color:var(--text2)">${group}：</div>`;
-      html += '<div class="tag-mgmt-list" style="margin-left:8px">';
-      items.forEach((item, idx) => {
-        html += `<span class="tag-mgmt-item">${item} <span class="del" onclick="deleteSellingPoint('${cat}','${group}',${idx})">✕</span></span>`;
-      });
-      html += '</div>';
-    }
-    html += `<div class="tag-mgmt-add" style="margin-left:8px"><input id="addSp_${cat}" placeholder="分组>卖点（如：面料优势>冰丝凉爽）"><button class="btn btn-primary btn-sm" onclick="addSellingPoint('${cat}')">添加</button></div>`;
-  });
-  html += '</div>';
-
-  // 3. Pain Points
-  html += '<div class="tag-mgmt-group"><h4>😣 用户痛点（按品类）</h4>';
-  catNames.forEach(cat => {
-    const groups = tagData.painPoint[cat] || {};
-    html += `<div style="margin:4px 0;font-size:10px;font-weight:600;color:var(--danger)">${cat}</div>`;
-    for (const [group, items] of Object.entries(groups)) {
-      html += `<div style="margin-left:8px;font-size:9px;color:var(--text2)">${group}：</div>`;
-      html += '<div class="tag-mgmt-list" style="margin-left:8px">';
-      items.forEach((item, idx) => {
-        html += `<span class="tag-mgmt-item">${item} <span class="del" onclick="deletePainPoint('${cat}','${group}',${idx})">✕</span></span>`;
-      });
-      html += '</div>';
-    }
-    html += `<div class="tag-mgmt-add" style="margin-left:8px"><input id="addPp_${cat}" placeholder="分组>痛点（如：身材问题>手臂粗）"><button class="btn btn-primary btn-sm" onclick="addPainPoint('${cat}')">添加</button></div>`;
-  });
-  html += '</div>';
-
-  // 4. Scene
-  html += '<div class="tag-mgmt-group"><h4>🎬 使用场景</h4><div class="tag-mgmt-list">';
-  tagData.scene.forEach((s, i) => {
-    html += `<span class="tag-mgmt-item">${s} <span class="del" onclick="deleteScene(${i})">✕</span></span>`;
-  });
-  html += '</div><div class="tag-mgmt-add"><input id="addSceneInput" placeholder="场景名"><button class="btn btn-primary btn-sm" onclick="addScene()">添加</button></div></div>';
-
-  // 5. Atmosphere
-  html += '<div class="tag-mgmt-group"><h4>🌈 氛围风格</h4><div class="tag-mgmt-list">';
-  tagData.atmosphere.forEach((a, i) => {
-    html += `<span class="tag-mgmt-item">${a} <span class="del" onclick="deleteAtmosphere(${i})">✕</span></span>`;
-  });
-  html += '</div><div class="tag-mgmt-add"><input id="addAtmoInput" placeholder="风格名（如：清新自然型-纯净简约）"><button class="btn btn-primary btn-sm" onclick="addAtmosphere()">添加</button></div></div>';
-
-  // 6. Brand Tone
-  html += '<div class="tag-mgmt-group"><h4>🏛️ 品牌调性</h4><div class="tag-mgmt-list">';
-  tagData.brandTone.forEach((b, i) => {
-    html += `<span class="tag-mgmt-item">${b} <span class="del" onclick="deleteBrandTone(${i})">✕</span></span>`;
-  });
-  html += '</div><div class="tag-mgmt-add"><input id="addBtInput" placeholder="调性名"><button class="btn btn-primary btn-sm" onclick="addBrandTone()">添加</button></div></div>';
-
-  // 7. Target Audience
-  html += '<div class="tag-mgmt-group"><h4>👥 目标人群</h4>';
-  ['age','gender','identity'].forEach(dim => {
-    const label = {age:'年龄段',gender:'性别',identity:'身份'}[dim];
-    html += `<div style="font-size:10px;font-weight:600;margin:3px 0 1px">${label}</div><div class="tag-mgmt-list">`;
-    tagData.targetAudience[dim].forEach((item, i) => {
-      html += `<span class="tag-mgmt-item">${item} <span class="del" onclick="deleteAudience('${dim}',${i})">✕</span></span>`;
-    });
-    html += `</div><div class="tag-mgmt-add"><input id="addAud_${dim}" placeholder="${label}"><button class="btn btn-primary btn-sm" onclick="addAudience('${dim}')">添加</button></div>`;
-  });
-  html += '</div>';
-
-  // Clothing types
-  html += '<div class="tag-mgmt-group"><h4>👗 服装类型</h4><div class="tag-mgmt-list">';
-  tagData.clothingType.forEach((t, i) => {
-    html += `<span class="tag-mgmt-item">${t} <span class="del" onclick="deleteClothingType(${i})">✕</span></span>`;
-  });
-  html += '</div><div class="tag-mgmt-add"><input id="addCtInput" placeholder="服装类型"><button class="btn btn-primary btn-sm" onclick="addClothingType()">添加</button></div></div>';
-
-  // Reset
-  html += '<div style="margin-top:8px"><button class="btn btn-danger btn-sm" onclick="resetTags()">🔄 恢复默认标签</button></div>';
-
-  el.innerHTML = html;
-}
-
-// Tag CRUD operations
-function addCategory() {
-  const input = document.getElementById('addCatInput');
-  const name = input.value.trim();
-  if (!name) return;
-  if (tagData.category.find(c => c.name === name)) return alert('已存在');
-  tagData.category.push({name, children:[]});
-  saveTags(); renderTagManagement(); renderAllDimensions();
-  input.value = '';
-}
-function deleteCategory(idx) {
-  const name = tagData.category[idx].name;
-  if (!confirm(`删除品类"${name}"及其关联卖点/痛点？`)) return;
-  tagData.category.splice(idx, 1);
-  delete tagData.sellingPoint[name];
-  delete tagData.painPoint[name];
-  if (selectedTags.category === name) { selectedTags.category = ''; selectedTags.sellingPoints = []; selectedTags.painPoints = []; }
-  saveTags(); renderTagManagement(); renderAllDimensions(); updatePreview();
-}
-function addSellingPoint(cat) {
-  const input = document.getElementById('addSp_' + cat);
-  const val = input.value.trim();
-  if (!val) return;
-  const parts = val.split('>');
-  const group = parts[0].trim();
-  const item = parts[1] ? parts[1].trim() : '';
-  if (!tagData.sellingPoint[cat]) tagData.sellingPoint[cat] = {};
-  if (!tagData.sellingPoint[cat][group]) tagData.sellingPoint[cat][group] = [];
-  if (item) { tagData.sellingPoint[cat][group].push(item); }
-  else { tagData.sellingPoint[cat][group].push(group); } // no group prefix, add as item in new group
-  saveTags(); renderTagManagement(); renderSellingPointChips();
-  input.value = '';
-}
-function deleteSellingPoint(cat, group, idx) {
-  tagData.sellingPoint[cat][group].splice(idx, 1);
-  if (tagData.sellingPoint[cat][group].length === 0) delete tagData.sellingPoint[cat][group];
-  saveTags(); renderTagManagement(); renderSellingPointChips();
-}
-function addPainPoint(cat) {
-  const input = document.getElementById('addPp_' + cat);
-  const val = input.value.trim();
-  if (!val) return;
-  const parts = val.split('>');
-  const group = parts[0].trim();
-  const item = parts[1] ? parts[1].trim() : '';
-  if (!tagData.painPoint[cat]) tagData.painPoint[cat] = {};
-  if (!tagData.painPoint[cat][group]) tagData.painPoint[cat][group] = [];
-  if (item) tagData.painPoint[cat][group].push(item);
-  else tagData.painPoint[cat][group].push(group);
-  saveTags(); renderTagManagement(); renderPainPointChips();
-  input.value = '';
-}
-function deletePainPoint(cat, group, idx) {
-  tagData.painPoint[cat][group].splice(idx, 1);
-  if (tagData.painPoint[cat][group].length === 0) delete tagData.painPoint[cat][group];
-  saveTags(); renderTagManagement(); renderPainPointChips();
-}
-function addScene() {
-  const input = document.getElementById('addSceneInput');
-  const val = input.value.trim();
-  if (!val) return;
-  tagData.scene.push(val);
-  saveTags(); renderTagManagement(); renderSceneChips();
-  input.value = '';
-}
-function deleteScene(idx) { tagData.scene.splice(idx, 1); saveTags(); renderTagManagement(); renderSceneChips(); }
-function addAtmosphere() {
-  const input = document.getElementById('addAtmoInput');
-  const val = input.value.trim();
-  if (!val) return;
-  tagData.atmosphere.push(val);
-  saveTags(); renderTagManagement(); renderAtmosphereChips();
-  input.value = '';
-}
-function deleteAtmosphere(idx) { tagData.atmosphere.splice(idx, 1); saveTags(); renderTagManagement(); renderAtmosphereChips(); }
-function addBrandTone() {
-  const input = document.getElementById('addBtInput');
-  const val = input.value.trim();
-  if (!val) return;
-  tagData.brandTone.push(val);
-  saveTags(); renderTagManagement(); renderBrandToneChips();
-  input.value = '';
-}
-function deleteBrandTone(idx) { tagData.brandTone.splice(idx, 1); saveTags(); renderTagManagement(); renderBrandToneChips(); }
-function addAudience(dim) {
-  const input = document.getElementById('addAud_' + dim);
-  const val = input.value.trim();
-  if (!val) return;
-  tagData.targetAudience[dim].push(val);
-  saveTags(); renderTagManagement(); renderTargetAudienceChips();
-  input.value = '';
-}
-function deleteAudience(dim, idx) { tagData.targetAudience[dim].splice(idx, 1); saveTags(); renderTagManagement(); renderTargetAudienceChips(); }
-function addClothingType() {
-  const input = document.getElementById('addCtInput');
-  const val = input.value.trim();
-  if (!val) return;
-  tagData.clothingType.push(val);
-  saveTags(); renderTagManagement(); renderClothingTypeChips();
-  input.value = '';
-}
-function deleteClothingType(idx) { tagData.clothingType.splice(idx, 1); saveTags(); renderTagManagement(); renderClothingTypeChips(); }
-function resetTags() {
-  if (!confirm('恢复默认标签？自定义标签将丢失。')) return;
-  tagData = JSON.parse(JSON.stringify(DEFAULT_TAGS));
-  saveTags(); renderTagManagement(); renderAllDimensions(); updatePreview();
-  setStatus('标签已恢复默认', 'success');
-}
-
-// ============ Account Management ============
-function renderAccountTable() {
-  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
-  const tbody = document.getElementById('accountTable');
-  tbody.innerHTML = accounts.map((a, i) => {
-    const r = ROLES[a.role] || ROLES.viewer;
-    return `<tr><td>${a.username}</td><td><span class="tag ${r.tag}">${r.label}</span></td><td>${a.apiKey?'✅':'❌'}</td><td>${a.username!=='admin'?`<button class="btn btn-danger btn-sm" onclick="deleteAccount(${i})">删除</button>`:''} <button class="btn btn-outline btn-sm" onclick="resetUserPassword(${i})">重置密码</button> <button class="btn btn-outline btn-sm" onclick="resetApiKey(${i})">重置Key</button></td></tr>`;
-  }).join('');
-}
-function addAccount() {
-  const username = document.getElementById('newUsername').value.trim();
-  const password = document.getElementById('newPassword').value;
-  const role = document.getElementById('newRole').value;
-  if (!username || !password) return alert('请填写用户名和密码');
-  if (password.length < 4) return alert('密码至少4位');
-  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
-  if (accounts.find(a => a.username === username)) return alert('用户名已存在');
-  accounts.push({username, password: hashPassword(password), role, apiKey:''});
-  localStorage.setItem('poster_v5_accounts', JSON.stringify(accounts));
-  document.getElementById('newUsername').value = '';
-  document.getElementById('newPassword').value = '';
-  renderAccountTable();
-}
-function deleteAccount(idx) {
-  if (!confirm('确定删除?')) return;
-  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
-  accounts.splice(idx, 1);
-  localStorage.setItem('poster_v5_accounts', JSON.stringify(accounts));
-  renderAccountTable();
-}
-function resetApiKey(idx) {
-  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
-  accounts[idx].apiKey = '';
-  localStorage.setItem('poster_v5_accounts', JSON.stringify(accounts));
-  renderAccountTable();
-}
-function saveCustomPrompt() {
-  localStorage.setItem('poster_ai_custom_prompts', document.getElementById('customPromptText').value);
-  alert('模板已保存');
-  updatePreview();
-}
-function saveApiKey() {
-  const key = document.getElementById('apiKeyInput').value.trim();
-  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
-  const acc = accounts.find(a => a.username === currentUser.username);
-  if (acc) { acc.apiKey = key; localStorage.setItem('poster_v5_accounts', JSON.stringify(accounts)); setStatus('API Key 已保存', 'success'); }
-}
-function getApiKey() {
-  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
-  const acc = accounts.find(a => a.username === currentUser.username);
-  return acc?.apiKey || document.getElementById('apiKeyInput').value.trim();
-}
-
-// ============ Data Management ============
-function renderDataRecords() {
-  const el = document.getElementById('dataRecords');
-  if (genRecords.length === 0) { el.innerHTML = '暂无记录'; return; }
-  el.innerHTML = genRecords.slice(-20).reverse().map(r =>
-    `<div style="padding:3px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text)">${r.name}</span> <span class="tag ${ROLES[r.role]?.tag||'tag-viewer'}" style="margin-left:3px">${r.role_label||r.role}</span> <span style="color:var(--text2);margin-left:3px">${r.time}</span> <span style="color:${r.success?'var(--success)':'var(--danger)'};margin-left:3px">${r.success?'✅':'❌'}</span></div>`
-  ).join('');
-}
-function addRecord(name, success) {
-  const r = ROLES[currentUser.role] || ROLES.viewer;
-  genRecords.push({name, success, time: new Date().toLocaleString('zh-CN'), role: currentUser.role, role_label: r.label, user: currentUser.username});
-  if (genRecords.length > 100) genRecords = genRecords.slice(-100);
-  localStorage.setItem('poster_ai_records', JSON.stringify(genRecords));
-  renderHistory();
-}
-function renderHistory() {
-  const el = document.getElementById('historyList');
-  const myRecords = genRecords.filter(r => r.user === currentUser.username || currentUser.role === 'super_admin' || currentUser.role === 'admin');
-  if (myRecords.length === 0) { el.innerHTML = '暂无记录'; return; }
-  el.innerHTML = myRecords.slice(-10).reverse().map(r =>
-    `<div style="padding:2px 0;border-bottom:1px solid var(--border)">${r.success?'✅':'❌'} ${r.name} <span style="color:var(--text2)">${r.time.split(' ')[1]||r.time}</span></div>`
-  ).join('');
-}
-function exportRecords() {
-  const blob = new Blob([JSON.stringify(genRecords, null, 2)], {type:'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'poster_ai_records.json'; a.click();
-}
-function clearRecords() {
-  if (!confirm('确定清空所有记录?')) return;
-  genRecords = []; localStorage.setItem('poster_ai_records', '[]'); renderDataRecords(); renderHistory();
-}
-
-// ============ Product Name Change ============
+// ============ PRODUCT CHANGE ============
 function onProductChange() {
   const name = document.getElementById('productName').value.trim();
-  // Auto-detect category if not selected
   if (!selectedTags.category && name) {
     const catKeywords = {
-      '服装': /衣|裤|裙|衫|外套|T恤|衬衫|连衣裙|牛仔裤|运动服|毛衣|卫衣|风衣|羽绒服|针织|短裤|吊带/i,
-      '智能电子': /充电|蓝牙|耳机|手机壳|数据线|鼠标|键盘|智能|电子|手表|音箱/i,
-      '家居用品': /枕|被|毯|杯|碗|收纳|清洁|拖把|灯|窗帘|地毯|沙发/i,
-      '汽车工具': /车载|汽车|方向盘|行车记录|车充/i,
-      '美妆': /口红|粉底|眼影|面膜|精华|乳液|防晒|化妆|护肤/i,
-      '食品': /零食|茶|咖啡|坚果|水果|面包|巧克力/i
+      '服装':/衣|裤|裙|衫|外套|T恤|衬衫|连衣裙|牛仔裤|运动服|毛衣|卫衣/i,
+      '智能电子':/充电|蓝牙|耳机|手机壳|数据线|鼠标|键盘|智能|电子/i,
+      '家居用品':/枕|被|毯|杯|碗|收纳|清洁|拖把|灯/i,
+      '汽车工具':/车载|汽车|方向盘/i,
+      '美妆':/口红|粉底|眼影|面膜|精华|乳液/i,
+      '食品':/零食|茶|咖啡|坚果|水果/i
     };
-    for (const [cat, regex] of Object.entries(catKeywords)) {
-      if (regex.test(name)) { selectedTags.category = cat; break; }
-    }
-    if (selectedTags.category) {
-      renderAllDimensions();
-      updateAnalysis();
-    }
+    for (const [cat, regex] of Object.entries(catKeywords)) { if (regex.test(name)) { selectedTags.category = cat; break; } }
+    if (selectedTags.category) { renderAllDimensions(); updateAnalysis(); }
   }
   updatePreview();
 }
 
-// ============ Image Upload ============
+// ============ IMAGE UPLOAD ============
 function setupPasteHandlers() {
   document.addEventListener('paste', e => {
     const items = e.clipboardData?.items;
     if (!items) return;
-    for (const item of items) {
-      if (item.type.startsWith('image/')) {
-        e.preventDefault();
-        const file = item.getAsFile();
-        processImageFile(file, 'product');
-        break;
-      }
-    }
+    for (const item of items) { if (item.type.startsWith('image/')) { e.preventDefault(); processImageFile(item.getAsFile(), 'product'); return; } }
   });
 }
 
 function handleFileSelect(input, type) {
-  const files = Array.from(input.files);
-  files.forEach(f => processImageFile(f, type));
+  Array.from(input.files).filter(f => f.type.startsWith('image/')).forEach(f => processImageFile(f, type));
   input.value = '';
 }
 
 function handleDrop(e, type) {
-  e.preventDefault();
-  e.currentTarget.style.borderColor = '';
-  const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-  files.forEach(f => processImageFile(f, type));
+  e.preventDefault(); e.currentTarget.style.borderColor = '';
+  Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')).forEach(f => processImageFile(f, type));
 }
 
 function processImageFile(file, type) {
   const reader = new FileReader();
   reader.onload = e => {
-    const dataUrl = e.target.result;
-    if (type === 'product') {
-      productImages.push(dataUrl);
-      renderProductPreview();
-    } else {
-      refImages.push(dataUrl);
-      renderRefPreview();
-    }
-    updatePreview();
+    if (type === 'product') { productImages.push(e.target.result); renderProductPreviews(); }
+    else { refImages.push(e.target.result); renderRefPreviews(); }
+    updatePreview(); updateAnalysis();
   };
   reader.readAsDataURL(file);
 }
 
-function renderProductPreview() {
-  const el = document.getElementById('productPreview');
-  el.innerHTML = productImages.map((img, i) =>
-    `<div style="position:relative;display:inline-block"><img src="${img}"><span style="position:absolute;top:-2px;right:-2px;background:var(--danger);color:#fff;border-radius:50%;width:14px;height:14px;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="event.stopPropagation();removeProductImage(${i})">✕</span></div>`
+function renderProductPreviews() {
+  const c = document.getElementById('productPreview');
+  c.innerHTML = productImages.map((img, i) =>
+    `<div style="position:relative;display:inline-block"><img src="${img}"><button onclick="event.stopPropagation();removeProductImg(${i})" style="position:absolute;top:-3px;right:-3px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:14px;height:14px;font-size:8px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button></div>`
   ).join('');
   document.getElementById('productZone').classList.toggle('has-image', productImages.length > 0);
 }
+function removeProductImg(idx) { productImages.splice(idx, 1); renderProductPreviews(); }
 
-function renderRefPreview() {
-  const el = document.getElementById('refPreview');
-  el.innerHTML = refImages.map((img, i) =>
-    `<div style="position:relative;display:inline-block"><img src="${img}"><span style="position:absolute;top:-2px;right:-2px;background:var(--danger);color:#fff;border-radius:50%;width:14px;height:14px;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="event.stopPropagation();removeRefImage(${i})">✕</span></div>`
+function renderRefPreviews() {
+  const c = document.getElementById('refPreview');
+  c.innerHTML = refImages.map((img, i) =>
+    `<div style="position:relative;display:inline-block"><img src="${img}"><button onclick="event.stopPropagation();removeRef(${i})" style="position:absolute;top:-3px;right:-3px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:14px;height:14px;font-size:8px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button></div>`
   ).join('');
   document.getElementById('refZone').classList.toggle('has-image', refImages.length > 0);
 }
+function removeRef(idx) { refImages.splice(idx, 1); renderRefPreviews(); }
 
-function removeProductImage(idx) { productImages.splice(idx, 1); renderProductPreview(); }
-function removeRefImage(idx) { refImages.splice(idx, 1); renderRefPreview(); }
-
-// ============ Collapse Toggle ============
+// ============ COLLAPSE TOGGLE ============
 function toggleCollapse(el) {
   el.classList.toggle('collapsed');
-  const content = el.nextElementSibling;
-  content.classList.toggle('collapsed');
+  el.nextElementSibling.classList.toggle('collapsed');
 }
 
-// ============ Generate ============
+// ============ QUALITY CHECK ============
+function runQualityCheck() {
+  let infoScore = 0, visualScore = 0, convertScore = 0;
+  const suggestions = [];
+  if (productImages.length > 0) infoScore += 30; else suggestions.push('❗ 请上传产品图片');
+  if (document.getElementById('productName').value.trim()) infoScore += 25; else suggestions.push('❗ 请填写产品名称');
+  if (selectedTags.sellingPoints.length > 0) infoScore += 20; else suggestions.push('💡 补充核心卖点可提升效果');
+  if (selectedTags.category) infoScore += 15; else suggestions.push('💡 选择品类帮助AI理解');
+  if (selectedTags.scene || selectedTags.atmosphere) infoScore += 10; else suggestions.push('💡 设定场景/氛围可提升效果');
+
+  if (refImages.length > 0) visualScore += 30; else suggestions.push('📷 上传参考图可稳定视觉方向');
+  if (selectedTags.atmosphere) visualScore += 25; else suggestions.push('🎨 请选择氛围风格');
+  if (selectedTags.brandTone) visualScore += 25; else suggestions.push('👁️ 选择品牌调性帮助确定风格');
+  if (selectedTags.scene) visualScore += 20; else suggestions.push('📐 选择使用场景控制画面');
+
+  if ((selectedTags.targetAges||[]).length || (selectedTags.targetGenders||[]).length) convertScore += 25; else suggestions.push('🎯 明确目标人群提升转化');
+  if (selectedTags.category) convertScore += 25; else suggestions.push('🌍 设定品类帮助本地化');
+  if (selectedTags.sellingPoints.length) convertScore += 25; else suggestions.push('📢 提炼核心卖点增强说服力');
+  if (selectedTags.painPoints.length) convertScore += 25; else suggestions.push('✨ 针对痛点增强说服力');
+
+  const overall = Math.round(infoScore * 0.4 + visualScore * 0.3 + convertScore * 0.3);
+  qualityScore = { overall, infoScore, visualScore, convertScore, suggestions };
+  renderQualityPanel();
+  document.getElementById('qualityPanel').classList.remove('hidden');
+}
+
+function renderQualityPanel() {
+  if (!qualityScore) return;
+  const { overall, infoScore, visualScore, convertScore, suggestions } = qualityScore;
+  document.getElementById('overallNumber').textContent = overall;
+  const overallEl = document.getElementById('overallScore');
+  let statusText, statusColor, bgColor;
+  if (overall >= 90) { statusText = '✅ 信息充足，可以生成'; statusColor = 'var(--success)'; bgColor = 'rgba(34,197,94,.1)'; }
+  else if (overall >= 70) { statusText = '⚡ 基本完整，建议优化后生成'; statusColor = 'var(--accent2)'; bgColor = 'rgba(99,101,241,.1)'; }
+  else if (overall >= 50) { statusText = '⚠️ 信息不足，效果可能不稳定'; statusColor = 'var(--warn)'; bgColor = 'rgba(245,158,11,.1)'; }
+  else { statusText = '❌ 信息缺失较多，建议补充'; statusColor = 'var(--danger)'; bgColor = 'rgba(239,68,68,.1)'; }
+  document.getElementById('overallStatus').textContent = statusText;
+  document.getElementById('overallStatus').style.color = statusColor;
+  overallEl.style.background = bgColor;
+  document.getElementById('overallNumber').style.color = statusColor;
+  const setScore = (id, barId, val) => {
+    document.getElementById(id).textContent = val;
+    document.getElementById(id).style.color = getScoreColor(val);
+    document.getElementById(barId).style.width = val + '%';
+    document.getElementById(barId).style.background = getScoreColor(val);
+  };
+  setScore('scoreInfo', 'barInfo', infoScore);
+  setScore('scoreVisual', 'barVisual', visualScore);
+  setScore('scoreConvert', 'barConvert', convertScore);
+  const sugEl = document.getElementById('suggestions');
+  sugEl.innerHTML = suggestions.length === 0
+    ? '<p style="font-size:11px;color:var(--success)">🎉 所有信息完善！</p>'
+    : '<p style="font-size:10px;color:var(--text2);margin-bottom:3px">AI建议：</p><ul>' + suggestions.map(s => `<li>${s}</li>`).join('') + '</ul>';
+}
+
+function getScoreColor(s) { return s >= 80 ? 'var(--success)' : s >= 60 ? 'var(--accent2)' : s >= 40 ? 'var(--warn)' : 'var(--danger)'; }
+
+function aiOptimize() {
+  aiAutoFill();
+  runQualityCheck();
+  setStatus('✅ AI已自动补充缺失字段', 'success');
+}
+
+function proceedGenerate() { document.getElementById('qualityPanel').classList.add('hidden'); doGenerate(); }
+function closeQuality() { document.getElementById('qualityPanel').classList.add('hidden'); }
+
+// ============ GENERATE ============
 function onGenerate() {
-  if (currentUser.role === 'viewer') return alert('查看人员无法生成图片');
   const name = document.getElementById('productName').value.trim();
   if (!name && productImages.length === 0) return setStatus('请填写产品名称或上传图片', 'error');
   if (!getApiKey()) return setStatus('请先设置 API Key', 'error');
+  if (!qualityScore) { runQualityCheck(); if (qualityScore && qualityScore.overall < 70) { setStatus('⚠️ 信息不足，建议先优化或点击"继续生成"', 'warn'); return; } }
   doGenerate();
 }
 
@@ -1784,15 +1249,12 @@ async function doGenerate() {
   const btn = document.getElementById('generateBtn');
   btn.disabled = true; btn.textContent = '⏳ 生成中...';
   setStatus('正在提交任务...', 'info');
-
   try {
     const imageUrls = [...productImages, ...refImages];
     const body = { model, prompt, size, n: count, image_urls: imageUrls };
     const proxies = getProxyUrl();
     const submitResp = await fetchWithProxy('https://api.apimart.ai/v1/images/generations', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-      body: JSON.stringify(body)
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey }, body: JSON.stringify(body)
     }, proxies);
     const submitData = await submitResp.json();
     if (submitData.code !== 200 || !submitData.data || !submitData.data[0]?.task_id) {
@@ -1804,6 +1266,7 @@ async function doGenerate() {
     displayResults(result);
     setStatus('✅ 生成完成！', 'success');
     addRecord(name, true);
+    qualityScore = null;
   } catch (err) {
     setStatus('❌ 生成失败: ' + err.message, 'error');
     addRecord(name, false);
@@ -1871,12 +1334,12 @@ function viewImage(url) {
   document.getElementById('imgViewer').classList.remove('hidden');
 }
 
-// ============ Utils ============
+// ============ UTILS ============
 function setStatus(msg, type) {
   const bar = document.getElementById('statusBar');
-  bar.textContent = msg;
-  bar.className = 'status-bar ' + type;
+  bar.textContent = msg; bar.className = 'status-bar ' + type;
 }
+
 async function testProxy() {
   const statusEl = document.getElementById('proxyStatus');
   statusEl.textContent = '测试中...'; statusEl.style.color = 'var(--text2)';
@@ -1885,16 +1348,289 @@ async function testProxy() {
     try {
       const proxyUrl = proxy ? (proxy + encodeURIComponent('https://api.apimart.ai/v1/tasks/test')) : 'https://api.apimart.ai/v1/tasks/test';
       await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
-      statusEl.textContent = '✅ ' + (proxy || '直连') + ' 可用';
-      statusEl.style.color = 'var(--success)';
-      return;
+      statusEl.textContent = '✅ ' + (proxy || '直连') + ' 可用'; statusEl.style.color = 'var(--success)'; return;
     } catch (e) { continue; }
   }
-  statusEl.textContent = '❌ 不可用'; statusEl.style.color = 'var(--danger)';
+  statusEl.textContent = '❌ 所有代理不可用'; statusEl.style.color = 'var(--danger)';
 }
+
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// ============ Start ============
+// ============ AUTH (Free Login Mode) ============
+function hashPassword(pwd) {
+  let hash = 0; const str = pwd + '_poster_ai_v3_salt';
+  for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash = hash & hash; }
+  return hash.toString(36);
+}
+
+function initAccounts() {
+  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || 'null');
+  if (!accounts) {
+    const defaults = [{ username: 'admin', password: hashPassword('admin888'), role: 'super_admin', apiKey: '' }];
+    localStorage.setItem('poster_v5_accounts', JSON.stringify(defaults));
+  }
+}
+
+function checkSession() {
+  // Free login mode: auto-login as super_admin
+  currentUser = { username: 'admin', role: 'super_admin' };
+  showApp();
+}
+
+function doLogin() {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  if (!username || !password) return;
+  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
+  const account = accounts.find(a => a.username === username && a.password === hashPassword(password));
+  if (!account) { alert('用户名或密码错误'); return; }
+  currentUser = { username: account.username, role: account.role };
+  sessionStorage.setItem('poster_ai_session', JSON.stringify(currentUser));
+  showApp();
+}
+
+function doLogout() {
+  sessionStorage.removeItem('poster_ai_session');
+  currentUser = null;
+  document.getElementById('loginOverlay').classList.remove('hidden');
+  document.getElementById('mainApp').style.display = 'none';
+}
+
+function showApp() {
+  document.getElementById('loginOverlay').classList.add('hidden');
+  document.getElementById('mainApp').style.display = 'block';
+  const role = ROLES[currentUser.role] || ROLES.viewer;
+  document.getElementById('userInfo').textContent = `👤 ${currentUser.username}`;
+  document.getElementById('roleInfo').textContent = role.label;
+  document.getElementById('roleInfo').className = 'tag ' + role.tag;
+  const canAdmin = role.canConfig || role.canManageUsers || role.canManageTags || role.canManageData;
+  document.getElementById('adminBtn').style.display = canAdmin ? '' : 'none';
+  const isViewer = currentUser.role === 'viewer';
+  document.getElementById('generateBtn').style.display = isViewer ? 'none' : '';
+  document.getElementById('analyzeBtn').style.display = isViewer ? 'none' : '';
+  document.getElementById('autoFillBtn').style.display = isViewer ? 'none' : '';
+  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
+  const acc = accounts.find(a => a.username === currentUser.username);
+  if (acc && acc.apiKey) document.getElementById('apiKeyInput').value = acc.apiKey;
+  const cp = localStorage.getItem('poster_ai_custom_prompts') || '';
+  if (cp) document.getElementById('customPromptText').value = cp;
+  renderAllDimensions();
+  renderHistory();
+  onLanguageChange();
+}
+
+// ============ PASSWORD ============
+function openPwdModal() { document.getElementById('pwdModal').classList.remove('hidden'); document.getElementById('pwdOld').value = ''; document.getElementById('pwdNew').value = ''; document.getElementById('pwdConfirm').value = ''; }
+function closePwdModal() { document.getElementById('pwdModal').classList.add('hidden'); }
+function changePassword() {
+  const old = document.getElementById('pwdOld').value, newP = document.getElementById('pwdNew').value, confirm = document.getElementById('pwdConfirm').value;
+  if (!old || !newP) return alert('请填写完整');
+  if (newP !== confirm) return alert('两次密码不一致');
+  if (newP.length < 4) return alert('密码至少4位');
+  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
+  const acc = accounts.find(a => a.username === currentUser.username);
+  if (!acc) return alert('账号异常');
+  if (acc.password !== hashPassword(old)) return alert('当前密码错误');
+  acc.password = hashPassword(newP);
+  localStorage.setItem('poster_v5_accounts', JSON.stringify(accounts));
+  closePwdModal(); alert('密码修改成功');
+}
+function resetUserPassword(idx) {
+  const newP = prompt('请输入新密码（至少4位）:');
+  if (!newP || newP.length < 4) return alert('密码无效');
+  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
+  accounts[idx].password = hashPassword(newP);
+  localStorage.setItem('poster_v5_accounts', JSON.stringify(accounts));
+  renderAccountTable(); alert('密码已重置');
+}
+
+// ============ API KEY ============
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
+  const acc = accounts.find(a => a.username === currentUser.username);
+  if (acc) { acc.apiKey = key; localStorage.setItem('poster_v5_accounts', JSON.stringify(accounts)); setStatus('API Key 已保存', 'success'); }
+}
+function getApiKey() {
+  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
+  const acc = accounts.find(a => a.username === currentUser.username);
+  return acc?.apiKey || document.getElementById('apiKeyInput').value.trim();
+}
+function saveCustomPrompt() { localStorage.setItem('poster_ai_custom_prompts', document.getElementById('customPromptText').value); alert('模板已保存'); updatePreview(); }
+
+// ============ ADMIN ============
+function openAdmin() {
+  document.getElementById('adminOverlay').classList.remove('hidden');
+  renderAccountTable(); renderDataRecords(); renderTagManagement();
+  const role = ROLES[currentUser.role];
+  const tabs = document.querySelectorAll('#adminTabs .tab');
+  if (!role.canManageTags) tabs[0].style.display = 'none'; else tabs[0].style.display = '';
+  if (!role.canManageUsers && !role.canConfig) tabs[1].style.display = 'none'; else tabs[1].style.display = '';
+  if (!role.canConfig) tabs[2].style.display = 'none'; else tabs[2].style.display = '';
+  if (!role.canManageData) tabs[3].style.display = 'none'; else tabs[3].style.display = '';
+}
+function closeAdmin() { document.getElementById('adminOverlay').classList.add('hidden'); }
+function switchAdminTab(idx) {
+  document.querySelectorAll('#adminTabs .tab').forEach((t,i) => t.classList.toggle('active', i === idx));
+  document.querySelectorAll('#adminOverlay .tab-content').forEach((t,i) => t.classList.toggle('active', i === idx));
+  if (idx === 0) renderTagManagement();
+}
+
+// ============ ACCOUNT TABLE ============
+function renderAccountTable() {
+  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
+  document.getElementById('accountTable').innerHTML = accounts.map((a, i) => {
+    const r = ROLES[a.role] || ROLES.viewer;
+    return `<tr><td>${a.username}</td><td><span class="tag ${r.tag}">${r.label}</span></td><td>${a.apiKey?'✅':'❌'}</td><td>${a.username!=='admin'?`<button class="btn btn-danger btn-sm" onclick="deleteAccount(${i})">删除</button>`:''} <button class="btn btn-outline btn-sm" onclick="resetUserPassword(${i})">重置密码</button> <button class="btn btn-outline btn-sm" onclick="resetApiKey(${i})">重置Key</button></td></tr>`;
+  }).join('');
+}
+function addAccount() {
+  const username = document.getElementById('newUsername').value.trim();
+  const password = document.getElementById('newPassword').value;
+  const role = document.getElementById('newRole').value;
+  if (!username || !password) return alert('请填写用户名和密码');
+  if (password.length < 4) return alert('密码至少4位');
+  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
+  if (accounts.find(a => a.username === username)) return alert('用户名已存在');
+  accounts.push({username, password: hashPassword(password), role, apiKey:''});
+  localStorage.setItem('poster_v5_accounts', JSON.stringify(accounts));
+  document.getElementById('newUsername').value = ''; document.getElementById('newPassword').value = '';
+  renderAccountTable();
+}
+function deleteAccount(idx) {
+  if (!confirm('确定删除该账号?')) return;
+  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
+  accounts.splice(idx, 1);
+  localStorage.setItem('poster_v5_accounts', JSON.stringify(accounts));
+  renderAccountTable();
+}
+function resetApiKey(idx) {
+  const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || '[]');
+  accounts[idx].apiKey = '';
+  localStorage.setItem('poster_v5_accounts', JSON.stringify(accounts));
+  renderAccountTable();
+}
+
+// ============ DATA MANAGEMENT ============
+function renderDataRecords() {
+  const el = document.getElementById('dataRecords');
+  if (genRecords.length === 0) { el.innerHTML = '暂无记录'; return; }
+  el.innerHTML = genRecords.slice(-20).reverse().map(r =>
+    `<div style="padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text)">${r.name}</span> <span style="color:var(--text2);margin-left:4px">${r.time}</span> <span style="color:${r.success?'var(--success)':'var(--danger)'};margin-left:4px">${r.success?'✅':'❌'}</span></div>`
+  ).join('');
+}
+function addRecord(name, success) {
+  genRecords.push({name, success, time: new Date().toLocaleString('zh-CN'), role: currentUser.role, user: currentUser.username});
+  if (genRecords.length > 100) genRecords = genRecords.slice(-100);
+  localStorage.setItem('poster_ai_records', JSON.stringify(genRecords));
+  renderHistory();
+}
+function renderHistory() {
+  const el = document.getElementById('historyList');
+  if (genRecords.length === 0) { el.innerHTML = '暂无记录'; return; }
+  el.innerHTML = genRecords.slice(-10).reverse().map(r =>
+    `<div style="padding:2px 0;border-bottom:1px solid var(--border)">${r.success?'✅':'❌'} ${r.name} <span style="color:var(--text2)">${r.time.split(' ')[1]||r.time}</span></div>`
+  ).join('');
+}
+function exportRecords() {
+  const blob = new Blob([JSON.stringify(genRecords, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'poster_ai_records.json'; a.click();
+}
+function clearRecords() {
+  if (!confirm('确定清空所有记录?')) return;
+  genRecords = []; localStorage.setItem('poster_ai_records', '[]'); renderDataRecords(); renderHistory();
+}
+
+// ============ TAG MANAGEMENT UI (Admin Tab 0) ============
+function renderTagManagement() {
+  const el = document.getElementById('tagMgmtContent');
+  let html = '';
+  html += '<div class="tag-mgmt-group"><h4>📦 产品品类</h4><div class="tag-mgmt-list">';
+  tagData.category.forEach((c, i) => { html += `<span class="tag-mgmt-item">${c.name}${c.children.length?' ('+c.children.join('/')+')':''} <span class="del" onclick="deleteCategory(${i})">✕</span></span>`; });
+  html += '</div><div class="tag-mgmt-add"><input id="addCatInput" placeholder="品类名"><button class="btn btn-primary btn-sm" onclick="addCategory()">添加</button></div></div>';
+
+  html += '<div class="tag-mgmt-group"><h4>🔥 核心卖点（按品类）</h4>';
+  getCategoryNames().forEach(cat => {
+    const groups = tagData.sellingPoint[cat] || {};
+    html += `<div style="margin:4px 0;font-size:10px;font-weight:600;color:var(--pink)">${cat}</div>`;
+    for (const [group, items] of Object.entries(groups)) {
+      html += `<div style="margin-left:8px;font-size:9px;color:var(--text2)">${group}：</div><div class="tag-mgmt-list" style="margin-left:8px">`;
+      items.forEach((item, idx) => { html += `<span class="tag-mgmt-item">${item} <span class="del" onclick="deleteSellingPoint('${cat}','${group}',${idx})">✕</span></span>`; });
+      html += '</div>';
+    }
+    html += `<div class="tag-mgmt-add" style="margin-left:8px"><input id="addSp_${cat}" placeholder="分组>卖点"><button class="btn btn-primary btn-sm" onclick="addSellingPoint('${cat}')">添加</button></div>`;
+  });
+  html += '</div>';
+
+  html += '<div class="tag-mgmt-group"><h4>😣 用户痛点（按品类）</h4>';
+  getCategoryNames().forEach(cat => {
+    const groups = tagData.painPoint[cat] || {};
+    html += `<div style="margin:4px 0;font-size:10px;font-weight:600;color:var(--danger)">${cat}</div>`;
+    for (const [group, items] of Object.entries(groups)) {
+      html += `<div style="margin-left:8px;font-size:9px;color:var(--text2)">${group}：</div><div class="tag-mgmt-list" style="margin-left:8px">`;
+      items.forEach((item, idx) => { html += `<span class="tag-mgmt-item">${item} <span class="del" onclick="deletePainPoint('${cat}','${group}',${idx})">✕</span></span>`; });
+      html += '</div>';
+    }
+    html += `<div class="tag-mgmt-add" style="margin-left:8px"><input id="addPp_${cat}" placeholder="分组>痛点"><button class="btn btn-primary btn-sm" onclick="addPainPoint('${cat}')">添加</button></div>`;
+  });
+  html += '</div>';
+
+  html += '<div class="tag-mgmt-group"><h4>🎬 使用场景</h4><div class="tag-mgmt-list">';
+  tagData.scene.forEach((s, i) => { html += `<span class="tag-mgmt-item">${s} <span class="del" onclick="deleteScene(${i})">✕</span></span>`; });
+  html += '</div><div class="tag-mgmt-add"><input id="addSceneInput" placeholder="场景名"><button class="btn btn-primary btn-sm" onclick="addScene()">添加</button></div></div>';
+
+  html += '<div class="tag-mgmt-group"><h4>🌈 氛围风格</h4><div class="tag-mgmt-list">';
+  tagData.atmosphere.forEach((a, i) => { html += `<span class="tag-mgmt-item">${a} <span class="del" onclick="deleteAtmosphere(${i})">✕</span></span>`; });
+  html += '</div><div class="tag-mgmt-add"><input id="addAtmoInput" placeholder="风格名"><button class="btn btn-primary btn-sm" onclick="addAtmosphere()">添加</button></div></div>';
+
+  html += '<div class="tag-mgmt-group"><h4>🏛️ 品牌调性</h4><div class="tag-mgmt-list">';
+  tagData.brandTone.forEach((b, i) => { html += `<span class="tag-mgmt-item">${b} <span class="del" onclick="deleteBrandTone(${i})">✕</span></span>`; });
+  html += '</div><div class="tag-mgmt-add"><input id="addBtInput" placeholder="调性名"><button class="btn btn-primary btn-sm" onclick="addBrandTone()">添加</button></div></div>';
+
+  html += '<div class="tag-mgmt-group"><h4>👥 目标人群</h4>';
+  ['age','gender','identity'].forEach(dim => {
+    const label = {age:'年龄段',gender:'性别',identity:'身份'}[dim];
+    html += `<div style="font-size:10px;font-weight:600;margin:3px 0 1px">${label}</div><div class="tag-mgmt-list">`;
+    tagData.targetAudience[dim].forEach((item, i) => { html += `<span class="tag-mgmt-item">${item} <span class="del" onclick="deleteAudience('${dim}',${i})">✕</span></span>`; });
+    html += `</div><div class="tag-mgmt-add"><input id="addAud_${dim}" placeholder="${label}"><button class="btn btn-primary btn-sm" onclick="addAudience('${dim}')">添加</button></div>`;
+  });
+  html += '</div>';
+
+  html += '<div class="tag-mgmt-group"><h4>👗 服装类型</h4><div class="tag-mgmt-list">';
+  tagData.clothingType.forEach((t, i) => { html += `<span class="tag-mgmt-item">${t} <span class="del" onclick="deleteClothingType(${i})">✕</span></span>`; });
+  html += '</div><div class="tag-mgmt-add"><input id="addCtInput" placeholder="服装类型"><button class="btn btn-primary btn-sm" onclick="addClothingType()">添加</button></div></div>';
+
+  html += '<div style="margin-top:8px"><button class="btn btn-danger btn-sm" onclick="resetTags()">🔄 恢复默认标签</button></div>';
+  el.innerHTML = html;
+}
+
+// Tag CRUD
+function addCategory() { const i=document.getElementById('addCatInput'); const n=i.value.trim(); if(!n)return; if(tagData.category.find(c=>c.name===n))return; tagData.category.push({name:n,children:[]}); saveTags(); renderTagManagement(); renderAllDimensions(); i.value=''; }
+function deleteCategory(idx) { const n=tagData.category[idx].name; if(!confirm(`删除品类"${n}"?`))return; tagData.category.splice(idx,1); delete tagData.sellingPoint[n]; delete tagData.painPoint[n]; if(selectedTags.category===n){selectedTags.category='';selectedTags.sellingPoints=[];selectedTags.painPoints=[];} saveTags(); renderTagManagement(); renderAllDimensions(); updatePreview(); }
+function addSellingPoint(cat) { const i=document.getElementById('addSp_'+cat); const v=i.value.trim(); if(!v)return; const p=v.split('>'); const g=p[0].trim(); const t=p[1]?p[1].trim():g; if(!tagData.sellingPoint[cat])tagData.sellingPoint[cat]={}; if(!tagData.sellingPoint[cat][g])tagData.sellingPoint[cat][g]=[]; tagData.sellingPoint[cat][g].push(t); saveTags(); renderTagManagement(); renderSellingPointChips(); i.value=''; }
+function deleteSellingPoint(cat,group,idx) { tagData.sellingPoint[cat][group].splice(idx,1); if(!tagData.sellingPoint[cat][group].length)delete tagData.sellingPoint[cat][group]; saveTags(); renderTagManagement(); renderSellingPointChips(); }
+function addPainPoint(cat) { const i=document.getElementById('addPp_'+cat); const v=i.value.trim(); if(!v)return; const p=v.split('>'); const g=p[0].trim(); const t=p[1]?p[1].trim():g; if(!tagData.painPoint[cat])tagData.painPoint[cat]={}; if(!tagData.painPoint[cat][g])tagData.painPoint[cat][g]=[]; tagData.painPoint[cat][g].push(t); saveTags(); renderTagManagement(); renderPainPointChips(); i.value=''; }
+function deletePainPoint(cat,group,idx) { tagData.painPoint[cat][group].splice(idx,1); if(!tagData.painPoint[cat][group].length)delete tagData.painPoint[cat][group]; saveTags(); renderTagManagement(); renderPainPointChips(); }
+function addScene() { const i=document.getElementById('addSceneInput'); const v=i.value.trim(); if(!v)return; tagData.scene.push(v); saveTags(); renderTagManagement(); renderSceneChips(); i.value=''; }
+function deleteScene(idx) { tagData.scene.splice(idx,1); saveTags(); renderTagManagement(); renderSceneChips(); }
+function addAtmosphere() { const i=document.getElementById('addAtmoInput'); const v=i.value.trim(); if(!v)return; tagData.atmosphere.push(v); saveTags(); renderTagManagement(); renderAtmosphereChips(); i.value=''; }
+function deleteAtmosphere(idx) { tagData.atmosphere.splice(idx,1); saveTags(); renderTagManagement(); renderAtmosphereChips(); }
+function addBrandTone() { const i=document.getElementById('addBtInput'); const v=i.value.trim(); if(!v)return; tagData.brandTone.push(v); saveTags(); renderTagManagement(); renderBrandToneChips(); i.value=''; }
+function deleteBrandTone(idx) { tagData.brandTone.splice(idx,1); saveTags(); renderTagManagement(); renderBrandToneChips(); }
+function addAudience(dim) { const i=document.getElementById('addAud_'+dim); const v=i.value.trim(); if(!v)return; tagData.targetAudience[dim].push(v); saveTags(); renderTagManagement(); renderTargetAudienceChips(); i.value=''; }
+function deleteAudience(dim,idx) { tagData.targetAudience[dim].splice(idx,1); saveTags(); renderTagManagement(); renderTargetAudienceChips(); }
+function addClothingType() { const i=document.getElementById('addCtInput'); const v=i.value.trim(); if(!v)return; tagData.clothingType.push(v); saveTags(); renderTagManagement(); renderClothingTypeChips(); i.value=''; }
+function deleteClothingType(idx) { tagData.clothingType.splice(idx,1); saveTags(); renderTagManagement(); renderClothingTypeChips(); }
+function resetTags() { if(!confirm('恢复默认标签？自定义标签将丢失。'))return; tagData=JSON.parse(JSON.stringify(DEFAULT_TAGS)); saveTags(); renderTagManagement(); renderAllDimensions(); updatePreview(); setStatus('标签已恢复默认','success'); }
+
+// ============ INIT ============
+function init() {
+  loadTags();
+  initAccounts();
+  checkSession();
+  setupPasteHandlers();
+}
+
 init();
 </script>
 </body>
