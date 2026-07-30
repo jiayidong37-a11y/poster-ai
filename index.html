@@ -208,6 +208,26 @@ header .actions span{font-size:11px;color:var(--text2)}
 .fav-star.active{color:var(--warn)}
 .hc-empty{text-align:center;padding:30px;color:var(--text2);font-size:12px}
 .hc-scroll{max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:6px}
+
+/* ===== Industry Mode & High Exposure Styles ===== */
+.industry-mode-section{margin-bottom:8px;padding:8px;background:linear-gradient(135deg,#fff7ed,#fef3c7);border:1px solid #fde68a;border-radius:6px}
+.industry-mode-section .dim-label{color:#d97706;margin-bottom:4px}
+.industry-mode-options{display:flex;gap:5px;flex-wrap:wrap}
+.industry-mode-btn{padding:5px 10px;border-radius:8px;border:2px solid var(--border);background:var(--card);cursor:pointer;font-size:10px;text-align:center;transition:all .2s;flex:1;min-width:80px}
+.industry-mode-btn:hover{border-color:#d97706;background:#fffbeb}
+.industry-mode-btn.active{border-color:#d97706;background:linear-gradient(135deg,#fff7ed,#fef3c7);color:#92400e;font-weight:600}
+.industry-mode-btn .im-icon{font-size:16px;display:block;margin-bottom:1px}
+.industry-mode-btn .im-label{font-size:10px;display:block}
+.high-exposure-notice{margin-top:6px;padding:6px 8px;background:linear-gradient(135deg,#fef2f2,#fff1f2);border:1px solid #fecdd3;border-radius:6px;font-size:10px;color:#9f1239;display:none}
+.high-exposure-notice.visible{display:block}
+.high-exposure-notice .he-title{font-weight:600;margin-bottom:2px}
+.high-exposure-notice .he-desc{font-size:9px;color:#be123c}
+.he-template-section{margin-top:4px}
+.he-template-chip{padding:4px 9px;border-radius:14px;border:1px solid #fda4af;background:transparent;color:#e11d48;cursor:pointer;font-size:10px;transition:all .2s;white-space:nowrap}
+.he-template-chip:hover{border-color:#e11d48;background:#fff1f2}
+.he-template-chip.active{background:#e11d48;border-color:#e11d48;color:#fff}
+.degrade-indicator{margin-top:4px;padding:4px 8px;background:#fffbeb;border:1px solid #fde68a;border-radius:4px;font-size:9px;color:#92400e;display:none}
+.degrade-indicator.visible{display:block}
 </style>
 </head>
 <body>
@@ -371,7 +391,18 @@ header .actions span{font-size:11px;color:var(--text2)}
       <div class="card">
         <div class="card-title"><span class="icon">🏷️</span> 智能标签配置 <span class="auto-badge">AI自动组合</span></div>
 
-        <!-- Dim 1: 产品品类 -->
+        
+        <!-- Industry Mode Selector -->
+        <div class="industry-mode-section">
+          <div class="dim-label"><span class="dot" style="background:#d97706"></span> 行业生成模式 <small style="color:var(--text2)">(选择行业适配策略)</small></div>
+          <div class="industry-mode-options" id="industryModeOptions"></div>
+          <div class="high-exposure-notice" id="highExposureNotice">
+            <div class="he-title">👙 高露肤服装模式已启用</div>
+            <div class="he-desc">已自动应用专业商业摄影策略，确保生成符合平台规范的产品展示图</div>
+          </div>
+        </div>
+
+<!-- Dim 1: 产品品类 -->
         <div class="dim-section">
           <div class="dim-label"><span class="dot" style="background:var(--pink)"></span> 1. 产品品类</div>
           <div class="chip-group" id="dimCategory"></div>
@@ -526,6 +557,11 @@ header .actions span{font-size:11px;color:var(--text2)}
             </div>
           </div>
         </div>
+          <div class="form-group" id="heTemplateGroup" style="display:none">
+            <label>高露肤专属模板 <small style="color:var(--text2)">(可多选)</small></label>
+            <div class="he-template-section" id="heTemplates"></div>
+          </div>
+
         <div class="form-group">
           <label class="collapsible collapsed" onclick="toggleCollapse(this)"> API Key / 代理设置</label>
           <div class="collapse-content collapsed">
@@ -601,7 +637,8 @@ header .actions span{font-size:11px;color:var(--text2)}
   </div>
 
   <!-- Status -->
-  <div class="status-bar" id="statusBar"></div>
+  <div class="degrade-indicator" id="degradeIndicator"></div>
+<div class="status-bar" id="statusBar"></div>
 
   <!-- Results -->
   <div class="result-area" id="resultArea" style="display:none">
@@ -640,7 +677,7 @@ const DEFAULT_TAGS = {
     {name:'美妆', children:[]},
     {name:'食品', children:[]}
   ],
-  clothingType: ['连衣裙','T恤','衬衫','牛仔裤','休闲裤','外套','毛衣','运动服','半身裙','卫衣','风衣','羽绒服','吊带','短裤','西服','针织衫'],
+  clothingType: ['连衣裙','T恤','衬衫','牛仔裤','休闲裤','外套','毛衣','运动服','半身裙','卫衣','风衣','羽绒服','吊带','短裤','西服','针织衫','内衣','泳装','比基尼','运动紧身衣','睡衣','塑身衣'],
   sellingPoint: {
     '服装': {'面料优势':['柔软亲肤','高弹舒适','透气轻薄','抗菌防臭','速干排汗','保暖锁温','冰丝凉爽'],'版型优势':['显瘦修身','修饰身材','高腰提臀','宽松遮肉','A字显瘦','直筒显腿长','收腰设计'],'功能优势':['百搭实用','通勤利器','运动自由','防水防污','可机洗','免烫抗皱','多穿法']},
     '智能电子': {'性能优势':['高性能芯片','大容量存储','长续航','快充技术','低功耗'],'功能优势':['智能互联','语音控制','多设备兼容','自动调节','远程操控'],'设计优势':['轻薄便携','简约设计','人机工学','防水设计','高清屏幕']},
@@ -677,6 +714,58 @@ const CLOTHING_TEMPLATES = [
   {name:'尺码指南图', desc:'肩宽/胸围/腰围测量示意', prompt:'size guide illustration showing measurement points for shoulder, chest, waist, and hips'}
 ];
 
+
+// ============ HIGH EXPOSURE & INDUSTRY MODE (V9.1) ============
+const HIGH_EXPOSURE_CATEGORIES = ['内衣','泳装','比基尼','运动紧身衣','睡衣','塑身衣'];
+const HIGH_EXPOSURE_CATEGORIES_EN = ['lingerie','swimwear','bikini','sports_tights','sleepwear','shapewear'];
+const HIGH_EXPOSURE_CLOTHING_MAP = {
+  '内衣':'lingerie','泳装':'swimwear','比基尼':'bikini','运动紧身衣':'sports_tights','睡衣':'sleepwear','塑身衣':'shapewear',
+  '吊带':'camisole_lingerie','运动服':'sportswear_tight'
+};
+const SAFE_PROMPT_SUFFIX = 'professional commercial clothing photography, product-focused, e-commerce marketing style, adult model, natural pose';
+const SENSITIVE_WORDS_MAP = {
+  'sexy': 'elegant commercial style',
+  'hot': 'professional',
+  'seductive': 'sophisticated',
+  'alluring': 'refined',
+  'sensual': 'tasteful',
+  'provocative': 'fashion-forward',
+  '诱惑': 'professional fashion',
+  '性感': 'elegant style',
+  '火辣': 'trendy commercial',
+  '暴露': 'minimal coverage design',
+  '撩人': 'appealing design',
+  '诱人': 'attractive product'
+};
+const INDUSTRY_MODES = {
+  normal_clothing: { name: '普通服装', icon: '👕', prompt_strategy: 'standard', desc: '标准服装展示' },
+  high_exposure: { name: '高露肤服装', icon: '👙', prompt_strategy: 'safe_commercial', desc: '内衣/泳装/紧身衣等' },
+  shoes_bags: { name: '鞋包配饰', icon: '👜', prompt_strategy: 'product_focus', desc: '鞋包帽子首饰等' },
+  beauty: { name: '美妆', icon: '💄', prompt_strategy: 'beauty_commercial', desc: '彩妆护肤美容等' },
+  home: { name: '家居', icon: '🏠', prompt_strategy: 'lifestyle', desc: '家具家装饰品等' }
+};
+const HE_CLOTHING_TEMPLATES = [
+  {name:'产品展示型', desc:'模特正常穿着展示(推荐)', prompt:'product display on model, natural standing pose, showcasing design and fit, professional e-commerce photography'},
+  {name:'面料细节型', desc:'材质纹理做工特写', prompt:'close-up detail shots of fabric texture, stitching quality, material craftsmanship, professional product photography'},
+  {name:'场景生活型', desc:'泳装海边/运动服健身/睡衣居家', prompt:'lifestyle scene photography, product worn naturally in appropriate setting, relaxed and natural pose'},
+  {name:'多颜色合集型', desc:'展示多个颜色选择', prompt:'same style in multiple color options displayed together, product-focused color showcase, professional e-commerce layout'}
+];
+const HE_SCENE_MAP = {
+  '泳装': 'beach resort, poolside, summer vacation',
+  '比基尼': 'beach resort, tropical paradise, summer vacation',
+  '运动紧身衣': 'sports environment, gym, fitness studio',
+  '睡衣': 'bedroom setting, cozy home environment, soft lighting',
+  '塑身衣': 'fitting room, professional studio, clean background',
+  '内衣': 'elegant studio setting, clean minimal background, soft lighting'
+};
+const DEGRADE_STAGES = [
+  {name:'标准模式', desc:'正常生成', prompt_suffix:''},
+  {name:'简化人物', desc:'减少人数、简化姿势', prompt_suffix:', single model, simple natural standing pose'},
+  {name:'半身展示', desc:'上半身展示为主', prompt_suffix:', half-body portrait crop, upper body display only'},
+  {name:'产品平铺', desc:'产品平铺展示', prompt_suffix:', flat lay product display, no model, clothing laid flat on surface'},
+  {name:'细节特写', desc:'产品细节特写', prompt_suffix:', macro detail close-up, fabric and design detail, no model'}
+];
+
 // ============ ROLES ============
 const ROLES = {
   super_admin: {label:'超级管理员',tag:'tag-super',canConfig:true,canManageUsers:true,canManageTags:true,canManageData:true},
@@ -709,6 +798,7 @@ Object.values(DEFAULT_TAGS.painPoint).forEach(groups => {
 DEFAULT_TAGS.brandTone.forEach(b => { TAG_WEIGHTS[b] = 'weak'; });
 Object.values(DEFAULT_TAGS.targetAudience).flat().forEach(v => { TAG_WEIGHTS[v] = 'weak'; });
 DEFAULT_TAGS.clothingType.forEach(c => { TAG_WEIGHTS[c] = 'auxiliary'; });
+HIGH_EXPOSURE_CATEGORIES.forEach(c => { TAG_WEIGHTS[c] = 'core'; }); // High-exposure types are core
 
 // ============ CONFLICT PAIRS (V9) ============
 const CONFLICT_PAIRS = [
@@ -757,7 +847,7 @@ const COUNTRY_LANG = {
 // ============ ENGLISH TRANSLATION MAP ============
 const TRANS = {
   category:{'服装':'Clothing','智能电子':'Smart Electronics','家居用品':'Home Goods','汽车工具':'Car Tools','美妆':'Beauty','食品':'Food'},
-  clothingType:{'连衣裙':'Dress','T恤':'T-Shirt','衬衫':'Shirt','牛仔裤':'Jeans','休闲裤':'Casual Pants','外套':'Jacket','毛衣':'Sweater','运动服':'Sportswear','半身裙':'Skirt','卫衣':'Hoodie','风衣':'Trench Coat','羽绒服':'Down Jacket','吊带':'Camisole','短裤':'Shorts','西服':'Suit','针织衫':'Knitwear'},
+  clothingType:{'连衣裙':'Dress','T恤':'T-Shirt','衬衫':'Shirt','牛仔裤':'Jeans','休闲裤':'Casual Pants','外套':'Jacket','毛衣':'Sweater','运动服':'Sportswear','半身裙':'Skirt','卫衣':'Hoodie','风衣':'Trench Coat','羽绒服':'Down Jacket','吊带':'Camisole','短裤':'Shorts','西服':'Suit','针织衫':'Knitwear','内衣':'Lingerie','泳装':'Swimwear','比基尼':'Bikini','运动紧身衣':'Sports Tights','睡衣':'Sleepwear','塑身衣':'Shapewear'},
   sellingPoints:{'柔软亲肤':'Soft & skin-friendly','高弹舒适':'High-stretch comfort','透气轻薄':'Breathable & lightweight','抗菌防臭':'Antibacterial & odor-resistant','速干排汗':'Quick-dry & moisture-wicking','保暖锁温':'Heat-locking warmth','冰丝凉爽':'Ice-silk cool','显瘦修身':'Slimming fit','修饰身材':'Figure-flattering','高腰提臀':'High-waist lifting','宽松遮肉':'Loose & forgiving','A字显瘦':'A-line slimming','直筒显腿长':'Straight-leg elongating','收腰设计':'Waist-defining design','百搭实用':'Versatile everyday','通勤利器':'Office-ready','运动自由':'Sport-comfortable','防水防污':'Waterproof & stain-resistant','可机洗':'Machine washable','免烫抗皱':'Wrinkle-free','多穿法':'Multi-way wear'},
   painPoints:{'担心显胖':'Worried about looking bulky','腿型不完美':'Unflattering leg shape','腰腹有赘肉':'Visible belly fat','肩宽背厚':'Broad shoulders & thick back','个子矮小':'Petite/short stature','面料闷热不透气':'Fabric too hot & not breathable','容易起球':'Pills easily','掉色严重':'Fades badly','尺码不准':'Inaccurate sizing','穿着不舒服':'Uncomfortable to wear','不知道怎么搭配':'Doesnt know how to style','担心质量差':'Worried about quality','怕不合适':'Worried it wont fit','不知道什么风格适合':'Unsure what style suits'},
   scene:{'日常生活':'Daily life','工作通勤':'Work commute','休闲聚会':'Casual gathering','运动健身':'Sports & fitness','旅行出游':'Travel','节日庆典':'Festival celebration','居家办公':'Work from home','户外探索':'Outdoor adventure','约会社交':'Date & social','亲子时光':'Family time'},
@@ -767,7 +857,9 @@ const TRANS = {
   gender:{'女性':'female','男性':'male','男女皆宜':'unisex'},
   identity:{'上班族':'office workers','学生':'students','宝妈':'moms','户外爱好者':'outdoor enthusiasts','时尚消费者':'fashion consumers','家庭主妇':'housewives','商务人士':'business professionals','运动达人':'fitness enthusiasts','宅家人士':'homebodies'},
   clothingTemplate:{'多身材模特展示':'models of different body types wearing the same piece','多色合集展示':'same style in multiple colors together','场景穿搭展示':'styled for different daily scenarios','搭配推荐展示':'complete outfit coordination with accessories','面料细节图':'macro close-up of fabric texture and stitching','尺码指南图':'size guide with measurement points'},
-  personType:{'商业模特':'professional model','普通消费者':'real consumer','多样化真人':'diverse real people'}
+  personType:{'商业模特':'professional model','普通消费者':'real consumer','多样化真人':'diverse real people'},
+  industryMode:{'普通服装':'Normal Clothing','高露肤服装':'High-Exposure Clothing','鞋包配饰':'Shoes & Accessories','美妆':'Beauty','家居':'Home'},
+  heTemplate:{'产品展示型':'Product display on model','面料细节型':'Fabric detail close-up','场景生活型':'Lifestyle scene display','多颜色合集型':'Multi-color collection display'}
 };
 
 // ============ MULTI-LANGUAGE TRANSLATION MAP (LANG_MAP) ============
@@ -791,13 +883,13 @@ const LANG_MAP = {
   hr:{category:{'服装':'Odjeća'},age:{'18-25岁':'18-25 godina'},gender:{'女性':'žena','男性':'muškarac'}},
   sk:{category:{'服装':'Oblečenie'},age:{'18-25岁':'18-25 rokov'},gender:{'女性':'žena','男性':'muž'}},
   uk:{category:{'服装':'Одяг'},age:{'18-25岁':'18-25 років'},gender:{'女性':'жінка','男性':'чоловік'}},
-  ru:{category:{'服装':'Одежда'},age:{'18-25岁':'18-25 лет','25-35岁':'25-35 лет'},gender:{'女性':'женщина','男性':'мужчина'},sellingPoints:{'柔软亲肤':'Мягкий и приятный для кожи','高弹舒适':'Эластичный комфорт','透气轻薄':'Дышащий и лёгкий','显瘦修身':'Стройнящий крой'},atmosphere:{'销售型-强促销感':'Профессиональный стиль e-commerce','高端型-质感奢华':'Люкс премиум','温馨生活型-亲切自然':'Тёплая естественная жизнь'},brandTone:{'简约高级':'Минималистичный премиум','年轻活泼':'Молодой и динамичный','专业可信':'Профессиональный надёжный'}},
+  ru:{clothingType:{'内衣':'Бельё','泳装':'Купальник','比基尼':'Бикини','运动紧身衣':'Спортивные легинсы','睡衣':'Пижама','塑身衣':'Утягивающее бельё'},category:{'服装':'Одежда'},age:{'18-25岁':'18-25 лет','25-35岁':'25-35 лет'},gender:{'女性':'женщина','男性':'мужчина'},sellingPoints:{'柔软亲肤':'Мягкий и приятный для кожи','高弹舒适':'Эластичный комфорт','透气轻薄':'Дышащий и лёгкий','显瘦修身':'Стройнящий крой'},atmosphere:{'销售型-强促销感':'Профессиональный стиль e-commerce','高端型-质感奢华':'Люкс премиум','温馨生活型-亲切自然':'Тёплая естественная жизнь'},brandTone:{'简约高级':'Минималистичный премиум','年轻活泼':'Молодой и динамичный','专业可信':'Профессиональный надёжный'}},
   he:{category:{'服装':'בגדים'},age:{'18-25岁':'18-25 שנים','25-35岁':'25-35 שנים'},gender:{'女性':'אישה','男性':'גבר'},sellingPoints:{'柔软亲肤':'רך וידידותי לעור','高弹舒适':'נוחות אלסטית','透气轻薄':'נושם וקל','显瘦修身':'גזרה מחטבת'}},
   ar:{category:{'服装':'ملابس'},age:{'18-25岁':'18-25 سنة','25-35岁':'25-35 سنة'},gender:{'女性':'امرأة','男性':'رجل'},sellingPoints:{'柔软亲肤':'ناعم ولطيف على البشرة','高弹舒适':'راحة مرنة','透气轻薄':'قابل للتنفس وخفيف'}},
   tr:{category:{'服装':'Giyim'},age:{'18-25岁':'18-25 yaş','25-35岁':'25-35 yaş'},gender:{'女性':'kadın','男性':'erkek'},sellingPoints:{'柔软亲肤':'Yumuşak ve cilt dostu','高弹舒适':'Elastik konfor','透气轻薄':'Nefes alabilir ve hafif'}},
   fa:{category:{'服装':'لباس'},age:{'18-25岁':'۱۸-۲۵ سال','25-35岁':'۲۵-۳۵ سال'},gender:{'女性':'زن','男性':'مرد'}},
-  ja:{category:{'服装':'衣類','智能电子':'スマート電子機器','家居用品':'家庭用品'},age:{'18-25岁':'18-25歳','25-35岁':'25-35歳','35-45岁':'35-45歳','45岁以上':'45歳以上'},gender:{'女性':'女性','男性':'男性','男女皆宜':'ユニセックス'},identity:{'上班族':'会社員','学生':'学生','宝妈':'ママ','时尚消费者':'ファッションコンシャス'},scene:{'日常生活':'日常生活','工作通勤':'通勤','休闲聚会':'カジュアルな集い','运动健身':'スポーツ＆フィットネス'},atmosphere:{'销售型-强促销感':'プロeコマーススタイル','高端型-质感奢华':'ラグジュアリープレミアム','温馨生活型-亲切自然':'温かく自然なライフスタイル','年轻潮流型-活力时尚':'若々しいトレンドファッション'},brandTone:{'简约高级':'ミニマルプレミアム','年轻活泼':'若々しく活発','专业可信':'プロフェッショナル信頼'},sellingPoints:{'柔软亲肤':'柔らかく肌に優しい','高弹舒适':'伸縮性コンフォート','透气轻薄':'通気性＆軽量','显瘦修身':'スリムフィット','百搭实用':'デイリー百搭','高腰提臀':'ハイウエスト'}},
-  ko:{category:{'服装':'의류','智能电子':'스마트 전자제품','家居用品':'가정용품'},age:{'18-25岁':'18-25세','25-35岁':'25-35세','35-45岁':'35-45세','45岁以上':'45세 이상'},gender:{'女性':'여성','男性':'남성','男女皆宜':'유니섹스'},identity:{'上班族':'직장인','学生':'학생','宝妈':'엄마','时尚消费者':'패션 소비자'},scene:{'日常生活':'일상생활','工作通勤':'출퇴근','休闲聚会':'캐주얼 모임','运动健身':'스포츠&피트니스'},atmosphere:{'销售型-强促销感':'전문 이커머스 스타일','高端型-质感奢华':'럭셔리 프리미엄','温馨生活型-亲切自然':'따뜻하고 자연스러운 라이프스타일'},brandTone:{'简约高级':'미니멀 프리미엄','年轻活泼':'젊고 활기찬','专业可信':'전문적이고 신뢰감'},sellingPoints:{'柔软亲肤':'부드럽고 피부 친화적','高弹舒适':'탄성 편안함','透气轻薄':'통기성＆경량','显瘦修身':'슬림핏'}},
+  ja:{clothingType:{'内衣':'ランジェリー','泳装':'水着','比基尼':'ビキニ','运动紧身衣':'スポーツタイツ','睡衣':'パジャマ','塑身衣':'ボディシェイパー'},category:{'服装':'衣類','智能电子':'スマート電子機器','家居用品':'家庭用品'},age:{'18-25岁':'18-25歳','25-35岁':'25-35歳','35-45岁':'35-45歳','45岁以上':'45歳以上'},gender:{'女性':'女性','男性':'男性','男女皆宜':'ユニセックス'},identity:{'上班族':'会社員','学生':'学生','宝妈':'ママ','时尚消费者':'ファッションコンシャス'},scene:{'日常生活':'日常生活','工作通勤':'通勤','休闲聚会':'カジュアルな集い','运动健身':'スポーツ＆フィットネス'},atmosphere:{'销售型-强促销感':'プロeコマーススタイル','高端型-质感奢华':'ラグジュアリープレミアム','温馨生活型-亲切自然':'温かく自然なライフスタイル','年轻潮流型-活力时尚':'若々しいトレンドファッション'},brandTone:{'简约高级':'ミニマルプレミアム','年轻活泼':'若々しく活発','专业可信':'プロフェッショナル信頼'},sellingPoints:{'柔软亲肤':'柔らかく肌に優しい','高弹舒适':'伸縮性コンフォート','透气轻薄':'通気性＆軽量','显瘦修身':'スリムフィット','百搭实用':'デイリー百搭','高腰提臀':'ハイウエスト'}},
+  ko:{clothingType:{'内衣':'란제리','泳装':'수영복','比基尼':'비키니','运动紧身衣':'스포츠 타이츠','睡衣':'잠옷','塑身衣':'보디쉐이퍼'},category:{'服装':'의류','智能电子':'스마트 전자제품','家居用品':'가정용품'},age:{'18-25岁':'18-25세','25-35岁':'25-35세','35-45岁':'35-45세','45岁以上':'45세 이상'},gender:{'女性':'여성','男性':'남성','男女皆宜':'유니섹스'},identity:{'上班族':'직장인','学生':'학생','宝妈':'엄마','时尚消费者':'패션 소비자'},scene:{'日常生活':'일상생활','工作通勤':'출퇴근','休闲聚会':'캐주얼 모임','运动健身':'스포츠&피트니스'},atmosphere:{'销售型-强促销感':'전문 이커머스 스타일','高端型-质感奢华':'럭셔리 프리미엄','温馨生活型-亲切自然':'따뜻하고 자연스러운 라이프스타일'},brandTone:{'简约高级':'미니멀 프리미엄','年轻活泼':'젊고 활기찬','专业可信':'전문적이고 신뢰감'},sellingPoints:{'柔软亲肤':'부드럽고 피부 친화적','高弹舒适':'탄성 편안함','透气轻薄':'통기성＆경량','显瘦修身':'슬림핏'}},
   th:{category:{'服装':'เสื้อผ้า'},age:{'18-25岁':'18-25 ปี'},gender:{'女性':'ผู้หญิง','男性':'ผู้ชาย'},sellingPoints:{'柔软亲肤':'นุ่มสบายผิว','高弹舒适':'ยืดหยุ่นสบาย','透气轻薄':'ระบายอากาศและเบา'}},
   vi:{category:{'服装':'Quần áo'},age:{'18-25岁':'18-25 tuổi'},gender:{'女性':'phụ nữ','男性':'đàn ông'},sellingPoints:{'柔软亲肤':'Mềm mại và thân thiện với da','高弹舒适':'Thoải mái co giãn','透气轻薄':'Thoáng khí và nhẹ'}},
   id:{category:{'服装':'Pakaian'},age:{'18-25岁':'18-25 tahun'},gender:{'女性':'wanita','男性':'pria'},sellingPoints:{'柔软亲肤':'Lembut dan ramah kulit','高弹舒适':'Kenyamanan elastis','透气轻薄':'Bernapas dan ringan'}},
@@ -839,11 +931,15 @@ let selectedTags = {
   category: '', clothingType: '', sellingPoints: [], painPoints: [],
   scene: '', atmosphere: '', brandTone: '',
   targetAges: [], targetGenders: [], targetIdentities: [],
-  clothingTemplates: [], personType: ''
+  clothingTemplates: [], personType: '', industryMode: 'normal_clothing', heTemplates: [], degradeLevel: 0
 };
 let tagData = null;
 // V9 new state
 let selectedPersonType = '';
+// V9.1: Industry mode & high exposure state
+let selectedIndustryMode = 'normal_clothing';
+let degradeLevel = 0;
+let degradeRetryCount = 0;
 let tagWeights = Object.assign({}, TAG_WEIGHTS);
 let v9Records = JSON.parse(localStorage.getItem('poster_v9_records') || '[]');
 let favorites = new Set(v9Records.filter(r => r.favorited).map(r => r.id));
@@ -861,9 +957,9 @@ function getPainPointsForCategory(cat) { return tagData.painPoint[cat] || {}; }
 
 // ============ RENDER DIMENSION CHIPS (V9: with weight marks) ============
 function renderAllDimensions() {
-  renderCategoryChips(); renderSellingPointChips(); renderPainPointChips();
+  renderIndustryModeOptions(); renderCategoryChips(); renderSellingPointChips(); renderPainPointChips();
   renderSceneChips(); renderAtmosphereChips(); renderBrandToneChips();
-  renderTargetAudienceChips(); renderPersonTypeOptions(); updateClothingVisibility();
+  renderTargetAudienceChips(); renderPersonTypeOptions(); updateClothingVisibility(); renderHETemplates();
 }
 
 function renderCategoryChips() {
@@ -955,13 +1051,110 @@ function renderPersonTypeOptions() {
   ).join('');
 }
 
+
+// ============ INDUSTRY MODE (V9.1) ============
+function renderIndustryModeOptions() {
+  const el = document.getElementById('industryModeOptions');
+  if (!el) return;
+  el.innerHTML = Object.entries(INDUSTRY_MODES).map(([key, mode]) =>
+    `<div class="industry-mode-btn${selectedIndustryMode===key?' active':''}" onclick="selectIndustryMode('${key}')">
+      <span class="im-icon">${mode.icon}</span>
+      <span class="im-label">${mode.name}</span>
+    </div>`
+  ).join('');
+  // Show/hide high-exposure notice
+  const notice = document.getElementById('highExposureNotice');
+  if (notice) notice.classList.toggle('visible', selectedIndustryMode === 'high_exposure');
+}
+
+function selectIndustryMode(mode) {
+  selectedIndustryMode = selectedIndustryMode === mode ? 'normal_clothing' : mode;
+  selectedTags.industryMode = selectedIndustryMode;
+  localStorage.setItem('poster_v91_industry_mode', selectedIndustryMode);
+  renderIndustryModeOptions();
+  // If switching to high_exposure, add high-exposure clothing types if not already present
+  if (selectedIndustryMode === 'high_exposure') {
+    // Ensure high-exposure types are in the tag list
+    HIGH_EXPOSURE_CATEGORIES.forEach(cat => {
+      if (!tagData.clothingType.includes(cat)) tagData.clothingType.push(cat);
+    });
+    saveTags();
+    renderClothingTypeChips();
+  }
+  updateClothingVisibility();
+  updatePreview();
+  updateAnalysis();
+}
+
+function isHighExposureMode() {
+  if (selectedIndustryMode === 'high_exposure') return true;
+  // Also check if selected clothing type is high-exposure
+  if (HIGH_EXPOSURE_CATEGORIES.includes(selectedTags.clothingType)) return true;
+  return false;
+}
+
+function getHighExposureCategory() {
+  return HIGH_EXPOSURE_CATEGORIES.find(c => c === selectedTags.clothingType) || '';
+}
+
+function autoDetectIndustryMode() {
+  // Auto-detect based on category and clothing type
+  if (selectedTags.category === '美妆') {
+    if (selectedIndustryMode !== 'beauty') { selectedIndustryMode = 'beauty'; selectedTags.industryMode = 'beauty'; }
+  } else if (selectedTags.category === '家居用品') {
+    if (selectedIndustryMode !== 'home') { selectedIndustryMode = 'home'; selectedTags.industryMode = 'home'; }
+  } else if (HIGH_EXPOSURE_CATEGORIES.includes(selectedTags.clothingType)) {
+    if (selectedIndustryMode !== 'high_exposure') { selectedIndustryMode = 'high_exposure'; selectedTags.industryMode = 'high_exposure'; }
+  } else if (selectedTags.category === '服装') {
+    if (selectedIndustryMode === 'beauty' || selectedIndustryMode === 'home') {
+      selectedIndustryMode = 'normal_clothing'; selectedTags.industryMode = 'normal_clothing';
+    }
+  }
+  renderIndustryModeOptions();
+}
+
+// ============ SENSITIVE WORD FILTER (V9.1) ============
+function filterSensitiveWords(text) {
+  if (!text || !isHighExposureMode()) return text;
+  let result = text;
+  for (const [word, replacement] of Object.entries(SENSITIVE_WORDS_MAP)) {
+    const regex = new RegExp(word, 'gi');
+    result = result.replace(regex, replacement);
+  }
+  return result;
+}
+
+// ============ DEGRADE STRATEGY (V9.1) ============
+function getDegradeStage() {
+  return DEGRADE_STAGES[degradeLevel] || DEGRADE_STAGES[0];
+}
+
+function applyDegradeStrategy(failedPrompt) {
+  degradeLevel = Math.min(degradeLevel + 1, DEGRADE_STAGES.length - 1);
+  const stage = getDegradeStage();
+  const indicator = document.getElementById('degradeIndicator');
+  if (indicator) {
+    indicator.classList.add('visible');
+    indicator.innerHTML = `🔄 降级策略: <b>${stage.name}</b> - ${stage.desc}`;
+  }
+  return buildAutoPrompt(); // Rebuild with degrade level
+}
+
+function resetDegrade() {
+  degradeLevel = 0;
+  degradeRetryCount = 0;
+  const indicator = document.getElementById('degradeIndicator');
+  if (indicator) indicator.classList.remove('visible');
+}
+
 // ============ TAG SELECTION HANDLERS ============
 function selectCategory(name) {
   if (selectedTags.category === name) { selectedTags.category = ''; selectedTags.clothingType = ''; selectedTags.sellingPoints = []; selectedTags.painPoints = []; }
   else { selectedTags.category = name; selectedTags.clothingType = ''; selectedTags.sellingPoints = []; selectedTags.painPoints = []; }
+  autoDetectIndustryMode();
   renderAllDimensions(); updatePreview(); updateAnalysis();
 }
-function selectClothingType(name) { selectedTags.clothingType = selectedTags.clothingType === name ? '' : name; renderClothingTypeChips(); updatePreview(); updateAnalysis(); }
+function selectClothingType(name) { selectedTags.clothingType = selectedTags.clothingType === name ? '' : name; autoDetectIndustryMode(); renderClothingTypeChips(); updatePreview(); updateAnalysis(); }
 function toggleSellingPoint(name) {
   const idx = selectedTags.sellingPoints.indexOf(name);
   if (idx >= 0) selectedTags.sellingPoints.splice(idx, 1);
@@ -1004,13 +1197,39 @@ function selectPersonType(id) {
 
 function updateClothingVisibility() {
   const isClothing = selectedTags.category === '服装';
+  const isHE = isClothing && isHighExposureMode();
   document.getElementById('clothingSubTypes').style.display = isClothing ? 'block' : 'none';
-  document.getElementById('clothingTemplates').innerHTML = isClothing
-    ? CLOTHING_TEMPLATES.map(t =>
-        `<div class="chip chip-cloth${(selectedTags.clothingTemplates||[]).includes(t.name)?' active':''}" style="margin:2px" onclick="toggleClothingTemplate('${t.name}')">${t.name}<span style="font-size:8px;color:var(--text2);margin-left:3px">${t.desc}</span></div>`
-      ).join('')
-    : '<span style="font-size:10px;color:var(--text2)">选择"服装"品类后自动展示</span>';
+  // In high-exposure mode, show HE templates; otherwise show normal clothing templates
+  if (isHE) {
+    document.getElementById('clothingTemplates').innerHTML = '<span style="font-size:10px;color:#e11d48">👙 高露肤模式 - 请在下方选择专属模板</span>';
+  } else {
+    document.getElementById('clothingTemplates').innerHTML = isClothing
+      ? CLOTHING_TEMPLATES.map(t =>
+          `<div class="chip chip-cloth${(selectedTags.clothingTemplates||[]).includes(t.name)?' active':''}" style="margin:2px" onclick="toggleClothingTemplate('${t.name}')">${t.name}<span style="font-size:8px;color:var(--text2);margin-left:3px">${t.desc}</span></div>`
+        ).join('')
+      : '<span style="font-size:10px;color:var(--text2)">选择"服装"品类后自动展示</span>';
+  }
   if (isClothing) renderClothingTypeChips();
+  // Show/hide HE template group
+  const heGroup = document.getElementById('heTemplateGroup');
+  if (heGroup) heGroup.style.display = isHE ? 'block' : 'none';
+}
+
+function renderHETemplates() {
+  const el = document.getElementById('heTemplates');
+  if (!el) return;
+  const isHE = isHighExposureMode();
+  if (!isHE) { el.innerHTML = ''; return; }
+  el.innerHTML = HE_CLOTHING_TEMPLATES.map(t =>
+    `<div class="he-template-chip${(selectedTags.heTemplates||[]).includes(t.name)?' active':''}" style="margin:2px" onclick="toggleHETemplate('${t.name}')">${t.name}<span style="font-size:8px;color:var(--text2);margin-left:3px">${t.desc}</span></div>`
+  ).join('');
+}
+
+function toggleHETemplate(name) {
+  if (!selectedTags.heTemplates) selectedTags.heTemplates = [];
+  const idx = selectedTags.heTemplates.indexOf(name);
+  if (idx >= 0) selectedTags.heTemplates.splice(idx, 1); else selectedTags.heTemplates.push(name);
+  renderHETemplates(); updatePreview(); updateAnalysis();
 }
 
 function toggleClothingTemplate(name) {
@@ -1031,11 +1250,17 @@ function updateSelectionSummary() {
   if (selectedTags.brandTone) parts.push(`<b>调性:</b> ${selectedTags.brandTone}`);
   const aud = [...(selectedTags.targetAges||[]), ...(selectedTags.targetGenders||[]), ...(selectedTags.targetIdentities||[])];
   if (aud.length) parts.push(`<b>人群:</b> ${aud.join(' ')}`);
+  if (selectedIndustryMode && selectedIndustryMode !== 'normal_clothing') {
+    const mode = INDUSTRY_MODES[selectedIndustryMode];
+    if (mode) parts.push(`<b>行业:</b> ${mode.icon} ${mode.name}`);
+  }
   if (selectedPersonType) {
     const pt = PERSON_TYPES.find(p=>p.id===selectedPersonType);
     if (pt) parts.push(`<b>人物:</b> ${pt.icon} ${pt.label}`);
   }
   if (selectedTags.clothingTemplates && selectedTags.clothingTemplates.length) parts.push(`<b>模板:</b> ${selectedTags.clothingTemplates.join('+')}`);
+  if (selectedTags.heTemplates && selectedTags.heTemplates.length) parts.push(`<b>HE模板:</b> ${selectedTags.heTemplates.join('+')}`);
+  if (degradeLevel > 0) parts.push(`<b>降级:</b> ${getDegradeStage().name}`);
   const langInfo = COUNTRY_LANG[getDetectedLanguage()];
   if (langInfo) parts.push(`<b>语言:</b> ${langInfo.flag} ${langInfo.name}`);
   document.getElementById('selectionSummary').innerHTML = parts.length ? parts.join(' &nbsp;|&nbsp; ') : '请从上方选择标签，AI将自动组合生成提示词';
@@ -1096,8 +1321,19 @@ function buildAutoPrompt() {
   const audience = buildAudienceText();
   if (audience) lines.push(`Target audience: ${audience}`);
 
-  // V9: Person type
-  if (selectedPersonType) {
+  // V9.1: Industry mode prompt
+  const isHE = isHighExposureMode();
+  const industryConfig = INDUSTRY_MODES[selectedIndustryMode] || INDUSTRY_MODES.normal_clothing;
+  if (selectedIndustryMode !== 'normal_clothing') {
+    lines.push(`Industry mode: ${industryConfig.name} (${industryConfig.prompt_strategy})`);
+  }
+
+  // V9: Person type (with high-exposure override)
+  if (isHE) {
+    // High-exposure: force professional model, natural pose
+    lines.push('Model type: adult professional e-commerce model, natural standing pose, product display posture');
+    lines.push('IMPORTANT: ambiguous poses, sensual poses, emphasizing body parts are NOT allowed. Product-focused commercial photography only.');
+  } else if (selectedPersonType) {
     const pt = PERSON_TYPES.find(p=>p.id===selectedPersonType);
     if (pt) {
       const ptEn = {'commercial_model':'Use professional commercial models with polished appearance','normal_consumer':'Use real-looking everyday consumers, natural and authentic','diverse_real':'Use diverse models of different ethnicities, body types and ages for inclusive representation'};
@@ -1105,13 +1341,44 @@ function buildAutoPrompt() {
     }
   }
 
-  if (selectedTags.category === '服装' && selectedTags.clothingTemplates && selectedTags.clothingTemplates.length) {
+  // V9.1: High-exposure templates
+  if (isHE && selectedTags.heTemplates && selectedTags.heTemplates.length) {
+    selectedTags.heTemplates.forEach(tplName => {
+      const tpl = HE_CLOTHING_TEMPLATES.find(t => t.name === tplName);
+      if (tpl) lines.push(`HE display: ${tpl.prompt}`);
+    });
+  } else if (selectedTags.category === '服装' && selectedTags.clothingTemplates && selectedTags.clothingTemplates.length) {
     selectedTags.clothingTemplates.forEach(tplName => {
       const tpl = CLOTHING_TEMPLATES.find(t => t.name === tplName);
       if (tpl) lines.push(`Clothing display: ${tpl.prompt}`);
     });
   }
+
+  // V9.1: High-exposure clothing prompt
   if (selectedTags.category === '服装') {
+    if (isHE) {
+      // High-exposure specific prompt
+      const heCat = getHighExposureCategory();
+      const clothingEn = TL('clothingType', selectedTags.clothingType) || subject;
+      lines.push(`\nProduct focus: ${clothingEn}, showcasing design details, fabric texture, cut and fit, color and silhouette`);
+      // Use mapped scene for high-exposure
+      const heScene = HE_SCENE_MAP[heCat];
+      if (heScene) lines.push(`Recommended scene: ${heScene}`);
+      else if (selectedTags.scene) lines.push(`Scene: ${TL('scene', selectedTags.scene)}`);
+      // Person pose constraint
+      lines.push('Pose: natural standing, front-facing display, slight movement only. 1 person maximum. No complex poses.');
+      lines.push(SAFE_PROMPT_SUFFIX);
+    } else {
+      // Standard clothing prompt
+      const genders = (selectedTags.targetGenders && selectedTags.targetGenders.length) ? selectedTags.targetGenders : ['女性'];
+      const genderText = genders.includes('女性') ? TL('gender','女性') : genders.includes('男性') ? TL('gender','男性') : 'model';
+      const ages = (selectedTags.targetAges && selectedTags.targetAges.length) ? selectedTags.targetAges.map(a=>TL('age',a)).join(', ') : '';
+      const sceneText = TL('scene', selectedTags.scene) || 'daily life';
+      const sellText = selectedTags.sellingPoints.slice(0,2).map(s=>TL('sellingPoints',s)).join(' and ');
+      const clothingEn = TL('clothingType', selectedTags.clothingType) || subject;
+      lines.push(`\nScene: ${ages} ${genderText} in ${sceneText} setting wearing ${clothingEn}, showcasing ${sellText||'the fit and quality'}, realistic commercial photography style`);
+    }
+  } else if (selectedTags.category === '服装') {
     const genders = (selectedTags.targetGenders && selectedTags.targetGenders.length) ? selectedTags.targetGenders : ['女性'];
     const genderText = genders.includes('女性') ? TL('gender','女性') : genders.includes('男性') ? TL('gender','男性') : 'model';
     const ages = (selectedTags.targetAges && selectedTags.targetAges.length) ? selectedTags.targetAges.map(a=>TL('age',a)).join(', ') : '';
@@ -1132,7 +1399,19 @@ function buildAutoPrompt() {
   else { lines.push('Use Western/European models appropriate for the target market.'); }
   if (extra) lines.push(`Additional: ${extra}`);
   lines.push(`Aspect ratio: ${size}, Quality: ${quality}, highly detailed professional commercial photography, not AI-looking`);
-  return filterBannedWords(lines.join('\n'));
+  let finalPrompt = filterBannedWords(lines.join('\n'));
+  // V9.1: Apply sensitive word filter for high-exposure mode
+  finalPrompt = filterSensitiveWords(finalPrompt);
+  // V9.1: Force safe suffix for high-exposure mode
+  if (isHE) {
+    finalPrompt += '\n' + SAFE_PROMPT_SUFFIX;
+  }
+  // V9.1: Apply degrade stage suffix
+  if (degradeLevel > 0) {
+    const stage = getDegradeStage();
+    finalPrompt += stage.prompt_suffix;
+  }
+  return finalPrompt;
 }
 
 function buildAudienceText() {
@@ -1157,6 +1436,7 @@ function updateAnalysis() {
     return;
   }
   const dims = [
+    {name:'行业', filled:!!selectedIndustryMode&&selectedIndustryMode!=='normal_clothing'},
     {name:'品类', filled:!!selectedTags.category},
     {name:'卖点', filled:selectedTags.sellingPoints.length>0},
     {name:'痛点', filled:selectedTags.painPoints.length>0},
@@ -1178,7 +1458,9 @@ function updateAnalysis() {
   if (!selectedTags.atmosphere) suggestions.push('💡 选择氛围风格确定视觉方向');
   if (!selectedPersonType) suggestions.push('💡 选择人物类型确定模特风格');
   if (selectedTags.category === '服装' && !selectedTags.clothingType) suggestions.push('💡 选择服装类型提升精准度');
-  if (selectedTags.category === '服装' && !(selectedTags.clothingTemplates && selectedTags.clothingTemplates.length)) suggestions.push('💡 选择服装模板获得更好效果');
+  if (selectedTags.category === '服装' && !(selectedTags.clothingTemplates && selectedTags.clothingTemplates.length) && !isHighExposureMode()) suggestions.push('💡 选择服装模板获得更好效果');
+  if (isHighExposureMode() && !(selectedTags.heTemplates && selectedTags.heTemplates.length)) suggestions.push('💡 选择高露肤专属模板获得更好效果');
+  if (selectedTags.category === '服装' && !isHighExposureMode() && HIGH_EXPOSURE_CATEGORIES.includes(selectedTags.clothingType)) suggestions.push('💡 已选择高露肤品类，建议切换到高露肤模式');
   if (suggestions.length) {
     html += '<div style="margin-top:6px;padding-top:4px;border-top:1px dashed var(--border)">';
     suggestions.forEach(s => { html += `<div style="font-size:9px;color:var(--text2);padding:1px 0">${s}</div>`; });
@@ -1242,6 +1524,8 @@ function aiAutoFill() {
   }
   if (selectedTags.category === '服装' && !selectedTags.clothingType) selectedTags.clothingType = '连衣裙';
   if (!selectedPersonType) { selectedPersonType = 'commercial_model'; selectedTags.personType = selectedPersonType; }
+  // V9.1: Auto-detect industry mode
+  autoDetectIndustryMode();
   renderAllDimensions(); updatePreview(); updateAnalysis();
   setStatus('✅ AI已智能填充标签配置', 'success');
 }
@@ -1253,6 +1537,15 @@ function onProductChange() {
     const catKeywords = {'服装':/衣|裤|裙|衫|外套|T恤|衬衫|连衣裙|牛仔裤|运动服|毛衣|卫衣/i,'智能电子':/充电|蓝牙|耳机|手机壳|数据线|鼠标|键盘|智能|电子/i,'家居用品':/枕|被|毯|杯|碗|收纳|清洁|拖把|灯/i,'汽车工具':/车载|汽车|方向盘/i,'美妆':/口红|粉底|眼影|面膜|精华|乳液/i,'食品':/零食|茶|咖啡|坚果|水果/i};
     for (const [cat, regex] of Object.entries(catKeywords)) { if (regex.test(name)) { selectedTags.category = cat; break; } }
     if (selectedTags.category) { renderAllDimensions(); updateAnalysis(); }
+  }
+  // V9.1: Auto-detect high-exposure from product name
+  if (name) {
+    const heKeywords = /内衣|泳装|比基尼|紧身衣|睡衣|塑身衣|lingerie|swimwear|bikini|shapewear|sleepwear/i;
+    if (heKeywords.test(name) && selectedIndustryMode !== 'high_exposure') {
+      selectedIndustryMode = 'high_exposure';
+      selectedTags.industryMode = 'high_exposure';
+      renderIndustryModeOptions();
+    }
   }
   updatePreview();
 }
@@ -1395,6 +1688,7 @@ function showConfirmModal() {
   if (selectedTags.scene) summary.push(`场景: ${selectedTags.scene}`);
   if (selectedTags.atmosphere) summary.push(`氛围: ${selectedTags.atmosphere}`);
   if (selectedTags.brandTone) summary.push(`调性: ${selectedTags.brandTone}`);
+  if (selectedIndustryMode && selectedIndustryMode !== 'normal_clothing') { const mode = INDUSTRY_MODES[selectedIndustryMode]; if(mode) summary.push(`行业: ${mode.icon} ${mode.name}`); }
   if (selectedPersonType) { const pt = PERSON_TYPES.find(p=>p.id===selectedPersonType); if(pt) summary.push(`人物: ${pt.label}`); }
   const model = document.getElementById('aiModel').value;
   const size = document.getElementById('imageSize').value;
@@ -1411,6 +1705,7 @@ function closeConfirmModal() { document.getElementById('confirmModal').classList
 
 function confirmGenerate() {
   closeConfirmModal();
+  resetDegrade();
   doGenerate();
 }
 
@@ -1464,10 +1759,39 @@ async function doGenerate() {
     saveV9Record(name, prompt, model, size, quality, count, resultImages);
     qualityScore = null;
   } catch (err) {
-    setStatus('❌ 生成失败: ' + err.message, 'error');
     addRecord(name, false);
+    // V9.1: Degrade strategy for high-exposure mode
+    if (isHighExposureMode() && degradeRetryCount < 2) {
+      degradeRetryCount++;
+      const degradedPrompt = applyDegradeStrategy(err.message);
+      setStatus(`⚠️ 生成失败，自动降级重试 (${degradeRetryCount}/2): ${getDegradeStage().name}`, 'warn');
+      try {
+        const body2 = { model, prompt: degradedPrompt, size, n: count, image_urls: [...productImages, ...refImages] };
+        const submitResp2 = await fetchWithProxy('https://api.apimart.ai/v1/images/generations', {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey }, body: JSON.stringify(body2)
+        }, proxies);
+        const submitData2 = await submitResp2.json();
+        if (submitData2.code !== 200 || !submitData2.data || !submitData2.data[0]?.task_id) {
+          throw new Error(`降级提交失败: ${submitData2.message||submitData2.msg||'unknown'}`);
+        }
+        const taskId2 = submitData2.data[0].task_id;
+        setStatus(`降级重试中... (${getDegradeStage().name})`, 'info');
+        const result2 = await pollTask(taskId2, apiKey);
+        displayResults(result2);
+        setStatus(`✅ 降级生成完成 (${getDegradeStage().name})`, 'success');
+        addRecord(name, true);
+        if (result2 && result2.images) resultImages = result2.images.map(img => img.url);
+        saveV9Record(name, degradedPrompt, model, size, quality, count, resultImages);
+        qualityScore = null;
+      } catch (err2) {
+        setStatus(`❌ 降级重试也失败: ${err2.message}`, 'error');
+      }
+    } else {
+      setStatus('❌ 生成失败: ' + err.message, 'error');
+    }
   } finally {
     btn.disabled = false; btn.textContent = '🚀 生成图片';
+    resetDegrade();
   }
 }
 
@@ -1556,7 +1880,10 @@ function saveV9Record(name, prompt, model, size, quality, count, imageUrls) {
       targetGenders: [...(selectedTags.targetGenders||[])],
       targetIdentities: [...(selectedTags.targetIdentities||[])],
       clothingTemplates: [...(selectedTags.clothingTemplates||[])],
-      personType: selectedPersonType
+      personType: selectedPersonType,
+      industryMode: selectedIndustryMode,
+      heTemplates: [...(selectedTags.heTemplates||[])],
+      degradeLevel: degradeLevel
     },
     tagWeights: Object.assign({}, tagWeights),
     country: getDetectedLanguage(),
@@ -1705,6 +2032,9 @@ function exportExcel() {
     '目标性别': (r.tags.targetGenders||[]).join('、'),
     '目标身份': (r.tags.targetIdentities||[]).join('、'),
     '人物类型': r.tags.personType || '',
+    '行业模式': r.tags.industryMode || 'normal_clothing',
+    '高露肤模板': (r.tags.heTemplates||[]).join('、'),
+    '降级级别': r.tags.degradeLevel || 0,
     '国家/语言': r.country,
     'AI模型': r.model,
     '尺寸': r.size,
@@ -1840,6 +2170,7 @@ function showApp() {
   const cp = localStorage.getItem('poster_ai_custom_prompts') || '';
   if (cp) document.getElementById('customPromptText').value = cp;
   renderAllDimensions();
+  renderIndustryModeOptions();
   renderHistory();
   renderHistoryCenter();
   onLanguageChange();
@@ -2047,6 +2378,9 @@ function init() {
   initAccounts();
   checkSession();
   setupPasteHandlers();
+  // V9.1: Restore industry mode from localStorage
+  const savedMode = localStorage.getItem('poster_v91_industry_mode');
+  if (savedMode) { selectedIndustryMode = savedMode; selectedTags.industryMode = savedMode; }
 }
 
 init();
