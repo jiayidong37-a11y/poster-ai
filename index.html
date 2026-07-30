@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI种草生图器 V9</title>
+<title>FB评论种草 V9</title>
 <script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <style>
@@ -215,7 +215,7 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- Login Overlay (hidden - free login mode) -->
 <div class="login-overlay hidden" id="loginOverlay">
   <div class="login-box">
-    <h2>🎨 AI种草生图器</h2>
+    <h2>🎨 FB评论种草</h2>
     <div class="form-group">
       <label>用户名</label>
       <input type="text" id="loginUser" placeholder="输入用户名" onkeydown="if(event.key==='Enter')doLogin()">
@@ -325,7 +325,7 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- Main App -->
 <div class="container" id="mainApp" style="display:block">
   <header>
-    <h1>🎨 AI种草生图器 V9</h1>
+    <h1>🎨 FB评论种草 V9</h1>
     <div class="actions">
       <span id="userInfo"></span>
       <span id="roleInfo" class="tag" style="margin-right:4px"></span>
@@ -1492,7 +1492,7 @@ async function fetchWithProxy(url, options, proxies) {
   throw new Error(`所有代理均失败 (${lastErr})，请检查网络或API Key`);
 }
 
-async function pollTask(taskId, apiKey, maxAttempts = 60) {
+async function pollTask(taskId, apiKey, maxAttempts = 120) {
   const proxies = getProxyUrl();
   for (let i = 0; i < maxAttempts; i++) {
     await sleep(3000);
@@ -1505,11 +1505,13 @@ async function pollTask(taskId, apiKey, maxAttempts = 60) {
         const status = data.data.status;
         if (status === 'completed') return data.data.result;
         if (status === 'failed') throw new Error(`任务失败: ${data.data.error || '未知错误'}`);
-        setStatus(`生成中... (${i+1}/${maxAttempts})`, 'info');
+        const mins = Math.floor((i+1)*3/60);
+        const secs = ((i+1)*3)%60;
+        setStatus(`生成中... 已等待${mins}分${secs}秒 (${i+1}/${maxAttempts})`, 'info');
       }
     } catch (e) { if (e.message.includes('任务失败')) throw e; }
   }
-  throw new Error('超时：任务未在规定时间内完成');
+  throw new Error('超时：任务未在6分钟内完成。图片可能仍在生成中，请稍后刷新页面查看历史记录。');
 }
 
 function displayResults(result) {
