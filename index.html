@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FB评论-海报生成器 v8</title>
+<title>AI种草生图器 V9</title>
+<script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#faf8f5;--card:#ffffff;--border:#e8e4df;--text:#2d2a26;--text2:#78716c;--accent:#6366f1;--accent2:#818cf8;--success:#22c55e;--warn:#f59e0b;--danger:#ef4444;--radius:8px;--pink:#ec4899;--cyan:#06b6d4;--orange:#f97316;--purple:#a855f7}
@@ -47,6 +49,9 @@ header .actions span{font-size:11px;color:var(--text2)}
 .chip-success{border-color:var(--success);color:#16a34a}.chip-success.active{background:var(--success);border-color:var(--success);color:#fff}.chip-success:hover{border-color:var(--success);color:var(--success)}
 .chip-danger{border-color:var(--danger);color:var(--danger)}.chip-danger.active{background:var(--danger);border-color:var(--danger);color:#fff}.chip-danger:hover{border-color:var(--danger);color:var(--danger)}
 .chip-cloth{border-color:var(--pink);color:#f472b6}.chip-cloth.active{background:var(--pink);border-color:var(--pink);color:#fff}.chip-cloth:hover{border-color:var(--pink);color:var(--pink)}
+/* V9: Weight markers on chips */
+.chip .weight-mark{font-size:9px;margin-left:2px;opacity:.7}
+.weight-core{color:#fbbf24}.weight-auxiliary{color:#94a3b8}.weight-weak{color:#d1d5db}
 .upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:12px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
 .upload-zone:hover{border-color:var(--accent)}
 .upload-zone.has-image{border-style:solid;border-color:var(--accent)}
@@ -154,6 +159,55 @@ header .actions span{font-size:11px;color:var(--text2)}
 .tag-mgmt-item .del{cursor:pointer;color:var(--danger);font-size:11px;margin-left:2px}
 .tag-mgmt-add{display:flex;gap:4px;margin-top:4px}
 .tag-mgmt-add input{flex:1;padding:3px 6px;border:1px solid var(--border);border-radius:4px;font-size:10px;background:#fff}
+
+/* ===== V9 NEW STYLES ===== */
+/* Person Type Selection */
+.person-type-section{margin-top:6px;padding:8px;background:linear-gradient(135deg,#f0f9ff,#eff6ff);border:1px solid #bfdbfe;border-radius:6px}
+.person-type-section .dim-label{color:#3b82f6;margin-bottom:4px}
+.person-type-options{display:flex;gap:6px;flex-wrap:wrap}
+.person-type-btn{padding:6px 12px;border-radius:8px;border:2px solid var(--border);background:var(--card);cursor:pointer;font-size:11px;text-align:center;transition:all .2s;flex:1;min-width:100px}
+.person-type-btn:hover{border-color:var(--accent);background:#f8faff}
+.person-type-btn.active{border-color:var(--accent);background:linear-gradient(135deg,#eff6ff,#dbeafe);color:var(--accent);font-weight:600}
+.person-type-btn .pt-icon{font-size:18px;display:block;margin-bottom:2px}
+.person-type-btn .pt-label{font-size:11px;display:block}
+.person-type-btn .pt-desc{font-size:8px;color:var(--text2);display:block;margin-top:1px}
+
+/* Confirm Modal */
+.confirm-modal .modal-box{max-width:420px;text-align:center}
+.confirm-modal .confirm-icon{font-size:40px;margin-bottom:8px}
+.confirm-modal .confirm-title{font-size:15px;font-weight:600;margin-bottom:6px}
+.confirm-modal .confirm-desc{font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.6;text-align:left;background:#f5f3f0;padding:8px;border-radius:6px;max-height:200px;overflow-y:auto}
+.confirm-modal .confirm-actions{display:flex;gap:8px;justify-content:center}
+
+/* Conflict Warning Modal */
+.conflict-modal .modal-box{max-width:420px}
+.conflict-modal .conflict-title{font-size:14px;font-weight:600;color:var(--warn);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.conflict-modal .conflict-item{display:flex;align-items:center;gap:6px;padding:6px 8px;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;margin-bottom:4px;font-size:11px}
+.conflict-modal .conflict-item .vs{color:var(--danger);font-weight:700;font-size:10px}
+.conflict-modal .conflict-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+
+/* History Center */
+.history-center{margin-top:14px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.history-center .hc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px}
+.history-center .hc-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:5px}
+.history-center .hc-title .icon{font-size:15px}
+.history-center .hc-actions{display:flex;gap:5px;flex-wrap:wrap}
+.history-center .hc-count{font-size:10px;color:var(--text2);margin-left:6px}
+.history-table{width:100%;border-collapse:collapse;font-size:11px}
+.history-table th{background:#f5f3f0;padding:6px 8px;text-align:left;font-size:10px;color:var(--text2);font-weight:600;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1}
+.history-table td{padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+.history-table tr:hover{background:#faf8f5}
+.history-table .thumb{width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid var(--border);cursor:pointer}
+.history-table .thumb:hover{border-color:var(--accent)}
+.history-table .tag-summary{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9px;color:var(--text2)}
+.history-table .actions-cell{display:flex;gap:3px;flex-wrap:wrap}
+.history-table .actions-cell .btn{font-size:9px;padding:2px 6px}
+.version-badge{display:inline-block;padding:1px 5px;border-radius:4px;font-size:9px;font-weight:600;background:rgba(99,101,241,.15);color:var(--accent2)}
+.fav-star{cursor:pointer;font-size:13px;transition:transform .2s}
+.fav-star:hover{transform:scale(1.2)}
+.fav-star.active{color:var(--warn)}
+.hc-empty{text-align:center;padding:30px;color:var(--text2);font-size:12px}
+.hc-scroll{max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:6px}
 </style>
 </head>
 <body>
@@ -161,7 +215,7 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- Login Overlay (hidden - free login mode) -->
 <div class="login-overlay hidden" id="loginOverlay">
   <div class="login-box">
-    <h2>🎨 FB评论-海报生成器</h2>
+    <h2>🎨 AI种草生图器</h2>
     <div class="form-group">
       <label>用户名</label>
       <input type="text" id="loginUser" placeholder="输入用户名" onkeydown="if(event.key==='Enter')doLogin()">
@@ -188,6 +242,31 @@ header .actions span{font-size:11px;color:var(--text2)}
   </div>
 </div>
 
+<!-- V9: Confirm Modal -->
+<div class="modal-overlay hidden confirm-modal" id="confirmModal">
+  <div class="modal-box">
+    <div class="confirm-icon">🎨</div>
+    <div class="confirm-title" id="confirmTitle">确认生成？</div>
+    <div class="confirm-desc" id="confirmDesc"></div>
+    <div class="confirm-actions">
+      <button class="btn btn-outline" onclick="closeConfirmModal()">取消</button>
+      <button class="btn btn-primary" id="confirmOkBtn" onclick="confirmGenerate()">🚀 确认生成</button>
+    </div>
+  </div>
+</div>
+
+<!-- V9: Conflict Warning Modal -->
+<div class="modal-overlay hidden conflict-modal" id="conflictModal">
+  <div class="modal-box">
+    <div class="conflict-title">⚠️ 标签冲突检测</div>
+    <div id="conflictList"></div>
+    <div class="conflict-actions">
+      <button class="btn btn-outline" onclick="closeConflictModal()">返回修改</button>
+      <button class="btn btn-warn" onclick="ignoreConflicts()">仍然生成</button>
+    </div>
+  </div>
+</div>
+
 <!-- Admin Overlay -->
 <div class="modal-overlay hidden" id="adminOverlay">
   <div class="modal-box">
@@ -201,12 +280,10 @@ header .actions span{font-size:11px;color:var(--text2)}
       <div class="tab" onclick="switchAdminTab(2)">系统配置</div>
       <div class="tab" onclick="switchAdminTab(3)">数据管理</div>
     </div>
-    <!-- Tab 0: Tag Management -->
     <div class="tab-content active" id="adminTab0">
       <p style="font-size:10px;color:var(--text2);margin-bottom:6px">管理7大筛选维度的标签，修改后实时生效。添加子标签格式：父标签>子标签</p>
       <div id="tagMgmtContent"></div>
     </div>
-    <!-- Tab 1: Account Management -->
     <div class="tab-content" id="adminTab1">
       <div class="inline-row">
         <input type="text" id="newUsername" placeholder="用户名">
@@ -224,13 +301,11 @@ header .actions span{font-size:11px;color:var(--text2)}
         <tbody id="accountTable"></tbody>
       </table>
     </div>
-    <!-- Tab 2: System Config -->
     <div class="tab-content" id="adminTab2">
       <h3>自定义提示词模板</h3>
       <textarea id="customPromptText" rows="4" placeholder="自定义提示词模板，留空使用默认自动组合。支持变量：{产品名称} {核心卖点} {用户痛点} {使用场景} {氛围风格} {品牌调性} {目标人群} {服装类型}" style="width:100%;padding:7px;background:#f5f3f0;border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;resize:vertical"></textarea>
       <button class="btn btn-primary btn-sm" onclick="saveCustomPrompt()" style="margin-top:5px">保存模板</button>
     </div>
-    <!-- Tab 3: Data Management -->
     <div class="tab-content" id="adminTab3">
       <h3>生成记录</h3>
       <div id="dataRecords" style="font-size:11px;color:var(--text2)">暂无记录</div>
@@ -247,10 +322,10 @@ header .actions span{font-size:11px;color:var(--text2)}
   <img id="imgViewerSrc" src="">
 </div>
 
-<!-- Main App (display:block for free login) -->
+<!-- Main App -->
 <div class="container" id="mainApp" style="display:block">
   <header>
-    <h1>🎨 FB评论-海报生成器</h1>
+    <h1>🎨 AI种草生图器 V9</h1>
     <div class="actions">
       <span id="userInfo"></span>
       <span id="roleInfo" class="tag" style="margin-right:4px"></span>
@@ -292,7 +367,7 @@ header .actions span{font-size:11px;color:var(--text2)}
         </div>
       </div>
 
-      <!-- Card 2: Smart Tag Config (7 Dimensions from v7) -->
+      <!-- Card 2: Smart Tag Config -->
       <div class="card">
         <div class="card-title"><span class="icon">🏷️</span> 智能标签配置 <span class="auto-badge">AI自动组合</span></div>
 
@@ -306,13 +381,13 @@ header .actions span{font-size:11px;color:var(--text2)}
           </div>
         </div>
 
-        <!-- Dim 2: 核心卖点 (多选) -->
+        <!-- Dim 2: 核心卖点 -->
         <div class="dim-section">
           <div class="dim-label"><span class="dot" style="background:var(--orange)"></span> 2. 核心卖点 <small style="color:var(--text2)">(多选)</small></div>
           <div class="chip-group" id="dimSellingPoint"></div>
         </div>
 
-        <!-- Dim 3: 用户痛点 (多选) -->
+        <!-- Dim 3: 用户痛点 -->
         <div class="dim-section">
           <div class="dim-label"><span class="dot" style="background:var(--danger)"></span> 3. 用户痛点 <small style="color:var(--text2)">(多选)</small></div>
           <div class="chip-group" id="dimPainPoint"></div>
@@ -336,10 +411,18 @@ header .actions span{font-size:11px;color:var(--text2)}
           <div class="chip-group" id="dimBrandTone"></div>
         </div>
 
-        <!-- Dim 7: 目标人群 (多选) -->
+        <!-- Dim 7: 目标人群 -->
         <div class="dim-section">
           <div class="dim-label"><span class="dot" style="background:var(--success)"></span> 7. 目标人群 <small style="color:var(--text2)">(多选)</small></div>
           <div class="chip-group" id="dimTargetAudience"></div>
+        </div>
+
+        <!-- V9: Dim 8: 人物类型 -->
+        <div class="dim-section">
+          <div class="person-type-section">
+            <div class="dim-label"><span class="dot" style="background:#3b82f6"></span> 8. 人物类型 <small style="color:var(--text2)">(画面中人物形象)</small></div>
+            <div class="person-type-options" id="personTypeOptions"></div>
+          </div>
         </div>
       </div>
 
@@ -354,7 +437,6 @@ header .actions span{font-size:11px;color:var(--text2)}
       <!-- Card 3: Generation Settings -->
       <div class="card">
         <div class="card-title"><span class="icon">⚡</span> 生成设置</div>
-        <!-- Country/Language Selector (from v7) -->
         <div class="form-group">
           <label>🌍 目标国家/地区 <small style="color:var(--text2)">(决定生成语言)</small></label>
           <select id="genLanguage" onchange="onLanguageChange()">
@@ -444,7 +526,6 @@ header .actions span{font-size:11px;color:var(--text2)}
             </div>
           </div>
         </div>
-        <!-- API Key -->
         <div class="form-group">
           <label class="collapsible collapsed" onclick="toggleCollapse(this)"> API Key / 代理设置</label>
           <div class="collapse-content collapsed">
@@ -466,7 +547,6 @@ header .actions span{font-size:11px;color:var(--text2)}
             </div>
           </div>
         </div>
-        <!-- Prompt Preview -->
         <div class="form-group">
           <label>📝 提示词预览 <span class="auto-badge">自动组合</span></label>
           <div class="prompt-preview" id="promptPreview">填写产品信息后自动显示...</div>
@@ -494,7 +574,7 @@ header .actions span{font-size:11px;color:var(--text2)}
       </div>
     </div>
 
-    <!-- Right Column: AI Analysis & History -->
+    <!-- Right Column -->
     <div>
       <div class="card">
         <div class="card-title"><span class="icon">🤖</span> AI配置分析</div>
@@ -527,6 +607,25 @@ header .actions span{font-size:11px;color:var(--text2)}
   <div class="result-area" id="resultArea" style="display:none">
     <div class="card-title"><span class="icon">🖼️</span> 生成结果</div>
     <div class="images" id="resultImages"></div>
+  </div>
+
+  <!-- V9: History Center (full-width, outside grid) -->
+  <div class="history-center" id="historyCenter">
+    <div class="hc-header">
+      <div class="hc-title"><span class="icon">📚</span> 历史记录中心 <span class="hc-count" id="hcCount">0 条记录</span></div>
+      <div class="hc-actions">
+        <button class="btn btn-primary btn-sm" onclick="exportBatchImages()">📸 批量导出图片</button>
+        <button class="btn btn-success btn-sm" onclick="exportExcel()">📊 导出Excel</button>
+        <button class="btn btn-warn btn-sm" onclick="exportCombined()">📦 图片+数据打包</button>
+      </div>
+    </div>
+    <div class="hc-scroll" id="hcScroll">
+      <div class="hc-empty" id="hcEmpty">暂无生成记录，开始创作吧！</div>
+      <table class="history-table" id="historyTable" style="display:none">
+        <thead><tr><th>缩略图</th><th>产品名</th><th>版本</th><th>国家</th><th>标签摘要</th><th>时间</th><th>操作</th></tr></thead>
+        <tbody id="historyTableBody"></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -568,7 +667,7 @@ const DEFAULT_TAGS = {
   }
 };
 
-// ============ CLOTHING TEMPLATES (multi-select) ============
+// ============ CLOTHING TEMPLATES ============
 const CLOTHING_TEMPLATES = [
   {name:'多身材模特展示', desc:'不同身高/体型模特穿同款', prompt:'showing the same clothing on models of different body types and heights'},
   {name:'多色合集展示', desc:'同款不同颜色组合', prompt:'displaying the same clothing style in multiple color options together'},
@@ -586,7 +685,40 @@ const ROLES = {
   viewer: {label:'查看人员',tag:'tag-viewer',canConfig:false,canManageUsers:false,canManageTags:false,canManageData:false}
 };
 
-// ============ COUNTRY_LANG (30+ countries) ============
+// ============ PERSON TYPES (V9) ============
+const PERSON_TYPES = [
+  {id:'commercial_model', label:'商业模特', icon:'💃', desc:'专业模特，精致高级感'},
+  {id:'normal_consumer', label:'普通消费者', icon:'👤', desc:'真实自然，贴近生活'},
+  {id:'diverse_real', label:'多样化真人', icon:'👥', desc:'多种族多体型，包容性展示'}
+];
+
+// ============ TAG WEIGHTS DEFAULT (V9) ============
+const TAG_WEIGHTS = {};
+// core: 品类+卖点
+DEFAULT_TAGS.category.forEach(c => { TAG_WEIGHTS[c.name] = 'core'; });
+Object.values(DEFAULT_TAGS.sellingPoint).forEach(groups => {
+  Object.values(groups).flat().forEach(s => { TAG_WEIGHTS[s] = 'core'; });
+});
+// auxiliary: 场景+氛围
+DEFAULT_TAGS.scene.forEach(s => { TAG_WEIGHTS[s] = 'auxiliary'; });
+DEFAULT_TAGS.atmosphere.forEach(a => { TAG_WEIGHTS[a] = 'auxiliary'; });
+// weak: 其余 (painPoints, brandTone, targetAudience)
+Object.values(DEFAULT_TAGS.painPoint).forEach(groups => {
+  Object.values(groups).flat().forEach(p => { TAG_WEIGHTS[p] = 'weak'; });
+});
+DEFAULT_TAGS.brandTone.forEach(b => { TAG_WEIGHTS[b] = 'weak'; });
+Object.values(DEFAULT_TAGS.targetAudience).flat().forEach(v => { TAG_WEIGHTS[v] = 'weak'; });
+DEFAULT_TAGS.clothingType.forEach(c => { TAG_WEIGHTS[c] = 'auxiliary'; });
+
+// ============ CONFLICT PAIRS (V9) ============
+const CONFLICT_PAIRS = [
+  ['销售型-强促销感','高端型-质感奢华'],
+  ['年轻潮流型-活力时尚','专业可信型-权威感'],
+  ['简约高级','温暖生活'],
+  ['强销售转化','精致优雅']
+];
+
+// ============ COUNTRY_LANG ============
 const COUNTRY_LANG = {
   'en-GB':{name:'English (UK)',code:'en',flag:'🇬🇧'},
   'en-US':{name:'English (US)',code:'en',flag:'🇺🇸'},
@@ -622,7 +754,7 @@ const COUNTRY_LANG = {
   'ms':{name:'Bahasa Malaysia',code:'ms',flag:'🇲🇾'}
 };
 
-// ============ ENGLISH TRANSLATION MAP (fallback) ============
+// ============ ENGLISH TRANSLATION MAP ============
 const TRANS = {
   category:{'服装':'Clothing','智能电子':'Smart Electronics','家居用品':'Home Goods','汽车工具':'Car Tools','美妆':'Beauty','食品':'Food'},
   clothingType:{'连衣裙':'Dress','T恤':'T-Shirt','衬衫':'Shirt','牛仔裤':'Jeans','休闲裤':'Casual Pants','外套':'Jacket','毛衣':'Sweater','运动服':'Sportswear','半身裙':'Skirt','卫衣':'Hoodie','风衣':'Trench Coat','羽绒服':'Down Jacket','吊带':'Camisole','短裤':'Shorts','西服':'Suit','针织衫':'Knitwear'},
@@ -634,7 +766,8 @@ const TRANS = {
   age:{'18-25岁':'18-25 years old','25-35岁':'25-35 years old','35-45岁':'35-45 years old','45岁以上':'45+ years old','全年龄段':'All ages'},
   gender:{'女性':'female','男性':'male','男女皆宜':'unisex'},
   identity:{'上班族':'office workers','学生':'students','宝妈':'moms','户外爱好者':'outdoor enthusiasts','时尚消费者':'fashion consumers','家庭主妇':'housewives','商务人士':'business professionals','运动达人':'fitness enthusiasts','宅家人士':'homebodies'},
-  clothingTemplate:{'多身材模特展示':'models of different body types wearing the same piece','多色合集展示':'same style in multiple colors together','场景穿搭展示':'styled for different daily scenarios','搭配推荐展示':'complete outfit coordination with accessories','面料细节图':'macro close-up of fabric texture and stitching','尺码指南图':'size guide with measurement points'}
+  clothingTemplate:{'多身材模特展示':'models of different body types wearing the same piece','多色合集展示':'same style in multiple colors together','场景穿搭展示':'styled for different daily scenarios','搭配推荐展示':'complete outfit coordination with accessories','面料细节图':'macro close-up of fabric texture and stitching','尺码指南图':'size guide with measurement points'},
+  personType:{'商业模特':'professional model','普通消费者':'real consumer','多样化真人':'diverse real people'}
 };
 
 // ============ MULTI-LANGUAGE TRANSLATION MAP (LANG_MAP) ============
@@ -680,15 +813,20 @@ function filterBannedWords(text) {
   return text.replace(FB_BANNED_CN, '').replace(FB_BANNED_EN, '');
 }
 
-// ============ TL() - Translation helper ============
+// ============ TL() ============
 function TL(category, val) {
   const langCode = getDetectedLanguage();
   const langMap = LANG_MAP[langCode];
-  if (langMap && langMap[category] && langMap[category][val]) {
-    return langMap[category][val];
-  }
-  // Fallback to English TRANS map
+  if (langMap && langMap[category] && langMap[category][val]) return langMap[category][val];
   return (TRANS[category] && TRANS[category][val]) ? TRANS[category][val] : val;
+}
+
+// ============ WEIGHT MARKER (V9) ============
+function getWeightMark(tagName) {
+  const w = tagWeights[tagName] || 'weak';
+  if (w === 'core') return '<span class="weight-mark weight-core" title="核心权重">★</span>';
+  if (w === 'auxiliary') return '<span class="weight-mark weight-auxiliary" title="辅助权重">☆</span>';
+  return '<span class="weight-mark weight-weak" title="弱权重">○</span>';
 }
 
 // ============ STATE ============
@@ -698,19 +836,17 @@ let refImages = [];
 let qualityScore = null;
 let genRecords = JSON.parse(localStorage.getItem('poster_ai_records') || '[]');
 let selectedTags = {
-  category: '',
-  clothingType: '',
-  sellingPoints: [],
-  painPoints: [],
-  scene: '',
-  atmosphere: '',
-  brandTone: '',
-  targetAges: [],
-  targetGenders: [],
-  targetIdentities: [],
-  clothingTemplates: []
+  category: '', clothingType: '', sellingPoints: [], painPoints: [],
+  scene: '', atmosphere: '', brandTone: '',
+  targetAges: [], targetGenders: [], targetIdentities: [],
+  clothingTemplates: [], personType: ''
 };
 let tagData = null;
+// V9 new state
+let selectedPersonType = '';
+let tagWeights = Object.assign({}, TAG_WEIGHTS);
+let v9Records = JSON.parse(localStorage.getItem('poster_v9_records') || '[]');
+let favorites = new Set(v9Records.filter(r => r.favorited).map(r => r.id));
 
 // ============ TAG MANAGEMENT ============
 function loadTags() {
@@ -723,24 +859,24 @@ function getCategoryNames() { return tagData.category.map(c => c.name); }
 function getSellingPointsForCategory(cat) { return tagData.sellingPoint[cat] || {}; }
 function getPainPointsForCategory(cat) { return tagData.painPoint[cat] || {}; }
 
-// ============ RENDER DIMENSION CHIPS ============
+// ============ RENDER DIMENSION CHIPS (V9: with weight marks) ============
 function renderAllDimensions() {
   renderCategoryChips(); renderSellingPointChips(); renderPainPointChips();
   renderSceneChips(); renderAtmosphereChips(); renderBrandToneChips();
-  renderTargetAudienceChips(); updateClothingVisibility();
+  renderTargetAudienceChips(); renderPersonTypeOptions(); updateClothingVisibility();
 }
 
 function renderCategoryChips() {
   const el = document.getElementById('dimCategory');
   el.innerHTML = tagData.category.map(c =>
-    `<div class="chip chip-pink${selectedTags.category===c.name?' active':''}" data-val="${c.name}" onclick="selectCategory('${c.name}')">${c.name}${c.children.length?' ('+c.children.join('/')+')':''}</div>`
+    `<div class="chip chip-pink${selectedTags.category===c.name?' active':''}" data-val="${c.name}" onclick="selectCategory('${c.name}')">${c.name}${getWeightMark(c.name)}${c.children.length?' ('+c.children.join('/')+')':''}</div>`
   ).join('');
 }
 
 function renderClothingTypeChips() {
   const el = document.getElementById('dimClothingType');
   el.innerHTML = (tagData.clothingType||[]).map(t =>
-    `<div class="chip chip-cloth${selectedTags.clothingType===t?' active':''}" onclick="selectClothingType('${t}')">${t}</div>`
+    `<div class="chip chip-cloth${selectedTags.clothingType===t?' active':''}" onclick="selectClothingType('${t}')">${t}${getWeightMark(t)}</div>`
   ).join('');
 }
 
@@ -753,7 +889,7 @@ function renderSellingPointChips() {
   for (const [group, items] of Object.entries(groups)) {
     html += `<div style="font-size:9px;color:var(--text2);margin:3px 0 1px;font-weight:600">${group}</div><div class="chip-group">`;
     items.forEach(item => {
-      html += `<div class="chip chip-orange${selectedTags.sellingPoints.includes(item)?' active':''}" onclick="toggleSellingPoint('${item}')">${item}</div>`;
+      html += `<div class="chip chip-orange${selectedTags.sellingPoints.includes(item)?' active':''}" onclick="toggleSellingPoint('${item}')">${item}${getWeightMark(item)}</div>`;
     });
     html += '</div>';
   }
@@ -769,7 +905,7 @@ function renderPainPointChips() {
   for (const [group, items] of Object.entries(groups)) {
     html += `<div style="font-size:9px;color:var(--text2);margin:3px 0 1px;font-weight:600">${group}</div><div class="chip-group">`;
     items.forEach(item => {
-      html += `<div class="chip chip-danger${selectedTags.painPoints.includes(item)?' active':''}" onclick="togglePainPoint('${item}')">${item}</div>`;
+      html += `<div class="chip chip-danger${selectedTags.painPoints.includes(item)?' active':''}" onclick="togglePainPoint('${item}')">${item}${getWeightMark(item)}</div>`;
     });
     html += '</div>';
   }
@@ -778,19 +914,19 @@ function renderPainPointChips() {
 
 function renderSceneChips() {
   document.getElementById('dimScene').innerHTML = tagData.scene.map(s =>
-    `<div class="chip chip-cyan${selectedTags.scene===s?' active':''}" onclick="selectScene('${s}')">${s}</div>`
+    `<div class="chip chip-cyan${selectedTags.scene===s?' active':''}" onclick="selectScene('${s}')">${s}${getWeightMark(s)}</div>`
   ).join('');
 }
 
 function renderAtmosphereChips() {
   document.getElementById('dimAtmosphere').innerHTML = tagData.atmosphere.map(a =>
-    `<div class="chip chip-purple${selectedTags.atmosphere===a?' active':''}" onclick="selectAtmosphere('${a}')">${a}</div>`
+    `<div class="chip chip-purple${selectedTags.atmosphere===a?' active':''}" onclick="selectAtmosphere('${a}')">${a}${getWeightMark(a)}</div>`
   ).join('');
 }
 
 function renderBrandToneChips() {
   document.getElementById('dimBrandTone').innerHTML = tagData.brandTone.map(b =>
-    `<div class="chip${selectedTags.brandTone===b?' active':''}" onclick="selectBrandTone('${b}')">${b}</div>`
+    `<div class="chip${selectedTags.brandTone===b?' active':''}" onclick="selectBrandTone('${b}')">${b}${getWeightMark(b)}</div>`
   ).join('');
 }
 
@@ -798,13 +934,25 @@ function renderTargetAudienceChips() {
   const el = document.getElementById('dimTargetAudience');
   const aud = tagData.targetAudience;
   let html = '<div style="font-size:9px;color:var(--text2);margin-bottom:1px;font-weight:600">年龄(可多选)</div><div class="chip-group">';
-  aud.age.forEach(a => { html += `<div class="chip chip-success${(selectedTags.targetAges||[]).includes(a)?' active':''}" onclick="toggleTargetAge('${a}')">${a}</div>`; });
+  aud.age.forEach(a => { html += `<div class="chip chip-success${(selectedTags.targetAges||[]).includes(a)?' active':''}" onclick="toggleTargetAge('${a}')">${a}${getWeightMark(a)}</div>`; });
   html += '</div><div style="font-size:9px;color:var(--text2);margin:3px 0 1px;font-weight:600">性别(可多选)</div><div class="chip-group">';
-  aud.gender.forEach(g => { html += `<div class="chip chip-pink${(selectedTags.targetGenders||[]).includes(g)?' active':''}" onclick="toggleTargetGender('${g}')">${g}</div>`; });
+  aud.gender.forEach(g => { html += `<div class="chip chip-pink${(selectedTags.targetGenders||[]).includes(g)?' active':''}" onclick="toggleTargetGender('${g}')">${g}${getWeightMark(g)}</div>`; });
   html += '</div><div style="font-size:9px;color:var(--text2);margin:3px 0 1px;font-weight:600">身份(可多选)</div><div class="chip-group">';
-  aud.identity.forEach(i => { html += `<div class="chip${(selectedTags.targetIdentities||[]).includes(i)?' active':''}" onclick="toggleTargetIdentity('${i}')">${i}</div>`; });
+  aud.identity.forEach(i => { html += `<div class="chip${(selectedTags.targetIdentities||[]).includes(i)?' active':''}" onclick="toggleTargetIdentity('${i}')">${i}${getWeightMark(i)}</div>`; });
   html += '</div>';
   el.innerHTML = html;
+}
+
+// V9: Person Type Rendering
+function renderPersonTypeOptions() {
+  const el = document.getElementById('personTypeOptions');
+  el.innerHTML = PERSON_TYPES.map(pt =>
+    `<div class="person-type-btn${selectedPersonType===pt.id?' active':''}" onclick="selectPersonType('${pt.id}')">
+      <span class="pt-icon">${pt.icon}</span>
+      <span class="pt-label">${pt.label}</span>
+      <span class="pt-desc">${pt.desc}</span>
+    </div>`
+  ).join('');
 }
 
 // ============ TAG SELECTION HANDLERS ============
@@ -847,6 +995,12 @@ function toggleTargetIdentity(name) {
   if (idx >= 0) selectedTags.targetIdentities.splice(idx, 1); else selectedTags.targetIdentities.push(name);
   renderTargetAudienceChips(); updatePreview(); updateAnalysis();
 }
+// V9: Person Type
+function selectPersonType(id) {
+  selectedPersonType = selectedPersonType === id ? '' : id;
+  selectedTags.personType = selectedPersonType;
+  renderPersonTypeOptions(); updatePreview(); updateAnalysis();
+}
 
 function updateClothingVisibility() {
   const isClothing = selectedTags.category === '服装';
@@ -877,6 +1031,10 @@ function updateSelectionSummary() {
   if (selectedTags.brandTone) parts.push(`<b>调性:</b> ${selectedTags.brandTone}`);
   const aud = [...(selectedTags.targetAges||[]), ...(selectedTags.targetGenders||[]), ...(selectedTags.targetIdentities||[])];
   if (aud.length) parts.push(`<b>人群:</b> ${aud.join(' ')}`);
+  if (selectedPersonType) {
+    const pt = PERSON_TYPES.find(p=>p.id===selectedPersonType);
+    if (pt) parts.push(`<b>人物:</b> ${pt.icon} ${pt.label}`);
+  }
   if (selectedTags.clothingTemplates && selectedTags.clothingTemplates.length) parts.push(`<b>模板:</b> ${selectedTags.clothingTemplates.join('+')}`);
   const langInfo = COUNTRY_LANG[getDetectedLanguage()];
   if (langInfo) parts.push(`<b>语言:</b> ${langInfo.flag} ${langInfo.name}`);
@@ -888,27 +1046,22 @@ function getDetectedLanguage() {
   const val = document.getElementById('genLanguage').value;
   return val || 'en-GB';
 }
-
 function getTargetLangName() {
   const val = getDetectedLanguage();
   return COUNTRY_LANG[val] ? COUNTRY_LANG[val].name : 'English';
 }
-
 function onLanguageChange() {
   const langInfo = COUNTRY_LANG[getDetectedLanguage()];
   document.getElementById('langHint').textContent = '↳ 当前语言: ' + (langInfo ? langInfo.flag + ' ' + langInfo.name : 'English');
-  updatePreview();
-  updateAnalysis();
+  updatePreview(); updateAnalysis();
 }
 
-// ============ PROMPT BUILDING (with TL() and banned words filter) ============
+// ============ PROMPT BUILDING ============
 function buildAutoPrompt() {
   const name = document.getElementById('productName').value.trim();
   const extra = document.getElementById('extraNote').value.trim();
   const size = document.getElementById('imageSize').value;
   const quality = document.getElementById('imageQuality').value;
-
-  // Custom template check
   const customTemplate = localStorage.getItem('poster_ai_custom_prompts') || '';
   if (customTemplate && customTemplate.trim()) {
     let prompt = customTemplate
@@ -923,42 +1076,41 @@ function buildAutoPrompt() {
     prompt += `\n\nIMPORTANT: All visible text on the poster MUST be in ${getTargetLangName()}. No Chinese characters anywhere. No watermarks. No logos.`;
     return filterBannedWords(prompt);
   }
-
   if (!selectedTags.category && !name) return 'Please select tags or enter product name...';
-
   const lines = [];
   let subject = name || 'product';
   if (selectedTags.category === '服装' && selectedTags.clothingType) {
     subject = TL('clothingType', selectedTags.clothingType) + (name ? ' "'+name+'"' : '');
   }
   lines.push(`Create a professional e-commerce poster for: "${subject}"`);
-
   if (selectedTags.category) lines.push(`Category: ${TL('category', selectedTags.category) || selectedTags.category}`);
   if (selectedTags.sellingPoints.length) lines.push(`Key selling points: ${selectedTags.sellingPoints.map(s=>TL('sellingPoints',s)).join(', ')}`);
-
   if (selectedTags.painPoints.length) {
     lines.push(`Addresses pain points: ${selectedTags.painPoints.map(p=>TL('painPoints',p)).join(', ')} - demonstrate how ${TL('sellingPoints',selectedTags.sellingPoints[0])||'the product'} solves these concerns`);
   }
-
   if (selectedTags.scene) lines.push(`Usage scene: ${TL('scene', selectedTags.scene) || selectedTags.scene}`);
-
   const styleParts = [];
   if (selectedTags.atmosphere) styleParts.push(TL('atmosphere', selectedTags.atmosphere) || selectedTags.atmosphere.split('-')[0]);
   if (selectedTags.brandTone) styleParts.push(TL('brandTone', selectedTags.brandTone) || selectedTags.brandTone);
   if (styleParts.length) lines.push(`Visual style: ${styleParts.join(', ')}`);
-
   const audience = buildAudienceText();
   if (audience) lines.push(`Target audience: ${audience}`);
 
-  // Multi-select clothing templates
+  // V9: Person type
+  if (selectedPersonType) {
+    const pt = PERSON_TYPES.find(p=>p.id===selectedPersonType);
+    if (pt) {
+      const ptEn = {'commercial_model':'Use professional commercial models with polished appearance','normal_consumer':'Use real-looking everyday consumers, natural and authentic','diverse_real':'Use diverse models of different ethnicities, body types and ages for inclusive representation'};
+      lines.push(`Model type: ${ptEn[selectedPersonType]||pt.label}`);
+    }
+  }
+
   if (selectedTags.category === '服装' && selectedTags.clothingTemplates && selectedTags.clothingTemplates.length) {
     selectedTags.clothingTemplates.forEach(tplName => {
       const tpl = CLOTHING_TEMPLATES.find(t => t.name === tplName);
       if (tpl) lines.push(`Clothing display: ${tpl.prompt}`);
     });
   }
-
-  // Scene description for clothing
   if (selectedTags.category === '服装') {
     const genders = (selectedTags.targetGenders && selectedTags.targetGenders.length) ? selectedTags.targetGenders : ['女性'];
     const genderText = genders.includes('女性') ? TL('gender','女性') : genders.includes('男性') ? TL('gender','男性') : 'model';
@@ -971,24 +1123,15 @@ function buildAutoPrompt() {
     const sceneEn = TL('scene', selectedTags.scene) || selectedTags.scene;
     lines.push(`\nScene: ${audience} using ${subject} in ${sceneEn} setting, showing ${TL('sellingPoints',selectedTags.sellingPoints[0])||'product benefits'}`);
   }
-
-  // STRICT: No Chinese + target language enforcement
   const targetLang = getTargetLangName();
   const langCode = getDetectedLanguage();
   lines.push(`\nIMPORTANT: All visible text on the poster MUST be in ${targetLang}. No other languages allowed. NO Chinese characters anywhere.`);
   lines.push(`No watermarks. No logos. No text overlays. Pure visual imagery with text only in ${targetLang}.`);
-
-  // Model faces based on target region
   const asianLangs = ['ja','ko','th','vi','id','ms'];
-  if (asianLangs.includes(langCode)) {
-    lines.push('Use Asian models appropriate for the target market.');
-  } else {
-    lines.push('Use Western/European models appropriate for the target market.');
-  }
-
+  if (asianLangs.includes(langCode)) { lines.push('Use Asian models appropriate for the target market.'); }
+  else { lines.push('Use Western/European models appropriate for the target market.'); }
   if (extra) lines.push(`Additional: ${extra}`);
   lines.push(`Aspect ratio: ${size}, Quality: ${quality}, highly detailed professional commercial photography, not AI-looking`);
-
   return filterBannedWords(lines.join('\n'));
 }
 
@@ -1020,7 +1163,8 @@ function updateAnalysis() {
     {name:'场景', filled:!!selectedTags.scene},
     {name:'氛围', filled:!!selectedTags.atmosphere},
     {name:'调性', filled:!!selectedTags.brandTone},
-    {name:'人群', filled:!!(selectedTags.targetAges&&selectedTags.targetAges.length)||!!(selectedTags.targetGenders&&selectedTags.targetGenders.length)||!!(selectedTags.targetIdentities&&selectedTags.targetIdentities.length)}
+    {name:'人群', filled:!!(selectedTags.targetAges&&selectedTags.targetAges.length)||!!(selectedTags.targetGenders&&selectedTags.targetGenders.length)||!!(selectedTags.targetIdentities&&selectedTags.targetIdentities.length)},
+    {name:'人物', filled:!!selectedPersonType}
   ];
   const filledCount = dims.filter(d=>d.filled).length;
   const coverage = Math.round(filledCount / dims.length * 100);
@@ -1032,6 +1176,7 @@ function updateAnalysis() {
   if (!selectedTags.sellingPoints.length) suggestions.push('💡 建议选择2-3个核心卖点');
   if (!selectedTags.scene) suggestions.push('💡 选择使用场景增强代入感');
   if (!selectedTags.atmosphere) suggestions.push('💡 选择氛围风格确定视觉方向');
+  if (!selectedPersonType) suggestions.push('💡 选择人物类型确定模特风格');
   if (selectedTags.category === '服装' && !selectedTags.clothingType) suggestions.push('💡 选择服装类型提升精准度');
   if (selectedTags.category === '服装' && !(selectedTags.clothingTemplates && selectedTags.clothingTemplates.length)) suggestions.push('💡 选择服装模板获得更好效果');
   if (suggestions.length) {
@@ -1040,6 +1185,14 @@ function updateAnalysis() {
     html += '</div>';
   }
   if (coverage < 50) html += '<button class="btn btn-primary btn-sm" style="width:100%;margin-top:6px" onclick="aiAutoFill()">🪄 一键智能填充</button>';
+  // V9: conflict warning in analysis
+  const conflicts = checkConflicts();
+  if (conflicts.length) {
+    html += '<div style="margin-top:6px;padding:6px;background:#fffbeb;border:1px solid #fde68a;border-radius:6px">';
+    html += '<div style="font-size:10px;color:var(--warn);font-weight:600">⚠️ 存在标签冲突</div>';
+    conflicts.forEach(c => { html += `<div style="font-size:9px;color:var(--text2)">"${c[0]}" ↔ "${c[1]}"</div>`; });
+    html += '</div>';
+  }
   el.innerHTML = html;
 }
 
@@ -1088,6 +1241,7 @@ function aiAutoFill() {
     selectedTags.targetIdentities = [idMap[selectedTags.category] || '上班族'];
   }
   if (selectedTags.category === '服装' && !selectedTags.clothingType) selectedTags.clothingType = '连衣裙';
+  if (!selectedPersonType) { selectedPersonType = 'commercial_model'; selectedTags.personType = selectedPersonType; }
   renderAllDimensions(); updatePreview(); updateAnalysis();
   setStatus('✅ AI已智能填充标签配置', 'success');
 }
@@ -1096,14 +1250,7 @@ function aiAutoFill() {
 function onProductChange() {
   const name = document.getElementById('productName').value.trim();
   if (!selectedTags.category && name) {
-    const catKeywords = {
-      '服装':/衣|裤|裙|衫|外套|T恤|衬衫|连衣裙|牛仔裤|运动服|毛衣|卫衣/i,
-      '智能电子':/充电|蓝牙|耳机|手机壳|数据线|鼠标|键盘|智能|电子/i,
-      '家居用品':/枕|被|毯|杯|碗|收纳|清洁|拖把|灯/i,
-      '汽车工具':/车载|汽车|方向盘/i,
-      '美妆':/口红|粉底|眼影|面膜|精华|乳液/i,
-      '食品':/零食|茶|咖啡|坚果|水果/i
-    };
+    const catKeywords = {'服装':/衣|裤|裙|衫|外套|T恤|衬衫|连衣裙|牛仔裤|运动服|毛衣|卫衣/i,'智能电子':/充电|蓝牙|耳机|手机壳|数据线|鼠标|键盘|智能|电子/i,'家居用品':/枕|被|毯|杯|碗|收纳|清洁|拖把|灯/i,'汽车工具':/车载|汽车|方向盘/i,'美妆':/口红|粉底|眼影|面膜|精华|乳液/i,'食品':/零食|茶|咖啡|坚果|水果/i};
     for (const [cat, regex] of Object.entries(catKeywords)) { if (regex.test(name)) { selectedTags.category = cat; break; } }
     if (selectedTags.category) { renderAllDimensions(); updateAnalysis(); }
   }
@@ -1118,17 +1265,14 @@ function setupPasteHandlers() {
     for (const item of items) { if (item.type.startsWith('image/')) { e.preventDefault(); processImageFile(item.getAsFile(), 'product'); return; } }
   });
 }
-
 function handleFileSelect(input, type) {
   Array.from(input.files).filter(f => f.type.startsWith('image/')).forEach(f => processImageFile(f, type));
   input.value = '';
 }
-
 function handleDrop(e, type) {
   e.preventDefault(); e.currentTarget.style.borderColor = '';
   Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')).forEach(f => processImageFile(f, type));
 }
-
 function processImageFile(file, type) {
   const reader = new FileReader();
   reader.onload = e => {
@@ -1138,7 +1282,6 @@ function processImageFile(file, type) {
   };
   reader.readAsDataURL(file);
 }
-
 function renderProductPreviews() {
   const c = document.getElementById('productPreview');
   c.innerHTML = productImages.map((img, i) =>
@@ -1147,7 +1290,6 @@ function renderProductPreviews() {
   document.getElementById('productZone').classList.toggle('has-image', productImages.length > 0);
 }
 function removeProductImg(idx) { productImages.splice(idx, 1); renderProductPreviews(); }
-
 function renderRefPreviews() {
   const c = document.getElementById('refPreview');
   c.innerHTML = refImages.map((img, i) =>
@@ -1158,10 +1300,7 @@ function renderRefPreviews() {
 function removeRef(idx) { refImages.splice(idx, 1); renderRefPreviews(); }
 
 // ============ COLLAPSE TOGGLE ============
-function toggleCollapse(el) {
-  el.classList.toggle('collapsed');
-  el.nextElementSibling.classList.toggle('collapsed');
-}
+function toggleCollapse(el) { el.classList.toggle('collapsed'); el.nextElementSibling.classList.toggle('collapsed'); }
 
 // ============ QUALITY CHECK ============
 function runQualityCheck() {
@@ -1172,17 +1311,14 @@ function runQualityCheck() {
   if (selectedTags.sellingPoints.length > 0) infoScore += 20; else suggestions.push('💡 补充核心卖点可提升效果');
   if (selectedTags.category) infoScore += 15; else suggestions.push('💡 选择品类帮助AI理解');
   if (selectedTags.scene || selectedTags.atmosphere) infoScore += 10; else suggestions.push('💡 设定场景/氛围可提升效果');
-
   if (refImages.length > 0) visualScore += 30; else suggestions.push('📷 上传参考图可稳定视觉方向');
   if (selectedTags.atmosphere) visualScore += 25; else suggestions.push('🎨 请选择氛围风格');
   if (selectedTags.brandTone) visualScore += 25; else suggestions.push('👁️ 选择品牌调性帮助确定风格');
   if (selectedTags.scene) visualScore += 20; else suggestions.push('📐 选择使用场景控制画面');
-
   if ((selectedTags.targetAges||[]).length || (selectedTags.targetGenders||[]).length) convertScore += 25; else suggestions.push('🎯 明确目标人群提升转化');
   if (selectedTags.category) convertScore += 25; else suggestions.push('🌍 设定品类帮助本地化');
   if (selectedTags.sellingPoints.length) convertScore += 25; else suggestions.push('📢 提炼核心卖点增强说服力');
   if (selectedTags.painPoints.length) convertScore += 25; else suggestions.push('✨ 针对痛点增强说服力');
-
   const overall = Math.round(infoScore * 0.4 + visualScore * 0.3 + convertScore * 0.3);
   qualityScore = { overall, infoScore, visualScore, convertScore, suggestions };
   renderQualityPanel();
@@ -1219,23 +1355,78 @@ function renderQualityPanel() {
 }
 
 function getScoreColor(s) { return s >= 80 ? 'var(--success)' : s >= 60 ? 'var(--accent2)' : s >= 40 ? 'var(--warn)' : 'var(--danger)'; }
-
-function aiOptimize() {
-  aiAutoFill();
-  runQualityCheck();
-  setStatus('✅ AI已自动补充缺失字段', 'success');
-}
-
+function aiOptimize() { aiAutoFill(); runQualityCheck(); setStatus('✅ AI已自动补充缺失字段', 'success'); }
 function proceedGenerate() { document.getElementById('qualityPanel').classList.add('hidden'); doGenerate(); }
 function closeQuality() { document.getElementById('qualityPanel').classList.add('hidden'); }
 
-// ============ GENERATE ============
+// ============ V9: CONFLICT DETECTION ============
+function checkConflicts() {
+  const conflicts = [];
+  const allSelected = [selectedTags.atmosphere, selectedTags.brandTone].filter(Boolean);
+  CONFLICT_PAIRS.forEach(([a, b]) => {
+    if (allSelected.includes(a) && allSelected.includes(b)) conflicts.push([a, b]);
+  });
+  return conflicts;
+}
+
+function showConflictWarning(conflicts) {
+  const list = document.getElementById('conflictList');
+  list.innerHTML = conflicts.map(([a, b]) =>
+    `<div class="conflict-item"><span>${a}</span><span class="vs">↔</span><span>${b}</span></div>`
+  ).join('');
+  document.getElementById('conflictModal').classList.remove('hidden');
+}
+
+function closeConflictModal() { document.getElementById('conflictModal').classList.add('hidden'); }
+
+function ignoreConflicts() {
+  closeConflictModal();
+  showConfirmModal();
+}
+
+// ============ V9: CONFIRM MODAL ============
+function showConfirmModal() {
+  const name = document.getElementById('productName').value.trim() || '未命名产品';
+  const prompt = buildAutoPrompt();
+  document.getElementById('confirmTitle').textContent = `确认为"${name}"生成图片？`;
+  const summary = [];
+  if (selectedTags.category) summary.push(`品类: ${selectedTags.category}`);
+  if (selectedTags.sellingPoints.length) summary.push(`卖点: ${selectedTags.sellingPoints.join('、')}`);
+  if (selectedTags.scene) summary.push(`场景: ${selectedTags.scene}`);
+  if (selectedTags.atmosphere) summary.push(`氛围: ${selectedTags.atmosphere}`);
+  if (selectedTags.brandTone) summary.push(`调性: ${selectedTags.brandTone}`);
+  if (selectedPersonType) { const pt = PERSON_TYPES.find(p=>p.id===selectedPersonType); if(pt) summary.push(`人物: ${pt.label}`); }
+  const model = document.getElementById('aiModel').value;
+  const size = document.getElementById('imageSize').value;
+  const count = document.getElementById('imageCount').value;
+  summary.push(`模型: ${model}, 尺寸: ${size}, 张数: ${count}`);
+  const langInfo = COUNTRY_LANG[getDetectedLanguage()];
+  if (langInfo) summary.push(`语言: ${langInfo.flag} ${langInfo.name}`);
+  document.getElementById('confirmDesc').innerHTML = summary.map(s => `<div>${s}</div>`).join('') +
+    `<div style="margin-top:6px;font-size:9px;color:var(--text2);max-height:80px;overflow-y:auto;white-space:pre-wrap">${prompt.substring(0,300)}...</div>`;
+  document.getElementById('confirmModal').classList.remove('hidden');
+}
+
+function closeConfirmModal() { document.getElementById('confirmModal').classList.add('hidden'); }
+
+function confirmGenerate() {
+  closeConfirmModal();
+  doGenerate();
+}
+
+// ============ GENERATE (V9: modified flow) ============
 function onGenerate() {
   const name = document.getElementById('productName').value.trim();
   if (!name && productImages.length === 0) return setStatus('请填写产品名称或上传图片', 'error');
   if (!getApiKey()) return setStatus('请先设置 API Key', 'error');
+  // V9: Check conflicts first
+  const conflicts = checkConflicts();
+  if (conflicts.length > 0) {
+    showConflictWarning(conflicts);
+    return;
+  }
   if (!qualityScore) { runQualityCheck(); if (qualityScore && qualityScore.overall < 70) { setStatus('⚠️ 信息不足，建议先优化或点击"继续生成"', 'warn'); return; } }
-  doGenerate();
+  showConfirmModal();
 }
 
 async function doGenerate() {
@@ -1245,10 +1436,12 @@ async function doGenerate() {
   const prompt = buildAutoPrompt();
   const model = document.getElementById('aiModel').value;
   const size = document.getElementById('imageSize').value;
+  const quality = document.getElementById('imageQuality').value;
   const count = parseInt(document.getElementById('imageCount').value);
   const btn = document.getElementById('generateBtn');
   btn.disabled = true; btn.textContent = '⏳ 生成中...';
   setStatus('正在提交任务...', 'info');
+  let resultImages = [];
   try {
     const imageUrls = [...productImages, ...refImages];
     const body = { model, prompt, size, n: count, image_urls: imageUrls };
@@ -1266,6 +1459,9 @@ async function doGenerate() {
     displayResults(result);
     setStatus('✅ 生成完成！', 'success');
     addRecord(name, true);
+    // V9: Save full record
+    if (result && result.images) resultImages = result.images.map(img => img.url);
+    saveV9Record(name, prompt, model, size, quality, count, resultImages);
     qualityScore = null;
   } catch (err) {
     setStatus('❌ 生成失败: ' + err.message, 'error');
@@ -1334,12 +1530,246 @@ function viewImage(url) {
   document.getElementById('imgViewer').classList.remove('hidden');
 }
 
+// ============ V9: SAVE RECORD ============
+function saveV9Record(name, prompt, model, size, quality, count, imageUrls) {
+  const existingVersions = v9Records.filter(r => r.productName === name);
+  const version = 'V' + (existingVersions.length + 1);
+  const record = {
+    id: Date.now(),
+    productName: name,
+    productImages: productImages.slice(),
+    category: selectedTags.category,
+    clothingType: selectedTags.clothingType,
+    createdAt: new Date().toISOString(),
+    version: version,
+    tags: {
+      category: selectedTags.category,
+      clothingType: selectedTags.clothingType,
+      sellingPoints: [...selectedTags.sellingPoints],
+      painPoints: [...selectedTags.painPoints],
+      scene: selectedTags.scene,
+      atmosphere: selectedTags.atmosphere,
+      brandTone: selectedTags.brandTone,
+      targetAges: [...(selectedTags.targetAges||[])],
+      targetGenders: [...(selectedTags.targetGenders||[])],
+      targetIdentities: [...(selectedTags.targetIdentities||[])],
+      clothingTemplates: [...(selectedTags.clothingTemplates||[])],
+      personType: selectedPersonType
+    },
+    tagWeights: Object.assign({}, tagWeights),
+    country: getDetectedLanguage(),
+    aiAnalysis: '',
+    prompt: prompt,
+    model: model,
+    size: size,
+    quality: quality,
+    count: count,
+    imageUrls: imageUrls || [],
+    favorited: false,
+    rating: 0
+  };
+  v9Records.push(record);
+  if (v9Records.length > 200) v9Records = v9Records.slice(-200);
+  localStorage.setItem('poster_v9_records', JSON.stringify(v9Records));
+  renderHistoryCenter();
+  renderHistory();
+}
+
+function deleteV9Record(id) {
+  if (!confirm('确定删除该记录？')) return;
+  v9Records = v9Records.filter(r => r.id !== id);
+  localStorage.setItem('poster_v9_records', JSON.stringify(v9Records));
+  renderHistoryCenter();
+  renderHistory();
+}
+
+function toggleFavorite(id) {
+  const rec = v9Records.find(r => r.id === id);
+  if (rec) {
+    rec.favorited = !rec.favorited;
+    if (rec.favorited) favorites.add(id); else favorites.delete(id);
+    localStorage.setItem('poster_v9_records', JSON.stringify(v9Records));
+    renderHistoryCenter();
+  }
+}
+
+function loadRecordToEditor(id) {
+  const rec = v9Records.find(r => r.id === id);
+  if (!rec) return;
+  document.getElementById('productName').value = rec.productName;
+  productImages = rec.productImages ? rec.productImages.slice() : [];
+  renderProductPreviews();
+  selectedTags.category = rec.tags.category || '';
+  selectedTags.clothingType = rec.tags.clothingType || '';
+  selectedTags.sellingPoints = rec.tags.sellingPoints ? [...rec.tags.sellingPoints] : [];
+  selectedTags.painPoints = rec.tags.painPoints ? [...rec.tags.painPoints] : [];
+  selectedTags.scene = rec.tags.scene || '';
+  selectedTags.atmosphere = rec.tags.atmosphere || '';
+  selectedTags.brandTone = rec.tags.brandTone || '';
+  selectedTags.targetAges = rec.tags.targetAges ? [...rec.tags.targetAges] : [];
+  selectedTags.targetGenders = rec.tags.targetGenders ? [...rec.tags.targetGenders] : [];
+  selectedTags.targetIdentities = rec.tags.targetIdentities ? [...rec.tags.targetIdentities] : [];
+  selectedTags.clothingTemplates = rec.tags.clothingTemplates ? [...rec.tags.clothingTemplates] : [];
+  selectedPersonType = rec.tags.personType || '';
+  selectedTags.personType = selectedPersonType;
+  if (rec.country) document.getElementById('genLanguage').value = rec.country;
+  renderAllDimensions(); updatePreview(); updateAnalysis();
+  onLanguageChange();
+  setStatus('✅ 已加载历史记录到编辑器', 'success');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ============ V9: HISTORY CENTER RENDERING ============
+function renderHistoryCenter() {
+  const tbody = document.getElementById('historyTableBody');
+  const empty = document.getElementById('hcEmpty');
+  const table = document.getElementById('historyTable');
+  const countEl = document.getElementById('hcCount');
+  countEl.textContent = v9Records.length + ' 条记录';
+  if (v9Records.length === 0) {
+    empty.style.display = 'block'; table.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none'; table.style.display = 'table';
+  const sorted = [...v9Records].reverse();
+  tbody.innerHTML = sorted.map(rec => {
+    const thumb = rec.imageUrls && rec.imageUrls.length ? rec.imageUrls[0] : (rec.productImages && rec.productImages.length ? rec.productImages[0] : '');
+    const langInfo = COUNTRY_LANG[rec.country] || {};
+    const tagSummary = [
+      rec.tags.category, ...(rec.tags.sellingPoints||[]).slice(0,2), rec.tags.scene, rec.tags.atmosphere
+    ].filter(Boolean).join(' · ');
+    const date = rec.createdAt ? new Date(rec.createdAt).toLocaleString('zh-CN', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+    return `<tr>
+      <td>${thumb ? `<img class="thumb" src="${thumb}" onclick="viewImage('${thumb}')">` : '<span style="color:var(--text2)">—</span>'}</td>
+      <td style="font-weight:500">${rec.productName}</td>
+      <td><span class="version-badge">${rec.version}</span></td>
+      <td>${langInfo.flag||''} ${langInfo.name||rec.country||''}</td>
+      <td><span class="tag-summary">${tagSummary}</span></td>
+      <td style="font-size:9px;color:var(--text2)">${date}</td>
+      <td><div class="actions-cell">
+        <span class="fav-star${rec.favorited?' active':''}" onclick="toggleFavorite(${rec.id})">${rec.favorited?'★':'☆'}</span>
+        ${rec.imageUrls&&rec.imageUrls.length?`<button class="btn btn-outline btn-sm" onclick="viewImage('${rec.imageUrls[0]}')">🖼️</button>`:''}
+        <button class="btn btn-primary btn-sm" onclick="loadRecordToEditor(${rec.id})">📝 编辑</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteV9Record(${rec.id})">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ============ V9: BATCH EXPORT ============
+async function exportBatchImages() {
+  if (v9Records.length === 0) return alert('暂无记录可导出');
+  const recordsWithImages = v9Records.filter(r => r.imageUrls && r.imageUrls.length);
+  if (recordsWithImages.length === 0) return alert('暂无带图片的记录');
+  setStatus('📦 正在打包图片...', 'info');
+  try {
+    const zip = new JSZip();
+    const imgFolder = zip.folder('poster_v9_images');
+    for (let i = 0; i < recordsWithImages.length; i++) {
+      const rec = recordsWithImages[i];
+      for (let j = 0; j < rec.imageUrls.length; j++) {
+        try {
+          const resp = await fetch(rec.imageUrls[j]);
+          const blob = await resp.blob();
+          const ext = blob.type.includes('png') ? 'png' : 'jpg';
+          imgFolder.file(`${rec.productName}_${rec.version}_${j+1}.${ext}`, blob);
+        } catch(e) { console.warn('Skip image:', e); }
+      }
+    }
+    const content = await zip.generateAsync({type: 'blob'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(content);
+    a.download = `poster_v9_images_${new Date().toISOString().slice(0,10)}.zip`;
+    a.click();
+    setStatus('✅ 图片打包完成', 'success');
+  } catch(err) {
+    setStatus('❌ 打包失败: ' + err.message, 'error');
+  }
+}
+
+function exportExcel() {
+  if (v9Records.length === 0) return alert('暂无记录可导出');
+  const data = v9Records.map(r => ({
+    '产品名称': r.productName,
+    '版本': r.version,
+    '品类': r.tags.category,
+    '服装类型': r.tags.clothingType || '',
+    '核心卖点': (r.tags.sellingPoints||[]).join('、'),
+    '用户痛点': (r.tags.painPoints||[]).join('、'),
+    '使用场景': r.tags.scene,
+    '氛围风格': r.tags.atmosphere,
+    '品牌调性': r.tags.brandTone,
+    '目标年龄': (r.tags.targetAges||[]).join('、'),
+    '目标性别': (r.tags.targetGenders||[]).join('、'),
+    '目标身份': (r.tags.targetIdentities||[]).join('、'),
+    '人物类型': r.tags.personType || '',
+    '国家/语言': r.country,
+    'AI模型': r.model,
+    '尺寸': r.size,
+    '清晰度': r.quality,
+    '生成张数': r.count,
+    '提示词': r.prompt,
+    '创建时间': r.createdAt,
+    '收藏': r.favorited ? '★' : '',
+    '图片URL': (r.imageUrls||[]).join('\n')
+  }));
+  try {
+    const ws = XLSX.utils.json_to_sheet(data);
+    ws['!cols'] = [{wch:15},{wch:6},{wch:8},{wch:10},{wch:20},{wch:20},{wch:10},{wch:15},{wch:10},{wch:12},{wch:8},{wch:12},{wch:10},{wch:8},{wch:10},{wch:6},{wch:6},{wch:6},{wch:50},{wch:18},{wch:4},{wch:50}];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, '生成记录');
+    XLSX.writeFile(wb, `poster_v9_records_${new Date().toISOString().slice(0,10)}.xlsx`);
+    setStatus('✅ Excel导出完成', 'success');
+  } catch(err) {
+    setStatus('❌ Excel导出失败: ' + err.message, 'error');
+  }
+}
+
+async function exportCombined() {
+  if (v9Records.length === 0) return alert('暂无记录可导出');
+  setStatus('📦 正在打包图片+数据...', 'info');
+  try {
+    const zip = new JSZip();
+    const imgFolder = zip.folder('images');
+    for (const rec of v9Records) {
+      if (rec.imageUrls && rec.imageUrls.length) {
+        for (let j = 0; j < rec.imageUrls.length; j++) {
+          try {
+            const resp = await fetch(rec.imageUrls[j]);
+            const blob = await resp.blob();
+            const ext = blob.type.includes('png') ? 'png' : 'jpg';
+            imgFolder.file(`${rec.productName}_${rec.version}_${j+1}.${ext}`, blob);
+          } catch(e) { console.warn('Skip image:', e); }
+        }
+      }
+    }
+    // Add Excel data
+    const data = v9Records.map(r => ({
+      '产品名称': r.productName, '版本': r.version, '品类': r.tags.category,
+      '核心卖点': (r.tags.sellingPoints||[]).join('、'), '氛围风格': r.tags.atmosphere,
+      '品牌调性': r.tags.brandTone, '国家/语言': r.country, '提示词': r.prompt, '创建时间': r.createdAt
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, '记录');
+    const xlsxData = XLSX.write(wb, {type: 'array', bookType: 'xlsx'});
+    zip.file('records.xlsx', xlsxData);
+    const content = await zip.generateAsync({type: 'blob'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(content);
+    a.download = `poster_v9_full_${new Date().toISOString().slice(0,10)}.zip`;
+    a.click();
+    setStatus('✅ 图片+数据打包完成', 'success');
+  } catch(err) {
+    setStatus('❌ 打包失败: ' + err.message, 'error');
+  }
+}
+
 // ============ UTILS ============
 function setStatus(msg, type) {
   const bar = document.getElementById('statusBar');
   bar.textContent = msg; bar.className = 'status-bar ' + type;
 }
-
 async function testProxy() {
   const statusEl = document.getElementById('proxyStatus');
   statusEl.textContent = '测试中...'; statusEl.style.color = 'var(--text2)';
@@ -1353,7 +1783,6 @@ async function testProxy() {
   }
   statusEl.textContent = '❌ 所有代理不可用'; statusEl.style.color = 'var(--danger)';
 }
-
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ============ AUTH (Free Login Mode) ============
@@ -1362,7 +1791,6 @@ function hashPassword(pwd) {
   for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash = hash & hash; }
   return hash.toString(36);
 }
-
 function initAccounts() {
   const accounts = JSON.parse(localStorage.getItem('poster_v5_accounts') || 'null');
   if (!accounts) {
@@ -1370,13 +1798,10 @@ function initAccounts() {
     localStorage.setItem('poster_v5_accounts', JSON.stringify(defaults));
   }
 }
-
 function checkSession() {
-  // Free login mode: auto-login as super_admin
   currentUser = { username: 'admin', role: 'super_admin' };
   showApp();
 }
-
 function doLogin() {
   const username = document.getElementById('loginUser').value.trim();
   const password = document.getElementById('loginPass').value;
@@ -1388,14 +1813,12 @@ function doLogin() {
   sessionStorage.setItem('poster_ai_session', JSON.stringify(currentUser));
   showApp();
 }
-
 function doLogout() {
   sessionStorage.removeItem('poster_ai_session');
   currentUser = null;
   document.getElementById('loginOverlay').classList.remove('hidden');
   document.getElementById('mainApp').style.display = 'none';
 }
-
 function showApp() {
   document.getElementById('loginOverlay').classList.add('hidden');
   document.getElementById('mainApp').style.display = 'block';
@@ -1416,6 +1839,7 @@ function showApp() {
   if (cp) document.getElementById('customPromptText').value = cp;
   renderAllDimensions();
   renderHistory();
+  renderHistoryCenter();
   onLanguageChange();
 }
 
@@ -1541,14 +1965,13 @@ function clearRecords() {
   genRecords = []; localStorage.setItem('poster_ai_records', '[]'); renderDataRecords(); renderHistory();
 }
 
-// ============ TAG MANAGEMENT UI (Admin Tab 0) ============
+// ============ TAG MANAGEMENT UI ============
 function renderTagManagement() {
   const el = document.getElementById('tagMgmtContent');
   let html = '';
   html += '<div class="tag-mgmt-group"><h4>📦 产品品类</h4><div class="tag-mgmt-list">';
   tagData.category.forEach((c, i) => { html += `<span class="tag-mgmt-item">${c.name}${c.children.length?' ('+c.children.join('/')+')':''} <span class="del" onclick="deleteCategory(${i})">✕</span></span>`; });
   html += '</div><div class="tag-mgmt-add"><input id="addCatInput" placeholder="品类名"><button class="btn btn-primary btn-sm" onclick="addCategory()">添加</button></div></div>';
-
   html += '<div class="tag-mgmt-group"><h4>🔥 核心卖点（按品类）</h4>';
   getCategoryNames().forEach(cat => {
     const groups = tagData.sellingPoint[cat] || {};
@@ -1561,7 +1984,6 @@ function renderTagManagement() {
     html += `<div class="tag-mgmt-add" style="margin-left:8px"><input id="addSp_${cat}" placeholder="分组>卖点"><button class="btn btn-primary btn-sm" onclick="addSellingPoint('${cat}')">添加</button></div>`;
   });
   html += '</div>';
-
   html += '<div class="tag-mgmt-group"><h4>😣 用户痛点（按品类）</h4>';
   getCategoryNames().forEach(cat => {
     const groups = tagData.painPoint[cat] || {};
@@ -1574,19 +1996,15 @@ function renderTagManagement() {
     html += `<div class="tag-mgmt-add" style="margin-left:8px"><input id="addPp_${cat}" placeholder="分组>痛点"><button class="btn btn-primary btn-sm" onclick="addPainPoint('${cat}')">添加</button></div>`;
   });
   html += '</div>';
-
   html += '<div class="tag-mgmt-group"><h4>🎬 使用场景</h4><div class="tag-mgmt-list">';
   tagData.scene.forEach((s, i) => { html += `<span class="tag-mgmt-item">${s} <span class="del" onclick="deleteScene(${i})">✕</span></span>`; });
   html += '</div><div class="tag-mgmt-add"><input id="addSceneInput" placeholder="场景名"><button class="btn btn-primary btn-sm" onclick="addScene()">添加</button></div></div>';
-
   html += '<div class="tag-mgmt-group"><h4>🌈 氛围风格</h4><div class="tag-mgmt-list">';
   tagData.atmosphere.forEach((a, i) => { html += `<span class="tag-mgmt-item">${a} <span class="del" onclick="deleteAtmosphere(${i})">✕</span></span>`; });
   html += '</div><div class="tag-mgmt-add"><input id="addAtmoInput" placeholder="风格名"><button class="btn btn-primary btn-sm" onclick="addAtmosphere()">添加</button></div></div>';
-
   html += '<div class="tag-mgmt-group"><h4>🏛️ 品牌调性</h4><div class="tag-mgmt-list">';
   tagData.brandTone.forEach((b, i) => { html += `<span class="tag-mgmt-item">${b} <span class="del" onclick="deleteBrandTone(${i})">✕</span></span>`; });
   html += '</div><div class="tag-mgmt-add"><input id="addBtInput" placeholder="调性名"><button class="btn btn-primary btn-sm" onclick="addBrandTone()">添加</button></div></div>';
-
   html += '<div class="tag-mgmt-group"><h4>👥 目标人群</h4>';
   ['age','gender','identity'].forEach(dim => {
     const label = {age:'年龄段',gender:'性别',identity:'身份'}[dim];
@@ -1595,11 +2013,9 @@ function renderTagManagement() {
     html += `</div><div class="tag-mgmt-add"><input id="addAud_${dim}" placeholder="${label}"><button class="btn btn-primary btn-sm" onclick="addAudience('${dim}')">添加</button></div>`;
   });
   html += '</div>';
-
   html += '<div class="tag-mgmt-group"><h4>👗 服装类型</h4><div class="tag-mgmt-list">';
   tagData.clothingType.forEach((t, i) => { html += `<span class="tag-mgmt-item">${t} <span class="del" onclick="deleteClothingType(${i})">✕</span></span>`; });
   html += '</div><div class="tag-mgmt-add"><input id="addCtInput" placeholder="服装类型"><button class="btn btn-primary btn-sm" onclick="addClothingType()">添加</button></div></div>';
-
   html += '<div style="margin-top:8px"><button class="btn btn-danger btn-sm" onclick="resetTags()">🔄 恢复默认标签</button></div>';
   el.innerHTML = html;
 }
