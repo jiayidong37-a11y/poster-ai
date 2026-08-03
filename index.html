@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FB评论种草 V9</title>
+<title>FB评论种草 V9.2 </title>
 <script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <style>
@@ -228,6 +228,13 @@ header .actions span{font-size:11px;color:var(--text2)}
 .he-template-chip.active{background:#e11d48;border-color:#e11d48;color:#fff}
 .degrade-indicator{margin-top:4px;padding:4px 8px;background:#fffbeb;border:1px solid #fde68a;border-radius:4px;font-size:9px;color:#92400e;display:none}
 .degrade-indicator.visible{display:block}
+
+/* ===== V9.2 PROMOTION CARD STYLES ===== */
+#promoCard{border:2px solid var(--orange);background:linear-gradient(135deg,#fff7ed,#ffffff)}
+#promoCard .card-title{color:var(--orange)}
+#promoCard select,#promoCard input[type=text],#promoCard input[type=number]{background:#fff7ed;border-color:#fed7aa}
+#promoCard select:focus,#promoCard input:focus{border-color:var(--orange)}
+#promoText{background:#fffbeb !important;border:1px solid #fde68a !important;color:#92400e !important;font-weight:600;font-size:12px !important}
 </style>
 </head>
 <body>
@@ -345,7 +352,7 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- Main App -->
 <div class="container" id="mainApp" style="display:block">
   <header>
-    <h1>🎨 FB评论种草 V9</h1>
+    <h1>🎨 FB评论种草 V9.2 </h1>
     <div class="actions">
       <span id="userInfo"></span>
       <span id="roleInfo" class="tag" style="margin-right:4px"></span>
@@ -384,6 +391,55 @@ header .actions span{font-size:11px;color:var(--text2)}
         <div class="form-group">
           <label>补充说明 <small style="color:var(--text2)">(可选，附加到AI Prompt)</small></label>
           <textarea id="extraNote" rows="2" placeholder="如：需要展示细节、颜色偏暖调..." oninput="updatePreview()"></textarea>
+        </div>
+        <!-- V9.2: Product-specific features (Fix #3: 标签描述不准确) -->
+        <div class="form-group">
+          <label>产品实际特性 <small style="color:var(--danger)">(重要！覆盖通用标签，确保文案准确)</small></label>
+          <textarea id="productFeatures" rows="2" placeholder="如：温水可卸除、含维E成分、刷头可360°旋转、续航72小时..." oninput="updatePreview()"></textarea>
+        </div>
+      </div>
+
+      <!-- V9.2: Promotion Config Card (Fix #1, #2, #5) -->
+      <div class="card" id="promoCard">
+        <div class="card-title"><span class="icon">🎁</span> 促销活动配置 <span style="font-size:10px;color:var(--text2);margin-left:4px">(不选则无促销信息)</span></div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>活动类型</label>
+            <select id="promoType" onchange="onPromoChange()">
+              <option value="">无促销活动</option>
+              <option value="buy_x_get_y">买X送Y</option>
+              <option value="discount">折扣优惠</option>
+              <option value="free_shipping">免运费</option>
+              <option value="bundle">组合套装</option>
+              <option value="gift">买就送赠品</option>
+            </select>
+          </div>
+          <div class="form-group" id="buyCountGroup" style="display:none">
+            <label>购买数量</label>
+            <input type="number" id="buyCount" value="3" min="1" max="20" onchange="onPromoChange()">
+          </div>
+          <div class="form-group" id="getCountGroup" style="display:none">
+            <label>赠送数量</label>
+            <input type="number" id="getCount" value="2" min="1" max="20" onchange="onPromoChange()">
+          </div>
+        </div>
+        <div class="form-group" id="discountValueGroup" style="display:none">
+          <label>折扣力度 <small style="color:var(--text2)">(如: 50% OFF, 7折, 半价)</small></label>
+          <input type="text" id="discountValue" placeholder="如: 50% OFF" oninput="onPromoChange()">
+        </div>
+        <div class="form-group" id="giftDescGroup" style="display:none">
+          <label>赠品描述</label>
+          <input type="text" id="giftDesc" placeholder="如: 送精美化妆包" oninput="onPromoChange()">
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#fffbeb;border:1px solid #fde68a;border-radius:6px">
+          <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;margin:0">
+            <input type="checkbox" id="freeShippingToggle" onchange="onPromoChange()" style="width:auto"> 🚚 <b>此活动包含免运费</b>
+          </label>
+          <span style="font-size:9px;color:var(--text2)">取消勾选则图片不显示免运费</span>
+        </div>
+        <div class="form-group" id="promoPreviewGroup" style="display:none">
+          <label>📋 促销信息预览</label>
+          <div class="prompt-preview" id="promoText" style="background:#fffbeb;color:#92400e"></div>
         </div>
       </div>
 
@@ -896,9 +952,9 @@ const LANG_MAP = {
   ms:{category:{'服装':'Pakaian'},age:{'18-25岁':'18-25 tahun'},gender:{'女性':'wanita','男性':'lelaki'},sellingPoints:{'柔软亲肤':'Lembut dan mesra kulit','高弹舒适':'Keselesaan elastik','透气轻薄':'Bernafas dan ringan'}}
 };
 
-// ============ FB BANNED WORDS FILTER ============
-const FB_BANNED_CN = /限时|折扣|秒杀|抢购|特价|促销|打折|优惠|买一送一|清仓|跳楼价|疯抢|秒杀价|超低价|史低|最低价|免费领|0元|一元|包邮|返现|返佣|返点/g;
-const FB_BANNED_EN = /limited\s*time|flash\s*sale|discount|clearance|free\s*shipping|buy\s*one\s*get\s*one|BOGO|lowest\s*price|free\s*gift|cashback|zero\s*dollar/gi;
+// ============ FB BANNED WORDS FILTER (V9.2: 移除促销相关词汇，避免误删折扣信息) ============
+const FB_BANNED_CN = /秒杀|抢购|清仓|跳楼价|疯抢|秒杀价|超低价|史低|最低价|免费领|0元|一元|返现|返佣|返点/g;
+const FB_BANNED_EN = /flash\s*sale|clearance|lowest\s*price|zero\s*dollar/gi;
 
 function filterBannedWords(text) {
   if (!text) return text;
@@ -943,6 +999,8 @@ let degradeRetryCount = 0;
 let tagWeights = Object.assign({}, TAG_WEIGHTS);
 let v9Records = JSON.parse(localStorage.getItem('poster_v9_records') || '[]');
 let favorites = new Set(v9Records.filter(r => r.favorited).map(r => r.id));
+// V9.2: Promotion config state (Fix #1, #2, #5)
+let promoConfig = { type: '', buyCount: 3, getCount: 2, discountValue: '', giftDesc: '', freeShipping: false };
 
 // ============ TAG MANAGEMENT ============
 function loadTags() {
@@ -1261,6 +1319,11 @@ function updateSelectionSummary() {
   if (selectedTags.clothingTemplates && selectedTags.clothingTemplates.length) parts.push(`<b>模板:</b> ${selectedTags.clothingTemplates.join('+')}`);
   if (selectedTags.heTemplates && selectedTags.heTemplates.length) parts.push(`<b>HE模板:</b> ${selectedTags.heTemplates.join('+')}`);
   if (degradeLevel > 0) parts.push(`<b>降级:</b> ${getDegradeStage().name}`);
+  // V9.2: 促销信息
+  if (promoConfig.type) parts.push(`<b style="color:var(--danger)">🎁 促销:</b> ${buildPromoDisplayString()}`);
+  // V9.2: 产品特性
+  const features = document.getElementById('productFeatures')?.value.trim();
+  if (features) parts.push(`<b style="color:var(--success)">特性:</b> ${features.substring(0,20)}...`);
   const langInfo = COUNTRY_LANG[getDetectedLanguage()];
   if (langInfo) parts.push(`<b>语言:</b> ${langInfo.flag} ${langInfo.name}`);
   document.getElementById('selectionSummary').innerHTML = parts.length ? parts.join(' &nbsp;|&nbsp; ') : '请从上方选择标签，AI将自动组合生成提示词';
@@ -1299,6 +1362,13 @@ function buildAutoPrompt() {
       .replace('{目标人群}', buildAudienceText())
       .replace('{服装类型}', TL('clothingType', selectedTags.clothingType) || '');
     prompt += `\n\nIMPORTANT: All visible text on the poster MUST be in ${getTargetLangName()}. No Chinese characters anywhere. No watermarks. No logos.`;
+    // V9.2: 自定义模板也加入促销和产品特性
+    const features2 = document.getElementById('productFeatures')?.value.trim() || '';
+    if (features2) prompt += `\nPRODUCT-SPECIFIC FEATURES (must be accurate): ${features2}`;
+    const promoLines2 = buildPromoPromptLines();
+    if (promoLines2.length) prompt += '\n' + promoLines2.join('\n');
+    if (productImages.length > 0) prompt += `\nREFERENCE IMAGE: Product MUST match the uploaded reference image exactly in shape, color, packaging, and design.`;
+    prompt += `\nPEOPLE LIMIT: Maximum 2-3 people. All faces must be natural and not distorted.`;
     return filterBannedWords(prompt);
   }
   if (!selectedTags.category && !name) return 'Please select tags or enter product name...';
@@ -1309,7 +1379,22 @@ function buildAutoPrompt() {
   }
   lines.push(`Create a professional e-commerce poster for: "${subject}"`);
   if (selectedTags.category) lines.push(`Category: ${TL('category', selectedTags.category) || selectedTags.category}`);
+  // V9.2 Fix #3: 产品实际特性优先于通用标签描述
+  const features = document.getElementById('productFeatures')?.value.trim() || '';
+  if (features) {
+    lines.push(`\nPRODUCT-SPECIFIC FEATURES (MUST be accurately described on the poster, overrides generic tags):`);
+    lines.push(features);
+    lines.push(`IMPORTANT: The product description text on the image MUST match these features exactly. Do NOT generate generic descriptions that contradict these features.\n`);
+  }
   if (selectedTags.sellingPoints.length) lines.push(`Key selling points: ${selectedTags.sellingPoints.map(s=>TL('sellingPoints',s)).join(', ')}`);
+  // V9.2 Fix #6: 参考图匹配指令
+  if (productImages.length > 0) {
+    lines.push(`\nREFERENCE IMAGE MATCHING (CRITICAL):`);
+    lines.push(`- The generated product MUST visually match the uploaded reference product image exactly`);
+    lines.push(`- Same product shape, color, packaging, label, and design details as the reference image`);
+    lines.push(`- Do NOT alter or hallucinate product appearance. If unsure, follow the reference image closely`);
+    lines.push(`- The product in the generated image must be instantly recognizable as the same product as the reference\n`);
+  }
   if (selectedTags.painPoints.length) {
     lines.push(`Addresses pain points: ${selectedTags.painPoints.map(p=>TL('painPoints',p)).join(', ')} - demonstrate how ${TL('sellingPoints',selectedTags.sellingPoints[0])||'the product'} solves these concerns`);
   }
@@ -1390,6 +1475,16 @@ function buildAutoPrompt() {
     const sceneEn = TL('scene', selectedTags.scene) || selectedTags.scene;
     lines.push(`\nScene: ${audience} using ${subject} in ${sceneEn} setting, showing ${TL('sellingPoints',selectedTags.sellingPoints[0])||'product benefits'}`);
   }
+  // V9.2 Fix #1, #2, #5: 促销活动信息（放在语言指令之前，确保优先级）
+  const promoLines = buildPromoPromptLines();
+  if (promoLines.length) lines.push(...promoLines);
+  
+  // V9.2 Fix #7: 人数限制和面部质量
+  lines.push(`\nPEOPLE & FACE QUALITY:`);
+  lines.push(`- Maximum 2-3 people in the image for best face quality. More people = lower quality per face.`);
+  lines.push(`- All faces must be natural, realistic, and NOT distorted or AI-looking.`);
+  lines.push(`- For small images, prefer 1-2 people maximum to avoid face distortion.`);
+  
   const targetLang = getTargetLangName();
   const langCode = getDetectedLanguage();
   lines.push(`\nIMPORTANT: All visible text on the poster MUST be in ${targetLang}. No other languages allowed. NO Chinese characters anywhere.`);
@@ -1467,6 +1562,24 @@ function updateAnalysis() {
     html += '</div>';
   }
   if (coverage < 50) html += '<button class="btn btn-primary btn-sm" style="width:100%;margin-top:6px" onclick="aiAutoFill()">🪄 一键智能填充</button>';
+  // V9.2 Fix #7: 标签过载警告
+  const tagCount = countSelectedTags();
+  if (tagCount > 10) {
+    const tagColor = tagCount > 15 ? 'var(--danger)' : 'var(--warn)';
+    const tagBg = tagCount > 15 ? 'rgba(239,68,68,.1)' : 'rgba(245,158,11,.1)';
+    const tagBorder = tagCount > 15 ? '#fecdd3' : '#fde68a';
+    html += `<div style="margin-top:6px;padding:6px;background:${tagBg};border:1px solid ${tagBorder};border-radius:6px">`;
+    html += `<div style="font-size:10px;color:${tagColor};font-weight:600">⚠️ 标签过载 (${tagCount}个)</div>`;
+    html += `<div style="font-size:9px;color:var(--text2);margin-top:2px">标签过多会导致AI生成质量下降、元素堆砌、重点不突出。建议控制在10个以内，保留核心标签。</div>`;
+    html += '</div>';
+  }
+  // V9.2 Fix #7: 促销信息检查
+  if (promoConfig.type) {
+    html += '<div style="margin-top:6px;padding:6px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:6px">';
+    html += '<div style="font-size:10px;color:var(--success);font-weight:600">🎁 促销活动已配置</div>';
+    html += `<div style="font-size:9px;color:var(--text2);margin-top:2px">${buildPromoDisplayString()}</div>`;
+    html += '</div>';
+  }
   // V9: conflict warning in analysis
   const conflicts = checkConflicts();
   if (conflicts.length) {
@@ -1690,6 +1803,13 @@ function showConfirmModal() {
   if (selectedTags.brandTone) summary.push(`调性: ${selectedTags.brandTone}`);
   if (selectedIndustryMode && selectedIndustryMode !== 'normal_clothing') { const mode = INDUSTRY_MODES[selectedIndustryMode]; if(mode) summary.push(`行业: ${mode.icon} ${mode.name}`); }
   if (selectedPersonType) { const pt = PERSON_TYPES.find(p=>p.id===selectedPersonType); if(pt) summary.push(`人物: ${pt.label}`); }
+  // V9.2: 促销信息显示在确认弹窗
+  if (promoConfig.type) {
+    summary.push(`<span style="color:var(--danger);font-weight:600">🎁 促销: ${buildPromoDisplayString()}</span>`);
+  }
+  // V9.2: 产品特性提示
+  const features = document.getElementById('productFeatures')?.value.trim();
+  if (features) summary.push(`<span style="color:var(--success)">✓ 产品特性已填写</span>`);
   const model = document.getElementById('aiModel').value;
   const size = document.getElementById('imageSize').value;
   const count = document.getElementById('imageCount').value;
@@ -1727,6 +1847,8 @@ function onGenerate() {
 async function doGenerate() {
   const apiKey = getApiKey();
   if (!apiKey) return setStatus('请先设置 API Key', 'error');
+  // V9.2 Fix #4: 生成前检查存储空间
+  checkStorageQuota();
   const name = document.getElementById('productName').value.trim() || '未命名产品';
   const prompt = buildAutoPrompt();
   const model = document.getElementById('aiModel').value;
@@ -1863,7 +1985,8 @@ function saveV9Record(name, prompt, model, size, quality, count, imageUrls) {
   const record = {
     id: Date.now(),
     productName: name,
-    productImages: productImages.slice(),
+    // V9.2 Fix #4: 不存储完整base64图片，只存缩略标记和数量
+    productImages: productImages.length > 0 ? { count: productImages.length, compressed: true } : [],
     category: selectedTags.category,
     clothingType: selectedTags.clothingType,
     createdAt: new Date().toISOString(),
@@ -1883,7 +2006,9 @@ function saveV9Record(name, prompt, model, size, quality, count, imageUrls) {
       personType: selectedPersonType,
       industryMode: selectedIndustryMode,
       heTemplates: [...(selectedTags.heTemplates||[])],
-      degradeLevel: degradeLevel
+      degradeLevel: degradeLevel,
+      promoConfig: Object.assign({}, promoConfig),
+      productFeatures: document.getElementById('productFeatures')?.value || ''
     },
     tagWeights: Object.assign({}, tagWeights),
     country: getDetectedLanguage(),
@@ -1898,7 +2023,20 @@ function saveV9Record(name, prompt, model, size, quality, count, imageUrls) {
     rating: 0
   };
   v9Records.push(record);
-  if (v9Records.length > 200) v9Records = v9Records.slice(-200);
+  // V9.2 Fix #4: 降低记录上限避免localStorage溢出
+  if (v9Records.length > 100) v9Records = v9Records.slice(-100);
+  // V9.2: 检查存储配额
+  try {
+    const dataSize = JSON.stringify(v9Records).length;
+    if (dataSize > 3 * 1048576) { // >3MB
+      // 自动清理最旧的无收藏记录
+      const uncached = v9Records.filter(r => !r.favorited);
+      if (uncached.length > 10) {
+        const toRemove = uncached.slice(0, uncached.length - 10);
+        v9Records = v9Records.filter(r => r.favorited || !toRemove.includes(r));
+      }
+    }
+  } catch(e) { console.warn('Storage cleanup failed:', e); }
   localStorage.setItem('poster_v9_records', JSON.stringify(v9Records));
   renderHistoryCenter();
   renderHistory();
@@ -1926,7 +2064,15 @@ function loadRecordToEditor(id) {
   const rec = v9Records.find(r => r.id === id);
   if (!rec) return;
   document.getElementById('productName').value = rec.productName;
-  productImages = rec.productImages ? rec.productImages.slice() : [];
+  // V9.2: 兼容新旧格式 - 新格式不存base64图片
+  if (Array.isArray(rec.productImages)) {
+    productImages = rec.productImages.slice();
+  } else if (rec.productImages && typeof rec.productImages === 'object' && rec.productImages.count) {
+    productImages = []; // 旧记录的base64已清除，显示提示
+    setStatus('ℹ️ 此历史记录的产品图未保存（V9.2存储优化），请重新上传', 'info');
+  } else {
+    productImages = [];
+  }
   renderProductPreviews();
   selectedTags.category = rec.tags.category || '';
   selectedTags.clothingType = rec.tags.clothingType || '';
@@ -1941,6 +2087,15 @@ function loadRecordToEditor(id) {
   selectedTags.clothingTemplates = rec.tags.clothingTemplates ? [...rec.tags.clothingTemplates] : [];
   selectedPersonType = rec.tags.personType || '';
   selectedTags.personType = selectedPersonType;
+  // V9.2: 恢复促销配置
+  if (rec.tags.promoConfig) {
+    promoConfig = Object.assign({}, rec.tags.promoConfig);
+    const pt = document.getElementById('promoType');
+    if (pt) { pt.value = promoConfig.type; onPromoChange(); }
+  }
+  // V9.2: 恢复产品特性
+  const pf = document.getElementById('productFeatures');
+  if (pf && rec.tags.productFeatures) pf.value = rec.tags.productFeatures;
   if (rec.country) document.getElementById('genLanguage').value = rec.country;
   renderAllDimensions(); updatePreview(); updateAnalysis();
   onLanguageChange();
@@ -2035,6 +2190,8 @@ function exportExcel() {
     '行业模式': r.tags.industryMode || 'normal_clothing',
     '高露肤模板': (r.tags.heTemplates||[]).join('、'),
     '降级级别': r.tags.degradeLevel || 0,
+    '促销活动': r.tags.promoConfig ? `${r.tags.promoConfig.type||''} 买${r.tags.promoConfig.buyCount||''}送${r.tags.promoConfig.getCount||''} ${r.tags.promoConfig.freeShipping?'免运费':''}` : '',
+    '产品特性': r.tags.productFeatures || '',
     '国家/语言': r.country,
     'AI模型': r.model,
     '尺寸': r.size,
@@ -2213,6 +2370,147 @@ function getApiKey() {
   const acc = accounts.find(a => a.username === currentUser.username);
   return acc?.apiKey || document.getElementById('apiKeyInput').value.trim();
 }
+
+// ============ V9.2: PROMOTION HANDLERS (Fix #1, #2, #5) ============
+function onPromoChange() {
+  promoConfig.type = document.getElementById('promoType').value;
+  promoConfig.buyCount = parseInt(document.getElementById('buyCount')?.value) || 3;
+  promoConfig.getCount = parseInt(document.getElementById('getCount')?.value) || 2;
+  promoConfig.discountValue = document.getElementById('discountValue')?.value || '';
+  promoConfig.giftDesc = document.getElementById('giftDesc')?.value || '';
+  promoConfig.freeShipping = document.getElementById('freeShippingToggle')?.checked || false;
+  // Show/hide conditional fields
+  document.getElementById('buyCountGroup').style.display = promoConfig.type === 'buy_x_get_y' ? 'block' : 'none';
+  document.getElementById('getCountGroup').style.display = promoConfig.type === 'buy_x_get_y' ? 'block' : 'none';
+  document.getElementById('discountValueGroup').style.display = promoConfig.type === 'discount' ? 'block' : 'none';
+  document.getElementById('giftDescGroup').style.display = promoConfig.type === 'gift' ? 'block' : 'none';
+  // Update preview
+  const previewGroup = document.getElementById('promoPreviewGroup');
+  const text = document.getElementById('promoText');
+  const promoStr = buildPromoDisplayString();
+  if (promoStr) {
+    previewGroup.style.display = 'block';
+    text.textContent = promoStr;
+  } else {
+    previewGroup.style.display = 'none';
+  }
+  updatePreview();
+}
+
+function buildPromoDisplayString() {
+  if (!promoConfig.type) return '';
+  const lang = getDetectedLanguage();
+  const isEn = lang.startsWith('en');
+  if (promoConfig.type === 'buy_x_get_y') {
+    const total = promoConfig.buyCount + promoConfig.getCount;
+    return isEn
+      ? `Buy ${promoConfig.buyCount} Get ${promoConfig.getCount} FREE (Show ${total} units total)${promoConfig.freeShipping ? ' + FREE SHIPPING' : ''}`
+      : `买${promoConfig.buyCount}送${promoConfig.getCount}（共${total}包）${promoConfig.freeShipping ? ' + 免运费' : ''}`;
+  }
+  if (promoConfig.type === 'discount') {
+    const dv = promoConfig.discountValue || (isEn ? 'Special Discount' : '特价优惠');
+    return `${dv}${promoConfig.freeShipping ? (isEn ? ' + FREE SHIPPING' : ' + 免运费') : ''}`;
+  }
+  if (promoConfig.type === 'free_shipping') {
+    return isEn ? 'FREE SHIPPING ONLY' : '免运费';
+  }
+  if (promoConfig.type === 'bundle') {
+    return isEn ? 'Bundle Deal' + (promoConfig.freeShipping ? ' + FREE SHIPPING' : '') : '组合套装' + (promoConfig.freeShipping ? ' + 免运费' : '');
+  }
+  if (promoConfig.type === 'gift') {
+    const gd = promoConfig.giftDesc || (isEn ? 'Free Gift' : '送赠品');
+    return `${gd}${promoConfig.freeShipping ? (isEn ? ' + FREE SHIPPING' : ' + 免运费') : ''}`;
+  }
+  return '';
+}
+
+function buildPromoPromptLines() {
+  if (!promoConfig.type) return [];
+  const lang = getDetectedLanguage();
+  const isEn = lang.startsWith('en');
+  const lines = [];
+  const promoStr = buildPromoDisplayString();
+  if (!promoStr) return [];
+  // V9.2 Fix #1: 折扣信息放在图片顶部1/3区域，占据至少30%面积
+  lines.push('\n=== PROMOTION ZONE (CRITICAL - MUST BE PROMINENT) ===');
+  lines.push(`Promotion text to display: "${promoStr}"`);
+  lines.push('Placement: TOP 1/3 of the image, occupying at least 30% of total image area');
+  lines.push('Style: Bold, eye-catching, high-contrast colors (red/yellow accent on white/light background)');
+  lines.push('The promotion must be the FIRST thing the viewer notices');
+  // V9.2 Fix #2: 正确计算产品总数，防止只生成赠送数量
+  if (promoConfig.type === 'buy_x_get_y') {
+    const total = promoConfig.buyCount + promoConfig.getCount;
+    lines.push(`\nPRODUCT QUANTITY (CRITICAL):`);
+    lines.push(`- Buy ${promoConfig.buyCount} + Get ${promoConfig.getCount} FREE = EXACTLY ${total} product units in the image`);
+    lines.push(`- Do NOT show only ${promoConfig.getCount} units. Do NOT show only ${promoConfig.buyCount} units. Show ALL ${total} units.`);
+    lines.push(`- Arrange products in a grid or fan layout WITHOUT overlap. Each unit must be clearly visible and distinct.`);
+    lines.push(`- Label the free items with "FREE" or "GIFT" tags to distinguish from paid items.`);
+  }
+  // V9.2 Fix #5: 免运费只在选中时显示，否则明确禁止
+  if (promoConfig.freeShipping || promoConfig.type === 'free_shipping') {
+    lines.push(`\nFREE SHIPPING: Include a "FREE SHIPPING" badge near the promotion area.`);
+  } else {
+    lines.push(`\nFREE SHIPPING: Do NOT include any free shipping text or badges. Only show the promotion as configured.`);
+  }
+  lines.push('=== END PROMOTION ZONE ===\n');
+  return lines;
+}
+
+// V9.2 Fix #7: 标签数量计算和过载警告
+function countSelectedTags() {
+  let c = 0;
+  c += selectedTags.sellingPoints.length;
+  c += selectedTags.painPoints.length;
+  c += selectedTags.scene ? 1 : 0;
+  c += selectedTags.atmosphere ? 1 : 0;
+  c += selectedTags.brandTone ? 1 : 0;
+  c += (selectedTags.targetAges||[]).length;
+  c += (selectedTags.targetGenders||[]).length;
+  c += (selectedTags.targetIdentities||[]).length;
+  c += (selectedTags.clothingTemplates||[]).length;
+  c += (selectedTags.heTemplates||[]).length;
+  c += selectedPersonType ? 1 : 0;
+  return c;
+}
+
+// V9.2 Fix #4: 存储空间检查
+function checkStorageQuota() {
+  try {
+    if (navigator.storage && navigator.storage.estimate) {
+      navigator.storage.estimate().then(est => {
+        const usedMB = (est.usage / 1048576).toFixed(1);
+        const quotaMB = (est.quota / 1048576).toFixed(1);
+        const pct = ((est.usage / est.quota) * 100).toFixed(0);
+        if (pct > 75) {
+          setStatus(`⚠️ 存储空间已使用 ${pct}% (${usedMB}MB/${quotaMB}MB)，建议清理历史记录或导出后删除旧记录`, 'warn');
+        }
+      });
+    }
+    // Also check localStorage usage
+    let lsSize = 0;
+    for (let key in localStorage) {
+      if (localStorage.hasOwnProperty(key)) {
+        lsSize += (localStorage[key].length || 0);
+      }
+    }
+    const lsMB = (lsSize / 1048576).toFixed(1);
+    if (lsMB > 4) {
+      setStatus(`⚠️ localStorage 已用 ${lsMB}MB，接近上限。建议导出记录后清理`, 'warn');
+    }
+  } catch(e) { console.warn('Storage check failed:', e); }
+}
+
+// V9.2 Fix #4: 压缩图片存储（不存完整base64）
+function getCompressedThumb(base64Img, maxLen) {
+  if (!base64Img) return '';
+  // For localStorage, store a reference marker instead of full base64
+  // Full images are only kept in memory (productImages array)
+  if (base64Img.length > maxLen) {
+    return base64Img.substring(0, maxLen) + '...[compressed]';
+  }
+  return base64Img;
+}
+
 function saveCustomPrompt() { localStorage.setItem('poster_ai_custom_prompts', document.getElementById('customPromptText').value); alert('模板已保存'); updatePreview(); }
 
 // ============ ADMIN ============
@@ -2381,6 +2679,8 @@ function init() {
   // V9.1: Restore industry mode from localStorage
   const savedMode = localStorage.getItem('poster_v91_industry_mode');
   if (savedMode) { selectedIndustryMode = savedMode; selectedTags.industryMode = savedMode; }
+  // V9.2 Fix #4: 启动时检查存储空间
+  checkStorageQuota();
 }
 
 init();
