@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FB评论种草 V9.2 </title>
+<title>FB评论种草 V10.2</title>
 <script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <style>
@@ -352,7 +352,7 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- Main App -->
 <div class="container" id="mainApp" style="display:block">
   <header>
-    <h1>🎨 FB评论种草 V9.2 </h1>
+    <h1>🎨 FB评论种草 V10.2</h1>
     <div class="actions">
       <span id="userInfo"></span>
       <span id="roleInfo" class="tag" style="margin-right:4px"></span>
@@ -373,7 +373,7 @@ header .actions span{font-size:11px;color:var(--text2)}
         <div class="two-col">
           <div class="form-group">
             <label class="required">产品图 <small style="color:var(--text2)">(多张/粘贴)</small></label>
-            <div class="upload-zone" id="productZone" onclick="document.getElementById('productInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleDrop(event,'product')">
+            <div class="upload-zone" id="productZone" onclick="document.getElementById('productInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleDrop(event,'product')" onmouseenter="activePasteTarget='product'">
               <input type="file" id="productInput" accept="image/*" multiple onchange="handleFileSelect(this,'product')">
               <div class="hint">点击上传 / Ctrl+V 粘贴</div>
               <div class="multi-preview" id="productPreview"></div>
@@ -381,7 +381,7 @@ header .actions span{font-size:11px;color:var(--text2)}
           </div>
           <div class="form-group">
             <label>参考图 <small style="color:var(--text2)">(可选多张)</small></label>
-            <div class="upload-zone" id="refZone" onclick="document.getElementById('refInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleDrop(event,'ref')">
+            <div class="upload-zone" id="refZone" onclick="document.getElementById('refInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleDrop(event,'ref')" onmouseenter="activePasteTarget='ref'">
               <input type="file" id="refInput" accept="image/*" multiple onchange="handleFileSelect(this,'ref')">
               <div class="hint">点击上传 / Ctrl+V 粘贴</div>
               <div class="multi-preview" id="refPreview"></div>
@@ -407,11 +407,26 @@ header .actions span{font-size:11px;color:var(--text2)}
             <label>活动类型</label>
             <select id="promoType" onchange="onPromoChange()">
               <option value="">无促销活动</option>
-              <option value="buy_x_get_y">买X送Y</option>
-              <option value="discount">折扣优惠</option>
-              <option value="free_shipping">免运费</option>
-              <option value="bundle">组合套装</option>
-              <option value="gift">买就送赠品</option>
+              <optgroup label="── 经典 7 种 (向后兼容) ──">
+                <option value="buy_x_get_y">买X送Y</option>
+                <option value="discount">折扣优惠</option>
+                <option value="buy_2nd_disc">买一件第二件X折</option>
+                <option value="tiered_disc">梯级折扣(买1/2/3件不同折扣)</option>
+                <option value="free_shipping">免运费</option>
+                <option value="bundle">组合套装</option>
+                <option value="gift">买就送赠品</option>
+              </optgroup>
+              <optgroup label="── V10.2 新增 9 种 ──">
+                <option value="percent">百分比折扣 (-X% OFF)</option>
+                <option value="amount">立减金额 (Save $X)</option>
+                <option value="full_x_get_y">满X享Y折 (Spend $X get Y% off)</option>
+                <option value="full_x_minus_y">满X减Y (Spend $X save $Y)</option>
+                <option value="full_x_piece_y_z">满X件第Y件Z折</option>
+                <option value="piece_half">第Y件半价 (5/6/7/8折+自定义)</option>
+                <option value="buy_n_get_m">买N送M</option>
+                <option value="flash_sale">限时特价</option>
+                <option value="custom">自定义文案</option>
+              </optgroup>
             </select>
           </div>
           <div class="form-group" id="buyCountGroup" style="display:none">
@@ -431,6 +446,8 @@ header .actions span{font-size:11px;color:var(--text2)}
           <label>赠品描述</label>
           <input type="text" id="giftDesc" placeholder="如: 送精美化妆包" oninput="onPromoChange()">
         </div>
+        <!-- V10.2: 新 9 种折扣动态字段容器 -->
+        <div class="form-group" id="mainPromoFields" style="display:none"></div>
         <div class="form-group" style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#fffbeb;border:1px solid #fde68a;border-radius:6px">
           <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;margin:0">
             <input type="checkbox" id="freeShippingToggle" onchange="onPromoChange()" style="width:auto"> 🚚 <b>此活动包含免运费</b>
@@ -726,21 +743,22 @@ header .actions span{font-size:11px;color:var(--text2)}
 // ============ DEFAULT TAG DATA ============
 const DEFAULT_TAGS = {
   category: [
-    {name:'服装', children:['女装','男装','童装','鞋类','配饰']},
-    {name:'智能电子', children:[]},
-    {name:'家居用品', children:[]},
-    {name:'汽车工具', children:[]},
-    {name:'美妆', children:[]},
-    {name:'食品', children:[]}
+    {name:'服装', children:['女装','男装','童装','鞋类','帽子','项链','耳环','腰带','围巾','眼镜','手套','手链','首饰']},
+    {name:'智能电子', children:['手机/手机壳','平板','耳机/耳塞','智能手表','音箱','充电器/充电宝','相机/配件','游戏配件']},
+    {name:'家居用品', children:['家具','收纳','厨具','卫浴','床品','家饰','灯具','家纺']},
+    {name:'汽车工具', children:['车载风扇','遮阳挡','手机支架','行车记录仪','车载充电器','收纳袋','座套','清洁工具']},
+    {name:'美妆', children:['粉底/底妆','口红/唇妆','眼影','护肤品','面膜','香水','工具刷具']},
+    {name:'食品', children:['零食','饮料','保健品','速食','茶叶','坚果','调味']}
   ],
-  clothingType: ['连衣裙','T恤','衬衫','牛仔裤','休闲裤','外套','毛衣','运动服','半身裙','卫衣','风衣','羽绒服','吊带','短裤','西服','针织衫','内衣','泳装','比基尼','运动紧身衣','睡衣','塑身衣'],
+  clothingType: ['连衣裙','T恤','衬衫','牛仔裤','休闲裤','外套','毛衣','运动服','半身裙','卫衣','风衣','羽绒服','吊带','短裤','西服','针织衫','内衣','泳装','比基尼','运动紧身衣','睡衣','塑身衣','亲子装','鞋子','帽子','袜子','首饰','项链','耳环','腰带','围巾','眼镜','手套','手链'],
   sellingPoint: {
     '服装': {'面料优势':['柔软亲肤','高弹舒适','透气轻薄','抗菌防臭','速干排汗','保暖锁温','冰丝凉爽'],'版型优势':['显瘦修身','修饰身材','高腰提臀','宽松遮肉','A字显瘦','直筒显腿长','收腰设计'],'功能优势':['百搭实用','通勤利器','运动自由','防水防污','可机洗','免烫抗皱','多穿法']},
     '智能电子': {'性能优势':['高性能芯片','大容量存储','长续航','快充技术','低功耗'],'功能优势':['智能互联','语音控制','多设备兼容','自动调节','远程操控'],'设计优势':['轻薄便携','简约设计','人机工学','防水设计','高清屏幕']},
     '家居用品': {'品质优势':['环保材质','耐用持久','易清洁','静音设计','安全防护'],'功能优势':['节省空间','多功能','智能控制','收纳便捷','可折叠'],'设计优势':['简约现代','北欧风格','温馨舒适','多色可选','模块化']},
     '汽车工具': {'品质优势':['耐用材质','安全认证','防水防尘','耐高温','抗冲击'],'功能优势':['即插即用','多场景适用','智能感应','无线设计','折叠收纳'],'设计优势':['小巧便携','隐形安装','多色可选','通用适配','人体工学']},
     '美妆': {'效果优势':['持久不脱妆','自然轻薄','遮瑕力强','显白提亮','滋润不拔干'],'成分优势':['天然植物','无添加','敏感肌可用','含防晒','保湿成分'],'体验优势':['易推开','速干','不卡粉','不搓泥','方便携带']},
-    '食品': {'品质优势':['天然无添加','新鲜直采','有机认证','产地直供','低脂低糖'],'口感优势':['酥脆可口','香浓顺滑','鲜嫩多汁','清爽不腻','回味甘甜'],'便利优势':['即食方便','独立包装','常温保存','便携出行','多种吃法']}
+    '食品': {'品质优势':['天然无添加','新鲜直采','有机认证','产地直供','低脂低糖'],'口感优势':['酥脆可口','香浓顺滑','鲜嫩多汁','清爽不腻','回味甘甜'],'便利优势':['即食方便','独立包装','常温保存','便携出行','多种吃法']},
+    '鞋包配饰': {'品质优势':['真皮材质','耐磨防滑','透气舒适','精细做工','防水处理'],'功能优势':['增高显瘦','百搭实用','轻便好走','防滑耐磨','舒适不磨脚'],'设计优势':['潮流款式','多色可选','简约百搭','细节精致','潮流设计']}
   },
   painPoint: {
     '服装': {'身材问题':['担心显胖','腿型不完美','腰腹有赘肉','肩宽背厚','个子矮小'],'穿着问题':['面料闷热不透气','容易起球','掉色严重','尺码不准','穿着不舒服'],'购买问题':['不知道怎么搭配','担心质量差','怕不合适','不知道什么风格适合']},
@@ -769,6 +787,127 @@ const CLOTHING_TEMPLATES = [
   {name:'面料细节图', desc:'纹理/走线/拉链特写', prompt:'macro close-up shots showing fabric texture, stitching details, zipper and button quality'},
   {name:'尺码指南图', desc:'肩宽/胸围/腰围测量示意', prompt:'size guide illustration showing measurement points for shoulder, chest, waist, and hips'}
 ];
+
+// ============ V10.2: INDUSTRY TAG FILTER ============
+const INDUSTRY_TAG_FILTER = {
+  normal_clothing: {
+    name:'普通服装', allowedCategories:['服装'],
+    allowedClothingTypes:['连衣裙','T恤','衬衫','牛仔裤','休闲裤','外套','毛衣','运动服','半身裙','卫衣','风衣','羽绒服','吊带','短裤','西服','针织衫','亲子装','帽子','项链','耳环','腰带','围巾','眼镜','手套','手链','首饰'],
+    hideAllClothingType:false, showClothingType:true, showPersonType:true,
+    defaultCategory:'服装', noticeText:'👕 普通服装模式：专注标准服装展示'
+  },
+  high_exposure: {
+    name:'高露肤服装', allowedCategories:['服装'],
+    allowedClothingTypes:['内衣','泳装','比基尼','运动紧身衣','睡衣','塑身衣'],
+    hideAllClothingType:false, showClothingType:true, showPersonType:false,
+    defaultCategory:'服装', noticeText:'👙 高露肤模式：已自动应用产品优先策略'
+  },
+  shoes_bags: {
+    name:'鞋包配饰', allowedCategories:['服装'],
+    allowedClothingTypes:['鞋子','帽子','袜子','首饰','项链','耳环','腰带','围巾','眼镜','手套','手链'],
+    hideAllClothingType:false, showClothingType:true, showPersonType:true,
+    defaultCategory:'服装', noticeText:'👜 鞋包配饰模式：鞋/帽/袜/饰'
+  },
+  beauty: {
+    name:'美妆', allowedCategories:['美妆'],
+    allowedClothingTypes:[],
+    hideAllClothingType:true, showClothingType:false, showPersonType:true,
+    defaultCategory:'美妆', noticeText:'💄 美妆模式：仅展示美妆相关标签'
+  },
+  home: {
+    name:'家居', allowedCategories:['家居用品'],
+    allowedClothingTypes:[],
+    hideAllClothingType:true, showClothingType:false, showPersonType:true,
+    defaultCategory:'家居用品', noticeText:'🏠 家居模式：仅展示家居相关标签'
+  }
+};
+
+// ============ V10.2: HE 深度套件 ============
+const HE_BODY_TYPE_MAP = {
+  '标准':'standard build','丰满':'fuller figure','娇小':'petite build',
+  '高挑':'tall build','运动型':'athletic build','圆润':'curvy build'
+};
+const HE_DETAIL_OPTIONS = [
+  {id:'fabric',label:'面料质感'},{id:'cut',label:'剪裁线条'},{id:'color',label:'颜色对比'},
+  {id:'lace',label:'蕾丝花纹'},{id:'stitch',label:'做工车线'},{id:'stretch',label:'弹性延展'},
+  {id:'mesh',label:'透气网眼'},{id:'back',label:'背部设计'},{id:'strap',label:'肩带细节'},
+  {id:'cup',label:'罩杯结构'},{id:'metal',label:'金属扣件'},{id:'print',label:'印花图案'},
+  {id:'waterproof',label:'防水速干'},{id:'uv',label:'抗氯防UV'}
+];
+const HE_DEGRADE_PROMPTS = [
+  "Professional product catalog presentation of {产品名}, focus on clothing design, material and craftsmanship. Clean studio background, soft commercial lighting. Product is the main subject.",
+  "{产品名} displayed professionally on a clean background. Commercial product photography, focus on design and material.",
+  "Flat lay product photography of {产品名}. Top-down view, clean white or neutral background. Product laid out flat showing full design.",
+  "Macro fabric detail photography of {产品名}. Close-up showing material texture, weave, stitching. Studio lighting, sharp focus."
+];
+const HE_TEMPLATE_PROMPTS = {
+  t1:{label:'产品展示型', build:(p)=>`Create a professional ecommerce product advertisement. Focus on the ${p.productName} - its design, material, color, stitching and craftsmanship. ${p.features||'Premium quality apparel'}. The product is the main subject. Professional fashion catalog photography style. Clean commercial composition.`},
+  t2:{label:'面料细节型', build:(p)=>`Professional close-up product photography of the ${p.productName}. Showcase fabric texture, stitching quality, material craftsmanship. Macro lens, sharp focus. Studio lighting, clean background. Commercial catalog style.`},
+  t3:{label:'生活场景型', build:(p)=>`Lifestyle product advertisement. The ${p.productName} as the main visual element, naturally styled in ${p.scene||'lifestyle'} setting. ${p.features||'Premium quality'}. Natural lighting, professional commercial photography. The product is the hero.`},
+  t4:{label:'多颜色合集型', build:(p)=>`Multi-color product collection display. The ${p.productName} shown in ${(p.colorList||['A','B','C','D']).length} color variants arranged side by side on a clean studio background. Catalog style commercial photography.`},
+  t5:{label:'多身材多尺码试穿型', build:(p)=>`Multi-size and multi-body type fitting display. The ${p.productName} shown on multiple body types with multiple sizes arranged in a grid. Each model in natural standing catalog pose. Consistent studio lighting, clean neutral background, professional ecommerce fitting chart style.`}
+};
+
+// ============ V10.2: 9 种折扣类型字段定义 ============
+const MAIN_PROMO_TYPE_FIELDS = {
+  'percent':[
+    {id:'percent',label:'百分比折扣',type:'select',options:['10% OFF','20% OFF','30% OFF','50% OFF','自定义'],placeholder:''},
+    {id:'customText',label:'自定义文本',type:'text',placeholder:'如:立省 30%',showIf:'percent==自定义'}
+  ],
+  'amount':[
+    {id:'amount',label:'立减金额',type:'number',unit:'USD',placeholder:'如:10'}
+  ],
+  'full_x_get_y':[
+    {id:'fullX',label:'满 X',type:'number',unit:'USD',placeholder:'如:100'},
+    {id:'getY',label:'享 Y 折 (%)',type:'number',placeholder:'如:80 (即8折)'},
+    {id:'stackable',label:'可叠加',type:'checkbox'}
+  ],
+  'full_x_minus_y':[
+    {id:'fullX',label:'满 X',type:'number',unit:'USD',placeholder:'如:100'},
+    {id:'minusY',label:'减 Y',type:'number',unit:'USD',placeholder:'如:20'},
+    {id:'stackable',label:'可叠加',type:'checkbox'}
+  ],
+  'full_x_piece_y_z':[
+    {id:'fullX',label:'满 X 件',type:'number',placeholder:'如:2'},
+    {id:'pieceY',label:'第 Y 件',type:'number',placeholder:'如:2'},
+    {id:'zDiscount',label:'享 Z 折扣',type:'select',options:['5折','6折','7折','8折','半价','免费','自定义']},
+    {id:'customZ',label:'自定义 Z 文案',type:'text',placeholder:'如:买二送一',showIf:'zDiscount==自定义'}
+  ],
+  'piece_half':[
+    {id:'pieceY',label:'第 Y 件 (5/6/7/8折+自定义)',type:'select',options:['2','3','4','5','6','7','8折','自定义']},
+    {id:'zDiscount',label:'具体折扣',type:'select',options:['5折','6折','7折','8折','半价','自定义'],showIf:'pieceY==自定义'},
+    {id:'customText',label:'自定义文案',type:'text',placeholder:'如:第2件1元',showIf:'pieceY==自定义'}
+  ],
+  'buy_n_get_m':[
+    {id:'buyN',label:'买 N',type:'number',placeholder:'如:2'},
+    {id:'getM',label:'送 M',type:'number',placeholder:'如:1'}
+  ],
+  'flash_sale':[
+    {id:'price',label:'价格',type:'number',unit:'USD',placeholder:'如:19.99'}
+  ],
+  'custom':[
+    {id:'text',label:'自定义文案',type:'text',placeholder:'如:今日特惠 立省50%'}
+  ]
+};
+const LEGACY_PROMO_TYPES = new Set(['buy_x_get_y','discount','buy_2nd_disc','tiered_disc','free_shipping','bundle','gift']);
+const NEW_PROMO_TYPES = new Set(['percent','amount','full_x_get_y','full_x_minus_y','full_x_piece_y_z','piece_half','buy_n_get_m','flash_sale','custom']);
+
+// ============ V10.2: 促销 main state ============
+let mainPromoState = {type:'',percent:'30% OFF',customText:'',amount:0,fullX:0,getY:0,minusY:0,stackable:false,pieceY:0,zDiscount:'5折',customZ:'',buyN:0,getM:0,price:0,text:'',freeShipping:false};
+
+// 英文序数
+function ordinalEn(n){const s=['th','st','nd','rd'];const v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
+
+// sanitizePromptText 防中文
+function sanitizePromptText(text){
+  if (!text) return text;
+  let s = text;
+  s = s.replace(/[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af]/g, '');
+  const cnReplace = {'促销':'Promotion','折扣':'Discount','免运费':'FREE SHIPPING','买':'Buy','送':'Get','件':'item','折':'off','立减':'Save','限时特价':'Flash Sale','自定义':'Custom','立省':'Save'};
+  for (const [cn, en] of Object.entries(cnReplace)) s = s.replace(new RegExp(cn, 'g'), en);
+  s = s.replace(/\s{2,}/g, ' ').trim();
+  return s;
+}
 
 
 // ============ HIGH EXPOSURE & INDUSTRY MODE (V9.1) ============
@@ -903,7 +1042,7 @@ const COUNTRY_LANG = {
 // ============ ENGLISH TRANSLATION MAP ============
 const TRANS = {
   category:{'服装':'Clothing','智能电子':'Smart Electronics','家居用品':'Home Goods','汽车工具':'Car Tools','美妆':'Beauty','食品':'Food'},
-  clothingType:{'连衣裙':'Dress','T恤':'T-Shirt','衬衫':'Shirt','牛仔裤':'Jeans','休闲裤':'Casual Pants','外套':'Jacket','毛衣':'Sweater','运动服':'Sportswear','半身裙':'Skirt','卫衣':'Hoodie','风衣':'Trench Coat','羽绒服':'Down Jacket','吊带':'Camisole','短裤':'Shorts','西服':'Suit','针织衫':'Knitwear','内衣':'Lingerie','泳装':'Swimwear','比基尼':'Bikini','运动紧身衣':'Sports Tights','睡衣':'Sleepwear','塑身衣':'Shapewear'},
+  clothingType:{'连衣裙':'Dress','T恤':'T-Shirt','衬衫':'Shirt','牛仔裤':'Jeans','休闲裤':'Casual Pants','外套':'Jacket','毛衣':'Sweater','运动服':'Sportswear','半身裙':'Skirt','卫衣':'Hoodie','风衣':'Trench Coat','羽绒服':'Down Jacket','吊带':'Camisole','短裤':'Shorts','西服':'Suit','针织衫':'Knitwear','内衣':'Lingerie','泳装':'Swimwear','比基尼':'Bikini','运动紧身衣':'Sports Tights','睡衣':'Sleepwear','塑身衣':'Shapewear','亲子装':'Family Matching Outfit','鞋子':'Shoes','帽子':'Hat','袜子':'Socks','首饰':'Jewelry'},
   sellingPoints:{'柔软亲肤':'Soft & skin-friendly','高弹舒适':'High-stretch comfort','透气轻薄':'Breathable & lightweight','抗菌防臭':'Antibacterial & odor-resistant','速干排汗':'Quick-dry & moisture-wicking','保暖锁温':'Heat-locking warmth','冰丝凉爽':'Ice-silk cool','显瘦修身':'Slimming fit','修饰身材':'Figure-flattering','高腰提臀':'High-waist lifting','宽松遮肉':'Loose & forgiving','A字显瘦':'A-line slimming','直筒显腿长':'Straight-leg elongating','收腰设计':'Waist-defining design','百搭实用':'Versatile everyday','通勤利器':'Office-ready','运动自由':'Sport-comfortable','防水防污':'Waterproof & stain-resistant','可机洗':'Machine washable','免烫抗皱':'Wrinkle-free','多穿法':'Multi-way wear'},
   painPoints:{'担心显胖':'Worried about looking bulky','腿型不完美':'Unflattering leg shape','腰腹有赘肉':'Visible belly fat','肩宽背厚':'Broad shoulders & thick back','个子矮小':'Petite/short stature','面料闷热不透气':'Fabric too hot & not breathable','容易起球':'Pills easily','掉色严重':'Fades badly','尺码不准':'Inaccurate sizing','穿着不舒服':'Uncomfortable to wear','不知道怎么搭配':'Doesnt know how to style','担心质量差':'Worried about quality','怕不合适':'Worried it wont fit','不知道什么风格适合':'Unsure what style suits'},
   scene:{'日常生活':'Daily life','工作通勤':'Work commute','休闲聚会':'Casual gathering','运动健身':'Sports & fitness','旅行出游':'Travel','节日庆典':'Festival celebration','居家办公':'Work from home','户外探索':'Outdoor adventure','约会社交':'Date & social','亲子时光':'Family time'},
@@ -952,13 +1091,21 @@ const LANG_MAP = {
   ms:{category:{'服装':'Pakaian'},age:{'18-25岁':'18-25 tahun'},gender:{'女性':'wanita','男性':'lelaki'},sellingPoints:{'柔软亲肤':'Lembut dan mesra kulit','高弹舒适':'Keselesaan elastik','透气轻薄':'Bernafas dan ringan'}}
 };
 
-// ============ FB BANNED WORDS FILTER (V9.2: 移除促销相关词汇，避免误删折扣信息) ============
+// ============ FB BANNED WORDS FILTER (V9.3: CJK字符自动清除 + 违规词过滤) ============
 const FB_BANNED_CN = /秒杀|抢购|清仓|跳楼价|疯抢|秒杀价|超低价|史低|最低价|免费领|0元|一元|返现|返佣|返点/g;
 const FB_BANNED_EN = /flash\s*sale|clearance|lowest\s*price|zero\s*dollar/gi;
+const CJK_REGEX = /[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af]/g;
 
 function filterBannedWords(text) {
   if (!text) return text;
   return text.replace(FB_BANNED_CN, '').replace(FB_BANNED_EN, '');
+}
+
+// V9.3: 强力清除所有中日韩文字（用于最终prompt）
+function stripCJK(text) {
+  if (!text) return text;
+  // 清除所有中文、日文、韩文字符，但保留英文、数字、标点、特殊符号
+  return text.replace(CJK_REGEX, '');
 }
 
 // ============ TL() ============
@@ -981,6 +1128,7 @@ function getWeightMark(tagName) {
 let currentUser = null;
 let productImages = [];
 let refImages = [];
+let activePasteTarget = 'product'; // 粘贴目标由鼠标悬停 zone 决定，避免 reference 粘贴进产品图
 let qualityScore = null;
 let genRecords = JSON.parse(localStorage.getItem('poster_ai_records') || '[]');
 let selectedTags = {
@@ -1005,7 +1153,30 @@ let promoConfig = { type: '', buyCount: 3, getCount: 2, discountValue: '', giftD
 // ============ TAG MANAGEMENT ============
 function loadTags() {
   const stored = localStorage.getItem('poster_v8_tags');
-  if (stored) { tagData = JSON.parse(stored); }
+  if (stored) { 
+    tagData = JSON.parse(stored);
+    // V10.2.1: 合并缺失的新配饰到 clothingType
+    const newClothingTypes = ['项链','耳环','腰带','围巾','眼镜','手套','手链'];
+    if (tagData.clothingType) {
+      let updated = false;
+      newClothingTypes.forEach(t => {
+        if (!tagData.clothingType.includes(t)) { tagData.clothingType.push(t); updated = true; }
+      });
+      if (updated) localStorage.setItem('poster_v8_tags', JSON.stringify(tagData));
+    }
+    // V10.2.1: 合并缺失的品类 children
+    if (tagData.category) {
+      const clothingCat = tagData.category.find(c => c.name === '服装');
+      if (clothingCat && clothingCat.children) {
+        const newChildren = ['帽子','项链','耳环','腰带','围巾','眼镜','手套','手链','首饰'];
+        let updated = false;
+        newChildren.forEach(c => {
+          if (!clothingCat.children.includes(c)) { clothingCat.children.push(c); updated = true; }
+        });
+        if (updated) localStorage.setItem('poster_v8_tags', JSON.stringify(tagData));
+      }
+    }
+  }
   else { tagData = JSON.parse(JSON.stringify(DEFAULT_TAGS)); localStorage.setItem('poster_v8_tags', JSON.stringify(tagData)); }
 }
 function saveTags() { localStorage.setItem('poster_v8_tags', JSON.stringify(tagData)); }
@@ -1022,14 +1193,27 @@ function renderAllDimensions() {
 
 function renderCategoryChips() {
   const el = document.getElementById('dimCategory');
-  el.innerHTML = tagData.category.map(c =>
+  // V10.2: INDUSTRY_TAG_FILTER 过滤
+  const filter = INDUSTRY_TAG_FILTER[selectedIndustryMode] || INDUSTRY_TAG_FILTER.normal_clothing;
+  const allowed = filter.allowedCategories || null;
+  const cats = allowed ? tagData.category.filter(c => allowed.includes(c.name)) : tagData.category;
+  el.innerHTML = cats.map(c =>
     `<div class="chip chip-pink${selectedTags.category===c.name?' active':''}" data-val="${c.name}" onclick="selectCategory('${c.name}')">${c.name}${getWeightMark(c.name)}${c.children.length?' ('+c.children.join('/')+')':''}</div>`
   ).join('');
 }
 
 function renderClothingTypeChips() {
   const el = document.getElementById('dimClothingType');
-  el.innerHTML = (tagData.clothingType||[]).map(t =>
+  const filter = INDUSTRY_TAG_FILTER[selectedIndustryMode] || INDUSTRY_TAG_FILTER.normal_clothing;
+  let types = tagData.clothingType || [];
+  if (filter.hideAllClothingType) {
+    el.innerHTML = '<span style="font-size:10px;color:var(--text2)">当前行业模式不显示服装子类型</span>';
+    return;
+  }
+  if (filter.allowedClothingTypes && filter.allowedClothingTypes.length) {
+    types = types.filter(t => filter.allowedClothingTypes.includes(t));
+  }
+  el.innerHTML = types.map(t =>
     `<div class="chip chip-cloth${selectedTags.clothingType===t?' active':''}" onclick="selectClothingType('${t}')">${t}${getWeightMark(t)}</div>`
   ).join('');
 }
@@ -1361,15 +1545,16 @@ function buildAutoPrompt() {
       .replace('{品牌调性}', TL('brandTone', selectedTags.brandTone) || '')
       .replace('{目标人群}', buildAudienceText())
       .replace('{服装类型}', TL('clothingType', selectedTags.clothingType) || '');
-    prompt += `\n\nIMPORTANT: All visible text on the poster MUST be in ${getTargetLangName()}. No Chinese characters anywhere. No watermarks. No logos.`;
+    prompt += `\n\n=== LANGUAGE REQUIREMENT ===\nALL text MUST be in ${getTargetLangName()} ONLY. ABSOLUTELY NO Chinese, Japanese, Korean, or CJK characters anywhere in the image. If any non-${getTargetLangName()} text appears, it is a FAILURE.\n=== END LANGUAGE REQUIREMENT ===\nNo watermarks. No logos.`;
     // V9.2: 自定义模板也加入促销和产品特性
     const features2 = document.getElementById('productFeatures')?.value.trim() || '';
     if (features2) prompt += `\nPRODUCT-SPECIFIC FEATURES (must be accurate): ${features2}`;
     const promoLines2 = buildPromoPromptLines();
     if (promoLines2.length) prompt += '\n' + promoLines2.join('\n');
-    if (productImages.length > 0) prompt += `\nREFERENCE IMAGE: Product MUST match the uploaded reference image exactly in shape, color, packaging, and design.`;
-    prompt += `\nPEOPLE LIMIT: Maximum 2-3 people. All faces must be natural and not distorted.`;
-    return filterBannedWords(prompt);
+    if (productImages.length > 0) prompt += `\nREFERENCE PRODUCT: Use as product identity reference only. Create a fresh creative composition, do NOT copy-paste the product image.`;
+    prompt += `\nPEOPLE LIMIT: Maximum 1-2 people. All faces must be photorealistic and not distorted. For small images prefer zero people.`;
+    prompt += `\nLANGUAGE: All text MUST be in ${getTargetLangName()} only. NO Chinese/Japanese/Korean characters anywhere in the image.`;
+    return stripCJK(filterBannedWords(prompt));
   }
   if (!selectedTags.category && !name) return 'Please select tags or enter product name...';
   const lines = [];
@@ -1387,13 +1572,13 @@ function buildAutoPrompt() {
     lines.push(`IMPORTANT: The product description text on the image MUST match these features exactly. Do NOT generate generic descriptions that contradict these features.\n`);
   }
   if (selectedTags.sellingPoints.length) lines.push(`Key selling points: ${selectedTags.sellingPoints.map(s=>TL('sellingPoints',s)).join(', ')}`);
-  // V9.2 Fix #6: 参考图匹配指令
+  // V9.3 Fix #6 & #12: 参考图作为风格参考而非照搬，创造新构图
   if (productImages.length > 0) {
-    lines.push(`\nREFERENCE IMAGE MATCHING (CRITICAL):`);
-    lines.push(`- The generated product MUST visually match the uploaded reference product image exactly`);
-    lines.push(`- Same product shape, color, packaging, label, and design details as the reference image`);
-    lines.push(`- Do NOT alter or hallucinate product appearance. If unsure, follow the reference image closely`);
-    lines.push(`- The product in the generated image must be instantly recognizable as the same product as the reference\n`);
+    lines.push(`\nREFERENCE PRODUCT (STYLE GUIDE ONLY):`);
+    lines.push(`- The uploaded product image is a REFERENCE for product identity (shape, color, branding) ONLY`);
+    lines.push(`- Do NOT copy-paste the product image. Create a NEW creative e-commerce composition`);
+    lines.push(`- Pose the product differently, add lifestyle context, backgrounds, and decorative elements`);
+    lines.push(`- The product in the generated image must be the SAME product but in a FRESH creative arrangement\n`);
   }
   if (selectedTags.painPoints.length) {
     lines.push(`Addresses pain points: ${selectedTags.painPoints.map(p=>TL('painPoints',p)).join(', ')} - demonstrate how ${TL('sellingPoints',selectedTags.sellingPoints[0])||'the product'} solves these concerns`);
@@ -1463,38 +1648,93 @@ function buildAutoPrompt() {
       const clothingEn = TL('clothingType', selectedTags.clothingType) || subject;
       lines.push(`\nScene: ${ages} ${genderText} in ${sceneText} setting wearing ${clothingEn}, showcasing ${sellText||'the fit and quality'}, realistic commercial photography style`);
     }
-  } else if (selectedTags.category === '服装') {
-    const genders = (selectedTags.targetGenders && selectedTags.targetGenders.length) ? selectedTags.targetGenders : ['女性'];
-    const genderText = genders.includes('女性') ? TL('gender','女性') : genders.includes('男性') ? TL('gender','男性') : 'model';
-    const ages = (selectedTags.targetAges && selectedTags.targetAges.length) ? selectedTags.targetAges.map(a=>TL('age',a)).join(', ') : '';
-    const sceneText = TL('scene', selectedTags.scene) || 'daily life';
-    const sellText = selectedTags.sellingPoints.slice(0,2).map(s=>TL('sellingPoints',s)).join(' and ');
-    const clothingEn = TL('clothingType', selectedTags.clothingType) || subject;
-    lines.push(`\nScene: ${ages} ${genderText} in ${sceneText} setting wearing ${clothingEn}, showcasing ${sellText||'the fit and quality'}, realistic commercial photography style`);
   } else if (audience && selectedTags.scene) {
     const sceneEn = TL('scene', selectedTags.scene) || selectedTags.scene;
     lines.push(`\nScene: ${audience} using ${subject} in ${sceneEn} setting, showing ${TL('sellingPoints',selectedTags.sellingPoints[0])||'product benefits'}`);
   }
-  // V9.2 Fix #1, #2, #5: 促销活动信息（放在语言指令之前，确保优先级）
+  
+  // V9.3: Shoe/hat/jewelry specific handling
+  const ct = selectedTags.clothingType;
+  if (ct === '鞋子') {
+    lines.push(`\nSHOES DISPLAY: Product-only flat lay or angled studio shot. Show shoe from multiple angles (side, top, sole).`);
+    lines.push(`Highlight materials (leather/suede/mesh), sole design, stitching details. Clean studio lighting.`);
+    lines.push(`If lifestyle: model feet/walking shot from medium distance. No distorted or plastic-looking shoes.`);
+  }
+  if (ct === '帽子') {
+    lines.push(`\nHAT DISPLAY: Product-only clean studio shot or on-model head shot. Show front/side/back angles.`);
+    lines.push(`Highlight material, brim shape, logo/branding. Natural lighting for lifestyle shots.`);
+  }
+  if (ct === '首饰') {
+    lines.push(`\nJEWELRY DISPLAY: Macro close-up product shot on clean surface. Show metal texture, gem sparkle.`);
+    lines.push(`Elegant studio lighting. If on-model: close-up of wearing area only (neck/ear/wrist).`);
+  }
+  
+  // V9.3: 氛围风格不延续 — 如果氛围不是强促销型，削弱促销元素
+  const isPromoAtmosphere = selectedTags.atmosphere === '销售型-强促销感';
+  
+  // V9.2 Fix #1, #2, #5: 促销活动信息
   const promoLines = buildPromoPromptLines();
-  if (promoLines.length) lines.push(...promoLines);
+  if (promoLines.length) {
+    if (!isPromoAtmosphere) {
+      // 非强促销风格时，折扣用简约方式展示
+      promoLines.forEach((l, i) => {
+        if (l.includes('30-35%')) promoLines[i] = l.replace('30-35%', '15-20%');
+        if (l.includes('MOST PROMINENT ELEMENT')) promoLines[i] = l.replace('MOST PROMINENT ELEMENT', 'secondary element');
+        if (l.includes('hero element')) promoLines[i] = l.replace('hero element', 'supporting element');
+      });
+    }
+    lines.push(...promoLines);
+  }
   
-  // V9.2 Fix #7: 人数限制和面部质量
-  lines.push(`\nPEOPLE & FACE QUALITY:`);
-  lines.push(`- Maximum 2-3 people in the image for best face quality. More people = lower quality per face.`);
-  lines.push(`- All faces must be natural, realistic, and NOT distorted or AI-looking.`);
-  lines.push(`- For small images, prefer 1-2 people maximum to avoid face distortion.`);
+  // V9.3: 亲子装/儿童检查
+  const hasChildAge = (selectedTags.targetAges||[]).some(a => a.includes('18') || a === '全年龄段');
+  if (ct === '亲子装' || (ct && ct.includes('亲子'))) {
+    lines.push(`\nFAMILY/CHILDREN CONSTRAINT: Only generate child models if the product actually has children\'s sizes.`);
+    lines.push(`If no children\'s sizes: use adult models only, single adult or adult couple. NO children.`);
+  }
   
+  // V9.3 Fix #7: 人数限制和面部质量（大幅强化）
+  const genderCount = (selectedTags.targetGenders||[]).length || 0;
+  const isMultiGender = genderCount >= 2;
+  const maxPeople = isMultiGender ? 2 : 1;
+  lines.push(`\nPEOPLE & FACE QUALITY (CRITICAL):`);
+  lines.push(`- Maximum ${maxPeople} person(s) in the image. More people = exponentially worse face quality.`);
+  if (maxPeople === 1) {
+    lines.push(`- SINGLE MODEL ONLY. Do NOT generate couple or group shots. One person maximum.`);
+  } else {
+    lines.push(`- If showing ${maxPeople} people, use medium or wide shot. Faces occupy NO LESS than 15% of image height each.`);
+  }
+  lines.push(`- ALL faces MUST be photorealistic, natural skin texture, realistic eyes and facial features.`);
+  lines.push(`- NO distorted faces, NO AI-artifact faces, NO blurry faces, NO plastic/waxy skin.`);
+  lines.push(`- If face quality is poor, prefer showing products WITHOUT people (flat lay, studio shot, lifestyle without face).`);
+  lines.push(`- For small/thumbnail images, prefer ZERO people. Use product-only compositions.`);
+  
+  // V9.3: 🔴 绝对禁止中文 — 多层防护
   const targetLang = getTargetLangName();
   const langCode = getDetectedLanguage();
-  lines.push(`\nIMPORTANT: All visible text on the poster MUST be in ${targetLang}. No other languages allowed. NO Chinese characters anywhere.`);
-  lines.push(`No watermarks. No logos. No text overlays. Pure visual imagery with text only in ${targetLang}.`);
+  lines.push(`\n=== LANGUAGE REQUIREMENT (MOST IMPORTANT - READ CAREFULLY) ===`);
+  lines.push(`ALL text in the generated image MUST be in ${targetLang} ONLY.`);
+  lines.push(`ABSOLUTELY FORBIDDEN: Chinese characters (汉字), Japanese kana, Korean hangul, or any CJK script.`);
+  lines.push(`If you see any non-${targetLang} characters in your output, you MUST regenerate.`);
+  lines.push(`DO NOT use ANY Chinese text, not even for decorative purposes, not even one character.`);
+  lines.push(`Only ${targetLang} alphabet/characters. Period.`);
+  lines.push(`=== END LANGUAGE REQUIREMENT ===`);
+  lines.push(`No watermarks. No logos. No text overlays unless they are part of the marketing design.`);
   const asianLangs = ['ja','ko','th','vi','id','ms'];
-  if (asianLangs.includes(langCode)) { lines.push('Use Asian models appropriate for the target market.'); }
-  else { lines.push('Use Western/European models appropriate for the target market.'); }
+  const asianModelLang = ['ja','ko'];
+  if (asianModelLang.includes(langCode)) { lines.push('Use Asian models appropriate for the target market.'); }
+  else if (!asianLangs.includes(langCode)) { lines.push('Use Western/European models appropriate for the target market.'); }
   if (extra) lines.push(`Additional: ${extra}`);
-  lines.push(`Aspect ratio: ${size}, Quality: ${quality}, highly detailed professional commercial photography, not AI-looking`);
-  let finalPrompt = filterBannedWords(lines.join('\n'));
+  lines.push(`Aspect ratio: ${size}, Quality: ${quality}, professional commercial photography, photorealistic, NOT AI-looking`);
+  
+  // V9.3: 组合prompt + CJK强力清除
+  let finalPrompt = lines.join('\n');
+  // 过滤违规营销词
+  finalPrompt = filterBannedWords(finalPrompt);
+  // 🔴 关键修复：强力清除所有CJK字符（中文日文韩文），确保图片不会出现中文
+  finalPrompt = stripCJK(finalPrompt);
+  // 如果清除CJK后有残片，再清理一遍
+  finalPrompt = finalPrompt.replace(/\s{2,}/g, ' ').trim();
   // V9.1: Apply sensitive word filter for high-exposure mode
   finalPrompt = filterSensitiveWords(finalPrompt);
   // V9.1: Force safe suffix for high-exposure mode
@@ -1506,6 +1746,32 @@ function buildAutoPrompt() {
     const stage = getDegradeStage();
     finalPrompt += stage.prompt_suffix;
   }
+  // V10.2: VISUAL QUALITY 三段强化
+  finalPrompt += '\n\n=== VISUAL QUALITY (MANDATORY) ===';
+  finalPrompt += '\n- Photorealistic, NOT AI-looking. Natural skin texture, no plastic/waxy skin.';
+  finalPrompt += '\n- All faces must be photorealistic, natural eyes and facial features, no distortion.';
+  finalPrompt += '\n- High resolution, sharp focus, professional commercial photography grade.';
+  finalPrompt += '\n- Color accuracy: the product color must match the actual product.';
+  // V10.2: REFERENCE IMAGE RULES
+  if (productImages.length > 0) {
+    finalPrompt += '\n\n=== REFERENCE IMAGE RULES (CRITICAL) ===';
+    finalPrompt += '\n- The uploaded product image is for PRODUCT IDENTITY only (shape, color, branding).';
+    finalPrompt += '\n- DO NOT copy-paste the reference. Create a NEW creative composition.';
+    finalPrompt += '\n- Pose the product differently, add lifestyle context, backgrounds, decorative elements.';
+    finalPrompt += '\n- The product must be the SAME product in a FRESH creative arrangement.';
+  }
+  // V10.2: COMPOSITION VARIETY
+  finalPrompt += '\n\n=== COMPOSITION VARIETY ===';
+  finalPrompt += '\n- Use dynamic angles, creative product arrangement, lifestyle elements, or decorative accents.';
+  finalPrompt += '\n- Do NOT produce a flat, plain, or boring image.';
+  finalPrompt += '\n- The image should feel premium like a professional e-commerce ad, not a template.';
+  finalPrompt += '\n- ABSOLUTELY NO Chinese characters anywhere in the image. No CJK script. Target language only.';
+  // V10.2: INDUSTRY_TAG_FILTER 出口过滤
+  const industryFilter = INDUSTRY_TAG_FILTER[selectedIndustryMode] || INDUSTRY_TAG_FILTER.normal_clothing;
+  finalPrompt += '\n\n=== INDUSTRY FOCUS: '+industryFilter.name+' ===';
+  if (industryFilter.noticeText) finalPrompt += '\n'+industryFilter.noticeText;
+  // V10.2: sanitizePromptText 防中文
+  finalPrompt = sanitizePromptText(finalPrompt);
   return finalPrompt;
 }
 
@@ -1668,7 +1934,7 @@ function setupPasteHandlers() {
   document.addEventListener('paste', e => {
     const items = e.clipboardData?.items;
     if (!items) return;
-    for (const item of items) { if (item.type.startsWith('image/')) { e.preventDefault(); processImageFile(item.getAsFile(), 'product'); return; } }
+    for (const item of items) { if (item.type.startsWith('image/')) { e.preventDefault(); processImageFile(item.getAsFile(), activePasteTarget); return; } }
   });
 }
 function handleFileSelect(input, type) {
@@ -1845,8 +2111,9 @@ function onGenerate() {
 }
 
 async function doGenerate() {
+  try {
   const apiKey = getApiKey();
-  if (!apiKey) return setStatus('请先设置 API Key', 'error');
+  if (!apiKey) { try { alert('请先在"API Key / 代理设置"中配置 API Key'); } catch(_) {} ; return setStatus('请先设置 API Key', 'error'); }
   // V9.2 Fix #4: 生成前检查存储空间
   checkStorageQuota();
   const name = document.getElementById('productName').value.trim() || '未命名产品';
@@ -1881,7 +2148,9 @@ async function doGenerate() {
     saveV9Record(name, prompt, model, size, quality, count, resultImages);
     qualityScore = null;
   } catch (err) {
+    console.error("doGenerate failed:", err);
     addRecord(name, false);
+    try { alert("生成失败: " + (err.message || err)); } catch(_) {}
     // V9.1: Degrade strategy for high-exposure mode
     if (isHighExposureMode() && degradeRetryCount < 2) {
       degradeRetryCount++;
@@ -1914,6 +2183,13 @@ async function doGenerate() {
   } finally {
     btn.disabled = false; btn.textContent = '🚀 生成图片';
     resetDegrade();
+  }
+  } catch (e) {
+    console.error("doGenerate top-level:", e);
+    try { alert("生成系统错误: " + (e.message || e)); } catch(_) {}
+    setStatus('❌ 系统错误: ' + (e.message || e), 'error');
+    const btn = document.getElementById('generateBtn');
+    if (btn) { btn.disabled = false; btn.textContent = '🚀 生成图片'; }
   }
 }
 
@@ -2007,7 +2283,16 @@ function saveV9Record(name, prompt, model, size, quality, count, imageUrls) {
       industryMode: selectedIndustryMode,
       heTemplates: [...(selectedTags.heTemplates||[])],
       degradeLevel: degradeLevel,
-      promoConfig: Object.assign({}, promoConfig),
+      promoConfig: (() => {
+      // V10.2 P0-2: 嵌套去重 - 移除 fields.type 和 freeShipping 冗余
+      const pc = Object.assign({}, promoConfig);
+      if (pc.fields && typeof pc.fields === 'object') {
+        const f = Object.assign({}, pc.fields);
+        delete f.type; delete f.freeShipping;
+        pc.fields = f;
+      }
+      return pc;
+    })(),
       productFeatures: document.getElementById('productFeatures')?.value || ''
     },
     tagWeights: Object.assign({}, tagWeights),
@@ -2087,9 +2372,16 @@ function loadRecordToEditor(id) {
   selectedTags.clothingTemplates = rec.tags.clothingTemplates ? [...rec.tags.clothingTemplates] : [];
   selectedPersonType = rec.tags.personType || '';
   selectedTags.personType = selectedPersonType;
-  // V9.2: 恢复促销配置
+  // V10.2: 恢复促销配置 (新 9 种 + 老 7 种兼容)
   if (rec.tags.promoConfig) {
     promoConfig = Object.assign({}, rec.tags.promoConfig);
+    if (promoConfig.fields && typeof promoConfig.fields === 'object') {
+      Object.keys(promoConfig.fields).forEach(k => {
+        if (k in mainPromoState && k !== 'type' && k !== 'freeShipping') {
+          mainPromoState[k] = promoConfig.fields[k];
+        }
+      });
+    }
     const pt = document.getElementById('promoType');
     if (pt) { pt.value = promoConfig.type; onPromoChange(); }
   }
@@ -2190,7 +2482,7 @@ function exportExcel() {
     '行业模式': r.tags.industryMode || 'normal_clothing',
     '高露肤模板': (r.tags.heTemplates||[]).join('、'),
     '降级级别': r.tags.degradeLevel || 0,
-    '促销活动': r.tags.promoConfig ? `${r.tags.promoConfig.type||''} 买${r.tags.promoConfig.buyCount||''}送${r.tags.promoConfig.getCount||''} ${r.tags.promoConfig.freeShipping?'免运费':''}` : '',
+    '促销活动': r.tags.promoConfig ? (r.tags.promoConfig.fields ? `${r.tags.promoConfig.type||''} ${r.tags.promoConfig.freeShipping?'免运费':''}` : `${r.tags.promoConfig.type||''} 买${r.tags.promoConfig.buyCount||''}送${r.tags.promoConfig.getCount||''} ${r.tags.promoConfig.freeShipping?'免运费':''}`) : '',
     '产品特性': r.tags.productFeatures || '',
     '国家/语言': r.country,
     'AI模型': r.model,
@@ -2373,17 +2665,73 @@ function getApiKey() {
 
 // ============ V9.2: PROMOTION HANDLERS (Fix #1, #2, #5) ============
 function onPromoChange() {
+  try {
   promoConfig.type = document.getElementById('promoType').value;
-  promoConfig.buyCount = parseInt(document.getElementById('buyCount')?.value) || 3;
-  promoConfig.getCount = parseInt(document.getElementById('getCount')?.value) || 2;
-  promoConfig.discountValue = document.getElementById('discountValue')?.value || '';
-  promoConfig.giftDesc = document.getElementById('giftDesc')?.value || '';
   promoConfig.freeShipping = document.getElementById('freeShippingToggle')?.checked || false;
-  // Show/hide conditional fields
-  document.getElementById('buyCountGroup').style.display = promoConfig.type === 'buy_x_get_y' ? 'block' : 'none';
-  document.getElementById('getCountGroup').style.display = promoConfig.type === 'buy_x_get_y' ? 'block' : 'none';
-  document.getElementById('discountValueGroup').style.display = promoConfig.type === 'discount' ? 'block' : 'none';
-  document.getElementById('giftDescGroup').style.display = promoConfig.type === 'gift' ? 'block' : 'none';
+  promoConfig.isLegacy = LEGACY_PROMO_TYPES.has(promoConfig.type);
+  if (promoConfig.isLegacy) {
+    promoConfig.buyCount = parseInt(document.getElementById('buyCount')?.value) || 3;
+    promoConfig.getCount = parseInt(document.getElementById('getCount')?.value) || 2;
+    promoConfig.discountValue = document.getElementById('discountValue')?.value || '';
+    promoConfig.giftDesc = document.getElementById('giftDesc')?.value || '';
+    promoConfig.fields = null;
+    mainPromoState.type = '';
+    document.getElementById('buyCountGroup').style.display = (promoConfig.type==='buy_x_get_y'||promoConfig.type==='buy_2nd_disc'||promoConfig.type==='tiered_disc') ? 'block' : 'none';
+    document.getElementById('getCountGroup').style.display = (promoConfig.type==='buy_x_get_y'||promoConfig.type==='tiered_disc') ? 'block' : 'none';
+    document.getElementById('discountValueGroup').style.display = (promoConfig.type==='discount'||promoConfig.type==='buy_2nd_disc'||promoConfig.type==='tiered_disc') ? 'block' : 'none';
+    document.getElementById('giftDescGroup').style.display = promoConfig.type === 'gift' ? 'block' : 'none';
+    const dyn = document.getElementById('mainPromoFields');
+    if (dyn) { dyn.style.display = 'none'; dyn.innerHTML = ''; }
+    const buyLabel = document.querySelector('#buyCountGroup label');
+    const getLabel = document.querySelector('#getCountGroup label');
+    const discLabel = document.querySelector('#discountValueGroup label');
+    if (buyLabel) { if (promoConfig.type==='buy_2nd_disc') buyLabel.textContent='购买件数'; else if (promoConfig.type==='tiered_disc') buyLabel.textContent='起始件数'; else buyLabel.textContent='购买数量'; }
+    if (getLabel) { if (promoConfig.type==='tiered_disc') getLabel.textContent='折扣档数'; else getLabel.textContent='赠送数量'; }
+    if (discLabel) { if (promoConfig.type==='buy_2nd_disc') discLabel.innerHTML='第二件折扣 <small>(如: 50% OFF, 5折)</small>'; else if (promoConfig.type==='tiered_disc') discLabel.innerHTML='各级折扣 <small>(如: 15%/40%/60% OFF)</small>'; else discLabel.innerHTML='折扣力度 <small>(如: 50% OFF, 7折, 半价)</small>'; }
+  } else if (NEW_PROMO_TYPES.has(promoConfig.type)) {
+    document.getElementById('buyCountGroup').style.display = 'none';
+    document.getElementById('getCountGroup').style.display = 'none';
+    document.getElementById('discountValueGroup').style.display = 'none';
+    document.getElementById('giftDescGroup').style.display = 'none';
+    mainPromoState.type = promoConfig.type;
+    mainPromoState.freeShipping = promoConfig.freeShipping;
+    if (promoConfig.fields && typeof promoConfig.fields === 'object') {
+      Object.keys(promoConfig.fields).forEach(k => {
+        if (k === 'type' || k === 'freeShipping') return;
+        if (k in mainPromoState) mainPromoState[k] = promoConfig.fields[k];
+      });
+    }
+    const dyn = document.getElementById('mainPromoFields');
+    if (dyn) dyn.style.display = 'block';
+    renderMainPromoFields();
+  } else {
+    promoConfig.fields = null;
+    mainPromoState.type = '';
+    document.getElementById('buyCountGroup').style.display = 'none';
+    document.getElementById('getCountGroup').style.display = 'none';
+    document.getElementById('discountValueGroup').style.display = 'none';
+    document.getElementById('giftDescGroup').style.display = 'none';
+    const dyn = document.getElementById('mainPromoFields');
+    if (dyn) { dyn.style.display = 'none'; dyn.innerHTML = ''; }
+  }
+  // 动态标签
+  const buyLabel = document.querySelector('#buyCountGroup label');
+  const getLabel = document.querySelector('#getCountGroup label');
+  const discLabel = document.querySelector('#discountValueGroup label');
+  if (buyLabel) {
+    if (promoConfig.type === 'buy_2nd_disc') buyLabel.textContent = '购买件数';
+    else if (promoConfig.type === 'tiered_disc') buyLabel.textContent = '起始件数';
+    else buyLabel.textContent = '购买数量';
+  }
+  if (getLabel) {
+    if (promoConfig.type === 'tiered_disc') getLabel.textContent = '折扣档数';
+    else getLabel.textContent = '赠送数量';
+  }
+  if (discLabel) {
+    if (promoConfig.type === 'buy_2nd_disc') discLabel.innerHTML = '第二件折扣 <small style="color:var(--text2)">(如: 50% OFF, 5折)</small>';
+    else if (promoConfig.type === 'tiered_disc') discLabel.innerHTML = '各级折扣 <small style="color:var(--text2)">(如: 15%/40%/60% OFF)</small>';
+    else discLabel.innerHTML = '折扣力度 <small style="color:var(--text2)">(如: 50% OFF, 7折, 半价)</small>';
+  }
   // Update preview
   const previewGroup = document.getElementById('promoPreviewGroup');
   const text = document.getElementById('promoText');
@@ -2395,12 +2743,139 @@ function onPromoChange() {
     previewGroup.style.display = 'none';
   }
   updatePreview();
+  } catch(e) { console.error("onPromoChange failed:", e); alert("促销配置失败: " + e.message); }
+}
+
+// V10.2: 动态字段渲染
+function renderMainPromoFields() {
+  try {
+  const container = document.getElementById('mainPromoFields');
+  if (!container) return;
+  const type = mainPromoState.type;
+  if (!type || !MAIN_PROMO_TYPE_FIELDS[type]) { container.innerHTML = ''; return; }
+  const fields = MAIN_PROMO_TYPE_FIELDS[type];
+  let h = '<div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;padding:6px;background:#fff7ed;border:1px solid #fed7aa;border-radius:6px">';
+  fields.forEach(f => {
+    if (f.type === 'select') {
+      const opts = f.options.map(o => '<option value="'+o+'" '+(mainPromoState[f.id] === o ? 'selected' : '')+'>'+o+'</option>').join('');
+      h += '<div class="form-group" data-main-promo-field="'+f.id+'" '+(f.showIf ? 'data-showif="'+f.showIf+'"' : '')+'><label>'+f.label+'</label><select onchange="onMainPromoChange(\''+f.id+'\', this.value)"><option value="">--</option>'+opts+'</select></div>';
+    } else if (f.type === 'number') {
+      const v = (mainPromoState[f.id] != null && mainPromoState[f.id] !== 0) ? mainPromoState[f.id] : '';
+      h += '<div class="form-group" data-main-promo-field="'+f.id+'" '+(f.showIf ? 'data-showif="'+f.showIf+'"' : '')+'><label>'+f.label+(f.unit ? ' ('+f.unit+')' : '')+'</label><input type="number" placeholder="'+(f.placeholder||'')+'" value="'+v+'" oninput="onMainPromoChange(\''+f.id+'\', this.value)"></div>';
+    } else if (f.type === 'text') {
+      const v = mainPromoState[f.id] || '';
+      h += '<div class="form-group" data-main-promo-field="'+f.id+'" '+(f.showIf ? 'data-showif="'+f.showIf+'"' : '')+'><label>'+f.label+'</label><input type="text" placeholder="'+(f.placeholder||'')+'" value="'+v+'" oninput="onMainPromoChange(\''+f.id+'\', this.value)"></div>';
+    } else if (f.type === 'checkbox') {
+      const checked = mainPromoState[f.id] ? 'checked' : '';
+      h += '<div class="form-group" data-main-promo-field="'+f.id+'" style="display:flex;align-items:flex-end;padding-bottom:6px"><label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" '+checked+' onchange="onMainPromoChange(\''+f.id+'\', this.checked)"> '+f.label+'</label></div>';
+    }
+  });
+  h += '</div>';
+  container.innerHTML = h;
+  applyMainPromoShowIf();
+  } catch(e) { console.error("renderMainPromoFields failed:", e); }
+}
+function applyMainPromoShowIf() {
+  try {
+  document.querySelectorAll('#mainPromoFields [data-showif]').forEach(el => {
+    const cond = el.getAttribute('data-showif');
+    const parts = cond.split('==');
+    const lhs = parts[0], rhs = parts[1];
+    const val = mainPromoState[lhs];
+    el.style.display = String(val) === String(rhs) ? '' : 'none';
+  });
+  } catch(e) {}
+}
+function onMainPromoChange(fieldId, value) {
+  try {
+  const def = (MAIN_PROMO_TYPE_FIELDS[mainPromoState.type] || []).find(x => x.id === fieldId);
+  if (def && def.type === 'number') mainPromoState[fieldId] = parseFloat(value) || 0;
+  else if (def && def.type === 'checkbox') mainPromoState[fieldId] = !!value;
+  else mainPromoState[fieldId] = value;
+  mainPromoState.freeShipping = document.getElementById('freeShippingToggle')?.checked || false;
+  promoConfig.freeShipping = mainPromoState.freeShipping;
+  promoConfig.fields = Object.assign({}, mainPromoState);
+  promoConfig.isLegacy = false;
+  applyMainPromoShowIf();
+  const previewGroup = document.getElementById('promoPreviewGroup');
+  const text = document.getElementById('promoText');
+  const promoStr = buildPromoDisplayString();
+  if (promoStr) { previewGroup.style.display = 'block'; text.textContent = promoStr; } else { previewGroup.style.display = 'none'; }
+  updatePreview();
+  } catch(e) { console.error("onMainPromoChange failed:", e); }
 }
 
 function buildPromoDisplayString() {
   if (!promoConfig.type) return '';
   const lang = getDetectedLanguage();
   const isEn = lang.startsWith('en');
+  // V10.2 新 9 种
+  if (NEW_PROMO_TYPES.has(promoConfig.type)) {
+    let main = '';
+    switch (promoConfig.type) {
+      case 'percent': {
+        let txt = mainPromoState.percent || '30% OFF';
+        if (mainPromoState.percent === '自定义' && mainPromoState.customText) txt = mainPromoState.customText;
+        main = txt; break;
+      }
+      case 'amount': {
+        const amt = mainPromoState.amount || 0;
+        main = isEn ? 'Save $'+amt : '立省 $'+amt;
+        break;
+      }
+      case 'full_x_get_y': {
+        const x = mainPromoState.fullX || 0; const y = mainPromoState.getY || 0;
+        const offPct = 100 - y;
+        main = isEn ? 'Spend $'+x+' get '+offPct+'% off'+(mainPromoState.stackable ? ' (Stackable)' : '') : '满 $'+x+' 享 '+y+' 折'+(mainPromoState.stackable ? ' (可叠加)' : '');
+        break;
+      }
+      case 'full_x_minus_y': {
+        const x = mainPromoState.fullX || 0; const y = mainPromoState.minusY || 0;
+        main = isEn ? 'Spend $'+x+' save $'+y+(mainPromoState.stackable ? ' (Stackable)' : '') : '满 $'+x+' 减 $'+y+(mainPromoState.stackable ? ' (可叠加)' : '');
+        break;
+      }
+      case 'full_x_piece_y_z': {
+        const x = mainPromoState.fullX || 0; const y = mainPromoState.pieceY || 0;
+        let z = mainPromoState.zDiscount || '5折';
+        if (z === '自定义' && mainPromoState.customZ) z = mainPromoState.customZ;
+        const total = x + y;
+        main = isEn ? 'Buy '+total+', '+y+'th item '+z+' off' : '买 '+total+' 件 第 '+y+' 件 '+z;
+        break;
+      }
+      case 'piece_half': {
+        // V10.2: piece_half 扩展 5/6/7/8 折 + 自定义
+        const py = mainPromoState.pieceY || '2';
+        if (py === '自定义') {
+          const z = mainPromoState.zDiscount || '5折';
+          if (z === '自定义' && mainPromoState.customText) main = mainPromoState.customText;
+          else main = z;
+        } else {
+          const yNum = parseInt(py) || 2;
+          main = isEn ? ordinalEn(yNum) + ' item 20% off (5折)' : '第 '+py+' 件 5折';
+        }
+        break;
+      }
+      case 'buy_n_get_m': {
+        const n = mainPromoState.buyN || 0; const m = mainPromoState.getM || 0;
+        main = isEn ? 'Buy '+n+' Get '+m+' Free' : '买 '+n+' 送 '+m;
+        break;
+      }
+      case 'flash_sale': {
+        const p = mainPromoState.price || 0;
+        main = isEn ? 'Flash Sale $'+p : '限时特价 $'+p;
+        break;
+      }
+      case 'custom': {
+        // P0-2: 只显示 customText 单段
+        main = mainPromoState.text || (isEn ? 'Special Offer' : '特别优惠');
+        break;
+      }
+    }
+    if (!main) return '';
+    if (promoConfig.freeShipping) main += isEn ? ' + FREE SHIPPING' : ' + 免运费';
+    return main;
+  }
+  // 老 7 种兼容
   if (promoConfig.type === 'buy_x_get_y') {
     const total = promoConfig.buyCount + promoConfig.getCount;
     return isEn
@@ -2410,6 +2885,18 @@ function buildPromoDisplayString() {
   if (promoConfig.type === 'discount') {
     const dv = promoConfig.discountValue || (isEn ? 'Special Discount' : '特价优惠');
     return `${dv}${promoConfig.freeShipping ? (isEn ? ' + FREE SHIPPING' : ' + 免运费') : ''}`;
+  }
+  if (promoConfig.type === 'buy_2nd_disc') {
+    const dv = promoConfig.discountValue || (isEn ? '50% OFF' : '5折');
+    return isEn
+      ? `Buy 1 Get 2nd at ${dv}${promoConfig.freeShipping ? ' + FREE SHIPPING' : ''}`
+      : `买1件第2件${dv}${promoConfig.freeShipping ? ' + 免运费' : ''}`;
+  }
+  if (promoConfig.type === 'tiered_disc') {
+    const dv = promoConfig.discountValue || (isEn ? '15%/40%/60% OFF' : '15%/40%/60%折扣');
+    return isEn
+      ? `Tiered Discount: ${dv}${promoConfig.freeShipping ? ' + FREE SHIPPING' : ''}`
+      : `梯级折扣: ${dv}${promoConfig.freeShipping ? ' + 免运费' : ''}`;
   }
   if (promoConfig.type === 'free_shipping') {
     return isEn ? 'FREE SHIPPING ONLY' : '免运费';
@@ -2431,27 +2918,127 @@ function buildPromoPromptLines() {
   const lines = [];
   const promoStr = buildPromoDisplayString();
   if (!promoStr) return [];
-  // V9.2 Fix #1: 折扣信息放在图片顶部1/3区域，占据至少30%面积
-  lines.push('\n=== PROMOTION ZONE (CRITICAL - MUST BE PROMINENT) ===');
-  lines.push(`Promotion text to display: "${promoStr}"`);
-  lines.push('Placement: TOP 1/3 of the image, occupying at least 30% of total image area');
-  lines.push('Style: Bold, eye-catching, high-contrast colors (red/yellow accent on white/light background)');
-  lines.push('The promotion must be the FIRST thing the viewer notices');
-  // V9.2 Fix #2: 正确计算产品总数，防止只生成赠送数量
+  // P0-2 修复: custom 只显示 customText 单段
+  if (promoConfig.type === 'custom') {
+    const txt = mainPromoState.text || promoStr;
+    lines.push('\n=== CUSTOM PROMOTION BADGE ===');
+    lines.push('Show this EXACT text as a single prominent badge: "'+txt+'"');
+    lines.push('Treat the custom text exactly as written; do not paraphrase or translate.');
+    lines.push('=== END CUSTOM PROMOTION ===\n');
+    return lines;
+  }
+  // 🔴 CRITICAL: 折扣必须显眼 — 占据顶部1/3区域，至少30%面积
+  lines.push('\n=== PROMOTION BADGE (CRITICAL - MOST PROMINENT ELEMENT ON THE POSTER) ===');
+  lines.push('Promotion: "'+promoStr+'"');
+  lines.push('SIZE: The promotion badge/banner MUST occupy at least 30-35% of the ENTIRE image height, centered in the top 1/3 area');
+  lines.push('STYLE: Huge bold text, red/orange/yellow high-contrast color block on clean background, impossible to miss');
+  lines.push('LAYOUT: The viewer\'s eye should see the DISCOUNT FIRST, then the product. Discount is the hero element.');
+  lines.push('REQUIREMENT: Use LARGE font size (minimum 1/4 of image width for the discount text). Make it BOLD and EYE-CATCHING.');
+  
   if (promoConfig.type === 'buy_x_get_y') {
     const total = promoConfig.buyCount + promoConfig.getCount;
-    lines.push(`\nPRODUCT QUANTITY (CRITICAL):`);
-    lines.push(`- Buy ${promoConfig.buyCount} + Get ${promoConfig.getCount} FREE = EXACTLY ${total} product units in the image`);
-    lines.push(`- Do NOT show only ${promoConfig.getCount} units. Do NOT show only ${promoConfig.buyCount} units. Show ALL ${total} units.`);
-    lines.push(`- Arrange products in a grid or fan layout WITHOUT overlap. Each unit must be clearly visible and distinct.`);
-    lines.push(`- Label the free items with "FREE" or "GIFT" tags to distinguish from paid items.`);
+    lines.push(`\nPRODUCT QUANTITY (DOUBLE-CHECK):`);
+    lines.push(`- Buy ${promoConfig.buyCount} + Get ${promoConfig.getCount} FREE = MUST show EXACTLY ${total} product units`);
+    lines.push(`- CRITICAL: Show ${total} units total. Do NOT show only ${promoConfig.getCount} or only ${promoConfig.buyCount}. Count is ${total}.`);
+    lines.push(`- Layout: grid or fan arrangement, NO overlapping. Each unit distinct and fully visible.`);
+    lines.push(`- Label free items clearly with a "FREE" tag to distinguish from paid items.`);
   }
-  // V9.2 Fix #5: 免运费只在选中时显示，否则明确禁止
+  if (promoConfig.type === 'buy_2nd_disc') {
+    const dv = promoConfig.discountValue || '50% OFF';
+    lines.push(`\nLAYOUT: Show 2 product units side by side. The 2nd unit has a "${dv}" badge. Do NOT show only one.`);
+    lines.push(`Highlight the 2nd item with a prominent "${dv}" sticker, making the saving obvious.`);
+  }
+  if (promoConfig.type === 'tiered_disc') {
+    const dv = promoConfig.discountValue || '15%/40%/60% OFF';
+    lines.push(`\nTIERED DISPLAY: Show 3-4 product units in a row, each with progressively larger discount badges:`);
+    lines.push(`- 1st unit: smallest discount, 2nd: medium, 3rd: largest discount (${dv})`);
+    lines.push(`- Each tier clearly labeled. Make the escalating savings visually obvious.`);
+  }
+  // V10.2 新 9 种专项 prompt
+  if (NEW_PROMO_TYPES.has(promoConfig.type)) {
+    lines.push('\nPROMOTION TYPE-SPECIFIC INSTRUCTIONS:');
+    switch (promoConfig.type) {
+      case 'percent': {
+        const txt = (mainPromoState.percent==='自定义' && mainPromoState.customText) ? mainPromoState.customText : (mainPromoState.percent||'30% OFF');
+        lines.push('- Show "'+txt+'" badge at the top of the image, in the most prominent position.');
+        lines.push('- The discount percentage text must be the largest text element in the image.');
+        break;
+      }
+      case 'amount': {
+        const amt = mainPromoState.amount || 0;
+        lines.push('- Show a "Save $'+amt+'" badge prominently at the top.');
+        lines.push('- Emphasize the dollar amount '+amt+' in large bold text.');
+        break;
+      }
+      case 'full_x_get_y': {
+        const x = mainPromoState.fullX || 0; const y = mainPromoState.getY || 0;
+        const offPct = 100 - y;
+        lines.push('- Show a "Spend $'+x+' Get '+offPct+'% OFF" tier discount badge at the top.');
+        if (mainPromoState.stackable) lines.push('- Add a small "(Stackable)" tag near the main discount.');
+        break;
+      }
+      case 'full_x_minus_y': {
+        const x = mainPromoState.fullX || 0; const y = mainPromoState.minusY || 0;
+        lines.push('- Show a "Spend $'+x+' Save $'+y+'" tier discount badge at the top.');
+        if (mainPromoState.stackable) lines.push('- Add a small "(Stackable)" tag near the main discount.');
+        break;
+      }
+      case 'full_x_piece_y_z': {
+        const x = mainPromoState.fullX || 0; const y = mainPromoState.pieceY || 0;
+        const total = x + y; let z = mainPromoState.zDiscount || '5折';
+        if (z==='自定义' && mainPromoState.customZ) z = mainPromoState.customZ;
+        lines.push('- Show a "Buy '+total+' items, '+y+'th item '+z+' off" badge at the top.');
+        lines.push('- Total units in image: '+total+' (clearly label the discounted item with "'+z+'" tag).');
+        break;
+      }
+      case 'piece_half': {
+        const py = mainPromoState.pieceY || '2';
+        let disp;
+        if (py === '自定义') {
+          const z = mainPromoState.zDiscount || '5折';
+          disp = (z==='自定义' && mainPromoState.customText) ? mainPromoState.customText : z;
+        } else {
+          const yNum = parseInt(py)||2;
+          disp = ordinalEn(yNum) + ' item 20% off (5折)';
+        }
+        const yNum2 = parseInt(py) || 2;
+        lines.push('- Show a "'+disp+'" badge at the top.');
+        lines.push('- Image must show at least '+yNum2+' product units, with that item visually marked.');
+        break;
+      }
+      case 'buy_n_get_m': {
+        const n = mainPromoState.buyN || 0; const m = mainPromoState.getM || 0; const total = n + m;
+        lines.push('- Show a "Buy '+n+' Get '+m+' Free" badge prominently at the top.');
+        lines.push('- PRODUCT QUANTITY: EXACTLY '+total+' product units in image. Do NOT show only '+n+' or only '+m+'.');
+        lines.push('- Label the free '+m+' items with "FREE" or "GIFT" tags.');
+        break;
+      }
+      case 'flash_sale': {
+        const p = mainPromoState.price || 0;
+        lines.push('- Show a "Flash Sale $'+p+'" badge with countdown/urgency styling at the top.');
+        lines.push('- Use a bright, attention-grabbing color (red/orange/yellow) for the badge.');
+        break;
+      }
+    }
+  }
+  
+  // V9.3: 折扣不重复 — 只在prompt里说一次
+  lines.push(`\nDISCOUNT DISPLAY RULES:`);
+  lines.push(`- Show the promotion EXACTLY ONCE in the image. Do NOT repeat the discount text in multiple places.`);
+  lines.push(`- One prominent badge/banner in the top section is sufficient. Do not add duplicate discount labels.`);
+  
   if (promoConfig.freeShipping || promoConfig.type === 'free_shipping') {
-    lines.push(`\nFREE SHIPPING: Include a "FREE SHIPPING" badge near the promotion area.`);
+    lines.push(`\nFREE SHIPPING: Include ONE "FREE SHIPPING" badge near the promotion area.`);
   } else {
-    lines.push(`\nFREE SHIPPING: Do NOT include any free shipping text or badges. Only show the promotion as configured.`);
+    lines.push(`\nFREE SHIPPING: This promotion does NOT include free shipping. Do NOT show any free shipping text.`);
   }
+  
+  // V9.3: 布局多样性 — 不要每一张图看起来都一样
+  lines.push(`\nCOMPOSITION VARIETY:`);
+  lines.push(`- Create a visually interesting layout. Do NOT produce a flat, plain, or boring image.`);
+  lines.push(`- Use dynamic angles, creative product arrangement, lifestyle elements, or decorative accents.`);
+  lines.push(`- The image should feel premium like a professional e-commerce ad, not a template.`);
+  
   lines.push('=== END PROMOTION ZONE ===\n');
   return lines;
 }
@@ -2679,8 +3266,12 @@ function init() {
   // V9.1: Restore industry mode from localStorage
   const savedMode = localStorage.getItem('poster_v91_industry_mode');
   if (savedMode) { selectedIndustryMode = savedMode; selectedTags.industryMode = savedMode; }
+  // V10.2: 初始化 mainPromoState
+  mainPromoState.type = '';
   // V9.2 Fix #4: 启动时检查存储空间
   checkStorageQuota();
+  // V10.2: 初次触发 onPromoChange (确保所有 UI 状态正确)
+  if (typeof onPromoChange === 'function') onPromoChange();
 }
 
 init();
