@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FB评论种草 V10.2</title>
+<title>FB评论种草生图工作台 V11.0</title>
 <script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <style>
@@ -235,6 +235,37 @@ header .actions span{font-size:11px;color:var(--text2)}
 #promoCard select,#promoCard input[type=text],#promoCard input[type=number]{background:#fff7ed;border-color:#fed7aa}
 #promoCard select:focus,#promoCard input:focus{border-color:var(--orange)}
 #promoText{background:#fffbeb !important;border:1px solid #fde68a !important;color:#92400e !important;font-weight:600;font-size:12px !important}
+
+/* ===== V11.0 CATEGORY TEMPLATE STYLES ===== */
+.category-page{position:relative;min-height:90vh;padding:20px}
+.category-page.hidden{display:none}
+.category-page-header{text-align:center;margin-bottom:24px;padding:20px 0}
+.category-page-header h2{font-size:22px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--pink),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.category-page-header p{font-size:13px;color:var(--text2)}
+.category-group{margin-bottom:20px}
+.category-group-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:10px;padding-left:4px;display:flex;align-items:center;gap:6px}
+.category-group-title .group-icon{font-size:18px}
+.category-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.category-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .25s ease;position:relative;overflow:hidden}
+.category-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.08);border-color:var(--accent)}
+.category-card:active{transform:translateY(-1px)}
+.category-card .cc-icon{font-size:32px;display:block;margin-bottom:8px}
+.category-card .cc-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.category-card .cc-desc{font-size:10px;color:var(--text2);line-height:1.5}
+.category-card .cc-badge{position:absolute;top:8px;right:8px;font-size:8px;padding:2px 6px;border-radius:4px;background:rgba(99,101,241,.1);color:var(--accent)}
+.category-card.active-cat{border-color:var(--accent);background:linear-gradient(135deg,#f0f0ff,#faf8ff)}
+.category-card.active-cat::after{content:'✓ 已选';position:absolute;top:8px;right:8px;font-size:9px;padding:2px 8px;border-radius:4px;background:var(--accent);color:#fff}
+.back-to-category-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:11px;color:var(--text2);transition:all .2s;margin-bottom:8px}
+.back-to-category-btn:hover{border-color:var(--accent);color:var(--accent)}
+.current-cat-display{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:6px;background:linear-gradient(135deg,rgba(99,101,241,.08),rgba(236,72,153,.08));font-size:11px;font-weight:600;color:var(--accent);margin-bottom:8px}
+.mode-toggle-bar{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:6px 10px;background:#f5f3f0;border-radius:6px;font-size:10px;color:var(--text2)}
+.mode-toggle-bar .mode-label{font-weight:600}
+.mode-toggle-bar button{padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:10px;transition:all .2s}
+.mode-toggle-bar button:hover{border-color:var(--accent);color:var(--accent)}
+.mode-toggle-bar button.active-mode{background:var(--accent);color:#fff;border-color:var(--accent)}
+.legacy-notice{padding:8px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;font-size:11px;color:#92400e;margin-bottom:10px;display:none}
+.legacy-notice.visible{display:block}
+
 </style>
 </head>
 <body>
@@ -349,16 +380,48 @@ header .actions span{font-size:11px;color:var(--text2)}
   <img id="imgViewerSrc" src="">
 </div>
 
+
+<!-- V11.0: Category Selection Page (Page 0) -->
+<div class="category-page" id="categoryPage">
+  <div class="category-page-header">
+    <h2>🎨 FB评论种草生图工作台</h2>
+    <p>选择您的商品品类，我们将为您匹配最适合的标签维度与生成策略</p>
+  </div>
+  
+  <!-- Mode Toggle -->
+  <div style="max-width:1280px;margin:0 auto;padding:0 10px">
+    <div class="mode-toggle-bar">
+      <span class="mode-label">工作模式：</span>
+      <button id="modeBtnCategoryTemplate" class="active-mode" onclick="switchAppMode('categoryTemplate')">品类模板模式 (新)</button>
+      <button id="modeBtnLegacy" onclick="switchAppMode('legacy')">传统模式 (旧)</button>
+      <span style="margin-left:auto;font-size:9px">V11.0</span>
+    </div>
+  </div>
+
+  <div style="max-width:1280px;margin:0 auto;padding:0 10px" id="categoryCardsContainer">
+    <!-- Groups will be rendered by JS -->
+  </div>
+</div>
+
 <!-- Main App -->
 <div class="container" id="mainApp" style="display:block">
   <header>
-    <h1>🎨 FB评论种草 V10.2</h1>
+    <h1>🎨 FB评论种草生图工作台 V11.0</h1>
     <div class="actions">
       <span id="userInfo"></span>
       <span id="roleInfo" class="tag" style="margin-right:4px"></span>
       <button class="btn btn-outline btn-sm" id="adminBtn" onclick="openAdmin()">⚙️ 管理</button>
     </div>
   </header>
+
+  <!-- V11.0: Back button & Category Display -->
+  <div id="categoryNavBar" style="display:none;padding:0 0 6px 0">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <button class="back-to-category-btn" onclick="showCategoryPage()">← 返回品类选择</button>
+      <span class="current-cat-display" id="currentCatDisplay"></span>
+    </div>
+  </div>
+  <div class="legacy-notice" id="legacyNotice">📋 当前使用传统模式（旧版架构），所有品类共用同一套标签维度。切换至"品类模板模式"可获得更精准的品类专属体验。</div>
 
   <div class="grid">
     <!-- Left Column -->
@@ -397,6 +460,37 @@ header .actions span{font-size:11px;color:var(--text2)}
           <label>产品实际特性 <small style="color:var(--danger)">(重要！覆盖通用标签，确保文案准确)</small></label>
           <textarea id="productFeatures" rows="2" placeholder="如：温水可卸除、含维E成分、刷头可360°旋转、续航72小时..." oninput="updatePreview()"></textarea>
         </div>
+        <!-- V11.1 #3: 搭配单品 -->
+        <div class="form-group">
+          <label>👗 搭配单品 <small style="color:var(--text2)">(可选，为主商品搭配其他品类)</small></label>
+          <div class="form-row">
+            <select id="pairingType" onchange="onPairingChange()">
+              <option value="">不搭配（默认）</option>
+              <option value="bottoms">下装（通用）</option>
+              <option value="pants">裤子</option>
+              <option value="jeans">牛仔裤</option>
+              <option value="skirt">裙子</option>
+              <option value="shorts">短裤</option>
+              <option value="top">上衣</option>
+              <option value="outerwear">外套</option>
+              <option value="shoes">鞋履</option>
+              <option value="bag">包袋</option>
+              <option value="accessory">配饰</option>
+              <option value="full_look">整套穿搭</option>
+            </select>
+            <select id="pairingStyle" onchange="updatePreview()">
+              <option value="matching">同色系协调</option>
+              <option value="contrast">撞色对比</option>
+              <option value="casual">休闲日常</option>
+              <option value="commute">通勤职场</option>
+              <option value="street">街头潮流</option>
+              <option value="elegant">优雅气质</option>
+            </select>
+          </div>
+          <div id="pairingWarn" style="display:none;font-size:9px;color:#0369a1;margin-top:3px;padding:4px 6px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:4px">
+            🔒 已锁定主商品：搭配单品由 AI 生成，在售商品的颜色/版型/细节将保持不变
+          </div>
+        </div>
       </div>
 
       <!-- V9.2: Promotion Config Card (Fix #1, #2, #5) -->
@@ -405,7 +499,7 @@ header .actions span{font-size:11px;color:var(--text2)}
         <div class="form-row-3">
           <div class="form-group">
             <label>活动类型</label>
-            <select id="promoType" onchange="onPromoChange()">
+            <select id="promoType" onchange="onPromoChange();syncExtraPromoVisibility()">
               <option value="">无促销活动</option>
               <optgroup label="── 经典 7 种 (向后兼容) ──">
                 <option value="buy_x_get_y">买X送Y</option>
@@ -448,6 +542,25 @@ header .actions span{font-size:11px;color:var(--text2)}
         </div>
         <!-- V10.2: 新 9 种折扣动态字段容器 -->
         <div class="form-group" id="mainPromoFields" style="display:none"></div>
+        <!-- V11.1 #2: 叠加促销（多选） -->
+        <div class="form-group" id="extraPromoGroup" style="display:none">
+          <label>➕ 叠加促销 <small style="color:var(--text2)">(可多选，作为副文案与主促销组合)</small></label>
+          <div class="chip-group" id="extraPromoChips"></div>
+          <div id="bulkTierBox" style="display:none;margin-top:5px;padding:6px 8px;background:#fff7ed;border:1px solid #fed7aa;border-radius:6px">
+            <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:11px">
+              <span>满</span>
+              <input type="number" id="bulkPieces" value="2" min="2" max="10" style="width:56px;padding:3px 5px" oninput="onExtraPromoInput()">
+              <span>件，享</span>
+              <input type="text" id="bulkDiscount" value="10% OFF" placeholder="如 10% OFF" style="width:100px;padding:3px 5px" oninput="onExtraPromoInput()">
+            </div>
+          </div>
+          <div style="font-size:9px;color:var(--text2);margin-top:3px">建议叠加不超过 2 条：信息越堆越多，反而互相抢注意力</div>
+        </div>
+        <!-- V10.3: 促销配色方案选择器 -->
+        <div class="form-group">
+          <label>🎨 配色方案 <small style="color:var(--text2)">(与品牌调性联动，选品牌调性后自动匹配)</small></label>
+          <div class="chip-group" id="promoColorSchemeChips"></div>
+        </div>
         <div class="form-group" style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#fffbeb;border:1px solid #fde68a;border-radius:6px">
           <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;margin:0">
             <input type="checkbox" id="freeShippingToggle" onchange="onPromoChange()" style="width:auto"> 🚚 <b>此活动包含免运费</b>
@@ -939,6 +1052,172 @@ const INDUSTRY_MODES = {
   beauty: { name: '美妆', icon: '💄', prompt_strategy: 'beauty_commercial', desc: '彩妆护肤美容等' },
   home: { name: '家居', icon: '🏠', prompt_strategy: 'lifestyle', desc: '家具家装饰品等' }
 };
+
+
+// ============ V11.0: CATEGORY TEMPLATES ============
+const CATEGORY_TEMPLATES = {
+  '普通服装': {
+    icon: '👔', group: '服饰类', desc: '标准服装展示，支持多身材模特、多色合集等',
+    dimensions: ['clothingType', 'sellingPoint', 'painPoint', 'scene', 'atmosphere', 'brandTone', 'targetAudience', 'personType'],
+    industryMode: 'normal_clothing', useExistingTags: true
+  },
+  '高露肤服装': {
+    icon: '👙', group: '服饰类', desc: '内衣/泳装/紧身衣等专业展示',
+    dimensions: ['clothingType', 'heTemplate', 'scene', 'atmosphere', 'brandTone', 'targetAudience'],
+    industryMode: 'high_exposure', useExistingTags: true
+  },
+  '鞋靴': {
+    icon: '👟', group: '服饰类', desc: '鞋类产品展示',
+    dimensions: ['sellingPoint', 'scene', 'atmosphere', 'brandTone', 'targetAudience'],
+    industryMode: 'shoes_bags', useExistingTags: false,
+    placeholderTags: {
+      sellingPoint: ['舒适', '耐磨', '防滑', '透气', '轻便', '减震'],
+      scene: ['日常通勤', '运动健身', '商务正装', '休闲户外', '旅行'],
+      atmosphere: ['高端型-质感奢华', '年轻潮流型-活力时尚', '简约高级']
+    }
+  },
+  '箱包': {
+    icon: '👜', group: '服饰类', desc: '箱包配饰展示',
+    dimensions: ['sellingPoint', 'scene', 'atmosphere', 'brandTone', 'targetAudience'],
+    industryMode: 'shoes_bags', useExistingTags: false,
+    placeholderTags: {
+      sellingPoint: ['大容量', '轻便', '百搭', '防水', '多功能'],
+      scene: ['通勤', '旅行', '日常', '商务'],
+      atmosphere: ['高端型-质感奢华', '简约高级']
+    }
+  },
+  '珠宝配饰': {
+    icon: '💎', group: '服饰类', desc: '珠宝首饰精致展示',
+    dimensions: ['sellingPoint', 'scene', 'atmosphere', 'brandTone', 'targetAudience'],
+    industryMode: 'shoes_bags', useExistingTags: false,
+    placeholderTags: {
+      sellingPoint: ['精致', '高级感', '独特设计', '纯手工', '保值'],
+      scene: ['日常佩戴', '约会', '宴会', '送礼'],
+      atmosphere: ['高端型-质感奢华', '精致优雅']
+    }
+  },
+  '家居用品': {
+    icon: '🛋️', group: '家居类', desc: '家具家装饰品展示',
+    dimensions: ['sellingPoint', 'scene', 'atmosphere', 'brandTone', 'targetAudience'],
+    industryMode: 'home', useExistingTags: false,
+    placeholderTags: {
+      sellingPoint: ['环保材质', '简约设计', '实用', '耐用', '多功能'],
+      scene: ['客厅', '卧室', '书房', '阳台'],
+      atmosphere: ['温馨生活型-亲切自然', '清新自然型-纯净简约']
+    }
+  },
+  '厨房用品': {
+    icon: '🍳', group: '家居类', desc: '厨房用具展示',
+    dimensions: ['sellingPoint', 'scene', 'atmosphere', 'brandTone', 'targetAudience'],
+    industryMode: 'home', useExistingTags: false,
+    placeholderTags: {
+      sellingPoint: ['耐用', '安全', '易清洁', '食品级', '不粘'],
+      scene: ['厨房烹饪', '烘焙', '收纳整理', '家庭聚餐'],
+      atmosphere: ['温馨生活型-亲切自然']
+    }
+  },
+  '家居园艺': {
+    icon: '🌿', group: '家居类', desc: '花园庭院用品',
+    dimensions: ['sellingPoint', 'scene', 'atmosphere', 'brandTone', 'targetAudience'],
+    industryMode: 'home', useExistingTags: false,
+    placeholderTags: {
+      sellingPoint: ['户外耐用', '防水防晒', '美观', '环保', '易安装'],
+      scene: ['庭院花园', '阳台', '户外露台', '室内绿植'],
+      atmosphere: ['清新自然型-纯净简约', '温馨生活型-亲切自然']
+    }
+  },
+  '手机数码': {
+    icon: '📱', group: '科技类', desc: '手机及配件展示',
+    dimensions: ['sellingPoint', 'scene', 'atmosphere', 'brandTone', 'targetAudience'],
+    industryMode: 'shoes_bags', useExistingTags: false,
+    placeholderTags: {
+      sellingPoint: ['高性能', '长续航', '轻薄', '高清屏幕', '快充'],
+      scene: ['办公', '娱乐', '运动', '旅行'],
+      atmosphere: ['年轻潮流型-活力时尚', '专业可信型-权威感', '简约高级']
+    }
+  },
+  '电脑办公': {
+    icon: '💻', group: '科技类', desc: '电脑及办公设备',
+    dimensions: ['sellingPoint', 'scene', 'atmosphere', 'brandTone', 'targetAudience'],
+    industryMode: 'shoes_bags', useExistingTags: false,
+    placeholderTags: {
+      sellingPoint: ['高效', '便携', '专业', '稳定', '静音'],
+      scene: ['办公桌面', '移动办公', '游戏', '创意设计'],
+      atmosphere: ['专业可信型-权威感', '简约高级']
+    }
+  },
+  '美妆护理': {
+    icon: '💄', group: '其他', desc: '彩妆护肤美容',
+    dimensions: ['sellingPoint', 'scene', 'atmosphere', 'brandTone', 'targetAudience'],
+    industryMode: 'beauty', useExistingTags: false,
+    placeholderTags: {
+      sellingPoint: ['持久', '自然', '温和', '保湿', '遮瑕'],
+      scene: ['日常妆容', '约会', '职场', '派对'],
+      atmosphere: ['高端型-质感奢华', '年轻潮流型-活力时尚', '精致优雅']
+    }
+  },
+  '汽车用品': {
+    icon: '🚗', group: '其他', desc: '车载配件工具',
+    dimensions: ['sellingPoint', 'scene', 'atmosphere', 'brandTone', 'targetAudience'],
+    industryMode: 'home', useExistingTags: false,
+    placeholderTags: {
+      sellingPoint: ['耐用', '实用', '安全', '通用', '易安装'],
+      scene: ['日常驾驶', '长途旅行', '城市通勤', '越野'],
+      atmosphere: ['可靠实用', '专业可信型-权威感']
+    }
+  },
+  '母婴用品': {
+    icon: '🍼', group: '其他', desc: '母婴产品',
+    dimensions: ['sellingPoint', 'scene', 'atmosphere', 'brandTone', 'targetAudience'],
+    industryMode: 'home', useExistingTags: false,
+    placeholderTags: {
+      sellingPoint: ['安全', '柔软', '环保', '亲肤', '无刺激'],
+      scene: ['居家', '出行', '喂养', '睡眠'],
+      atmosphere: ['温馨生活型-亲切自然']
+    }
+  },
+  '食品保健': {
+    icon: '🍎', group: '其他', desc: '食品保健品',
+    dimensions: ['sellingPoint', 'scene', 'atmosphere', 'brandTone', 'targetAudience'],
+    industryMode: 'home', useExistingTags: false,
+    placeholderTags: {
+      sellingPoint: ['天然', '新鲜', '健康', '低糖', '有机'],
+      scene: ['日常食用', '送礼', '办公零食', '健身补给'],
+      atmosphere: ['清新自然型-纯净简约', '温馨生活型-亲切自然']
+    }
+  }
+};
+
+// Dimension definitions for rendering
+const DIMENSION_DEFS = {
+  clothingType: { label: '产品品类/服装类型', dimId: 'dimCategory', color: 'var(--pink)', multi: false, hasSub: true },
+  sellingPoint: { label: '核心卖点', dimId: 'dimSellingPoint', color: 'var(--orange)', multi: true },
+  painPoint: { label: '用户痛点', dimId: 'dimPainPoint', color: 'var(--danger)', multi: true },
+  scene: { label: '使用场景', dimId: 'dimScene', color: 'var(--cyan)', multi: false },
+  atmosphere: { label: '氛围风格', dimId: 'dimAtmosphere', color: 'var(--purple)', multi: false },
+  brandTone: { label: '品牌调性', dimId: 'dimBrandTone', color: 'var(--accent)', multi: false },
+  targetAudience: { label: '目标人群', dimId: 'dimTargetAudience', color: 'var(--success)', multi: true },
+  personType: { label: '人物类型', dimId: 'dimPersonType', color: '#3b82f6', multi: false },
+  heTemplate: { label: 'HE展示模板', dimId: 'dimHETemplate', color: '#e11d48', multi: true }
+};
+
+// All dim-section element IDs that can be toggled
+const ALL_DIM_SECTION_IDS = ['dimCategory', 'dimClothingType', 'dimSellingPoint', 'dimPainPoint', 'dimScene', 'dimAtmosphere', 'dimBrandTone', 'dimTargetAudience', 'dimPersonType', 'dimHETemplate'];
+// Parent containers for each dim
+const DIM_PARENT_MAP = {
+  'dimCategory': null, // special - has its own parent
+  'dimClothingType': 'clothingSubTypes',
+  'dimSellingPoint': null,
+  'dimPainPoint': null,
+  'dimScene': null,
+  'dimAtmosphere': null,
+  'dimBrandTone': null,
+  'dimTargetAudience': null,
+  'dimPersonType': null,
+  'dimHETemplate': 'heTemplateGroup'
+};
+
+
 const HE_CLOTHING_TEMPLATES = [
   {name:'产品展示型', desc:'模特正常穿着展示(推荐)', prompt:'product display on model, natural standing pose, showcasing design and fit, professional e-commerce photography'},
   {name:'面料细节型', desc:'材质纹理做工特写', prompt:'close-up detail shots of fabric texture, stitching quality, material craftsmanship, professional product photography'},
@@ -1148,7 +1427,23 @@ let tagWeights = Object.assign({}, TAG_WEIGHTS);
 let v9Records = JSON.parse(localStorage.getItem('poster_v9_records') || '[]');
 let favorites = new Set(v9Records.filter(r => r.favorited).map(r => r.id));
 // V9.2: Promotion config state (Fix #1, #2, #5)
-let promoConfig = { type: '', buyCount: 3, getCount: 2, discountValue: '', giftDesc: '', freeShipping: false };
+let promoConfig = { type: '', buyCount: 3, getCount: 2, discountValue: '', giftDesc: '', freeShipping: false, colorScheme: '强销售转化', extraPromos: [], bulkPieces: 2, bulkDiscount: '10% OFF' }; // V11.1 #2: extraPromos 等为新增，旧记录读取时自动补默认值
+// V10.3: 促销配色方案 (适用于所有品类)
+const PROMO_COLOR_SCHEMES = [
+  { key: '简约高级', name: '简约高级', color: '#212121', desc: '极简黑白+微金点缀', promptDesc: 'sleek black and white monochrome with subtle gold accents, ultra-premium minimalist style' },
+  { key: '年轻活泼', name: '年轻活泼', color: '#ff6f00', desc: '橙色暖调活力感', promptDesc: 'vibrant orange and warm tones, energetic and youthful, modern eye-catching style' },
+  { key: '专业可信', name: '专业可信', color: '#1976d2', desc: '蓝白专业商务', promptDesc: 'professional blue and white tones, trustworthy and authoritative, clean corporate style' },
+  { key: '温暖生活', name: '温暖生活', color: '#b76e79', desc: '暖棕+玫瑰柔光', promptDesc: 'warm brown and rose gold soft tones, cozy lifestyle feel, gentle premium aesthetic' },
+  { key: '强销售转化', name: '强销售转化', color: '#e53935', desc: '红黄强烈促销冲击', promptDesc: 'bold red/orange/yellow high-contrast color block, maximum visual impact, aggressive sale style' },
+  { key: '时尚前卫', name: '时尚前卫', color: '#7b1fa2', desc: '紫调未来科技感', promptDesc: 'futuristic purple and gradient tones, fashion-forward innovative feel, bold modern style' },
+  { key: '可靠实用', name: '可靠实用', color: '#2e7d32', desc: '绿调踏实稳重', promptDesc: 'steady green and earth tones, reliable and practical, grounded trustworthy aesthetic' },
+  { key: '精致优雅', name: '精致优雅', color: '#d4af37', desc: '金色奢华精致', promptDesc: 'elegant gold and dark tones, luxury premium feel with metallic accents, sophisticated elegant style' }
+];
+// V11.0: Category Template Mode State
+let appMode = localStorage.getItem('poster_v11_app_mode') || 'categoryTemplate'; // 'categoryTemplate' or 'legacy'
+let selectedCategoryTemplate = localStorage.getItem('poster_v11_selected_category') || '';
+let categorySelectionsCache = {}; // Cache selections per category for restoring when switching back
+
 
 // ============ TAG MANAGEMENT ============
 function loadTags() {
@@ -1186,9 +1481,39 @@ function getPainPointsForCategory(cat) { return tagData.painPoint[cat] || {}; }
 
 // ============ RENDER DIMENSION CHIPS (V9: with weight marks) ============
 function renderAllDimensions() {
-  renderIndustryModeOptions(); renderCategoryChips(); renderSellingPointChips(); renderPainPointChips();
-  renderSceneChips(); renderAtmosphereChips(); renderBrandToneChips();
-  renderTargetAudienceChips(); renderPersonTypeOptions(); updateClothingVisibility(); renderHETemplates();
+  renderIndustryModeOptions();
+  
+  // V11.0: In category template mode with non-existing tags, some renders are handled by applyPlaceholderTags
+  const tpl = (appMode === 'categoryTemplate' && selectedCategoryTemplate) ? CATEGORY_TEMPLATES[selectedCategoryTemplate] : null;
+  
+  if (tpl && !tpl.useExistingTags) {
+    // For non-clothing categories, use placeholder tags for some dimensions
+    renderCategoryChips(); // Still render category chips
+    applyPlaceholderTags(tpl); // This handles sellingPoint, scene, atmosphere with placeholders
+    // brandTone and targetAudience use existing data
+    renderBrandToneChips();
+    renderTargetAudienceChips();
+    renderPersonTypeOptions();
+    // Hide pain point section for non-clothing
+    const ppSection = document.querySelector('#dimPainPoint')?.closest('.dim-section');
+    if (ppSection) ppSection.style.display = 'none';
+    // Clothing type section hidden for non-clothing
+    const catSection = document.querySelector('#dimCategory')?.closest('.dim-section');
+    if (catSection && !tpl.dimensions.includes('clothingType')) catSection.style.display = 'none';
+    // HE template visibility
+    const heGroup = document.getElementById('heTemplateGroup');
+    if (heGroup) heGroup.style.display = tpl.dimensions.includes('heTemplate') ? '' : 'none';
+  } else {
+    // Full render for clothing categories or legacy mode
+    renderCategoryChips(); renderSellingPointChips(); renderPainPointChips();
+    renderSceneChips(); renderAtmosphereChips(); renderBrandToneChips();
+    renderTargetAudienceChips(); renderPersonTypeOptions(); updateClothingVisibility(); renderHETemplates();
+    
+    // In legacy mode, show everything
+    if (appMode === 'legacy') {
+      showAllDimSections();
+    }
+  }
 }
 
 function renderCategoryChips() {
@@ -1340,6 +1665,8 @@ function getHighExposureCategory() {
 }
 
 function autoDetectIndustryMode() {
+  // V11.0: In category template mode, industry mode is set by template, skip auto-detect
+  if (appMode === 'categoryTemplate' && selectedCategoryTemplate) return;
   // Auto-detect based on category and clothing type
   if (selectedTags.category === '美妆') {
     if (selectedIndustryMode !== 'beauty') { selectedIndustryMode = 'beauty'; selectedTags.industryMode = 'beauty'; }
@@ -1411,7 +1738,18 @@ function togglePainPoint(name) {
 }
 function selectScene(name) { selectedTags.scene = selectedTags.scene === name ? '' : name; renderSceneChips(); updatePreview(); updateAnalysis(); }
 function selectAtmosphere(name) { selectedTags.atmosphere = selectedTags.atmosphere === name ? '' : name; renderAtmosphereChips(); updatePreview(); updateAnalysis(); }
-function selectBrandTone(name) { selectedTags.brandTone = selectedTags.brandTone === name ? '' : name; renderBrandToneChips(); updatePreview(); updateAnalysis(); }
+function selectBrandTone(name) {
+  selectedTags.brandTone = selectedTags.brandTone === name ? '' : name;
+  // 正向联动：品牌调性 → 促销配色
+  if (selectedTags.brandTone) {
+    promoConfig.colorScheme = selectedTags.brandTone;
+    const promoChips = document.querySelectorAll('#promoColorSchemeChips .chip');
+    promoChips.forEach(chip => chip.classList.remove('active'));
+    const idx = PROMO_COLOR_SCHEMES.findIndex(s => s.key === selectedTags.brandTone);
+    if (idx >= 0 && promoChips[idx]) promoChips[idx].classList.add('active');
+  }
+  renderBrandToneChips(); updatePreview(); updateAnalysis();
+}
 function toggleTargetAge(name) {
   if (!selectedTags.targetAges) selectedTags.targetAges = [];
   const idx = selectedTags.targetAges.indexOf(name);
@@ -1438,6 +1776,8 @@ function selectPersonType(id) {
 }
 
 function updateClothingVisibility() {
+  // V11.0: In category template mode, visibility is handled by applyCategoryTemplateDimensions
+  if (appMode === 'categoryTemplate' && selectedCategoryTemplate) return;
   const isClothing = selectedTags.category === '服装';
   const isHE = isClothing && isHighExposureMode();
   document.getElementById('clothingSubTypes').style.display = isClothing ? 'block' : 'none';
@@ -1528,10 +1868,485 @@ function onLanguageChange() {
   updatePreview(); updateAnalysis();
 }
 
+
+
+// ============ V11.0: CATEGORY PAGE & DYNAMIC DIMENSION RENDERING ============
+
+// Render category selection page cards
+function renderCategoryPage() {
+  const container = document.getElementById('categoryCardsContainer');
+  if (!container) return;
+  
+  // Group categories
+  const groups = {};
+  for (const [name, tpl] of Object.entries(CATEGORY_TEMPLATES)) {
+    if (!groups[tpl.group]) groups[tpl.group] = [];
+    groups[tpl.group].push({ name, ...tpl });
+  }
+  
+  const groupIcons = { '服饰类': '👗', '家居类': '🏠', '科技类': '📱', '其他': '💄' };
+  let html = '';
+  
+  for (const [groupName, items] of Object.entries(groups)) {
+    html += '<div class="category-group">';
+    html += '<div class="category-group-title"><span class="group-icon">' + (groupIcons[groupName]||'📦') + '</span> ' + groupName + '</div>';
+    html += '<div class="category-grid">';
+    items.forEach(item => {
+      const isActive = selectedCategoryTemplate === item.name;
+      html += '<div class="category-card' + (isActive ? ' active-cat' : '') + '" onclick="selectCategoryTemplate(\'' + item.name.replace(/'/g, "\'") + '\')">';
+      html += '<span class="cc-icon">' + item.icon + '</span>';
+      html += '<div class="cc-name">' + item.name + '</div>';
+      html += '<div class="cc-desc">' + item.desc + '</div>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+  }
+  
+  container.innerHTML = html;
+}
+
+// Select a category template and enter config page
+function selectCategoryTemplate(catName) {
+  // Save current selections if switching categories
+  if (selectedCategoryTemplate && selectedCategoryTemplate !== catName) {
+    categorySelectionsCache[selectedCategoryTemplate] = JSON.parse(JSON.stringify(selectedTags));
+  }
+  
+  selectedCategoryTemplate = catName;
+  localStorage.setItem('poster_v11_selected_category', catName);
+  
+  const tpl = CATEGORY_TEMPLATES[catName];
+  if (!tpl) return;
+  
+  // Set industry mode based on template
+  selectedIndustryMode = tpl.industryMode;
+  selectedTags.industryMode = tpl.industryMode;
+  localStorage.setItem('poster_v91_industry_mode', selectedIndustryMode);
+  
+  // Restore cached selections or reset
+  if (categorySelectionsCache[catName]) {
+    const cached = categorySelectionsCache[catName];
+    Object.assign(selectedTags, cached);
+  } else {
+    // Reset tags for this category
+    selectedTags.category = '';
+    selectedTags.clothingType = '';
+    selectedTags.sellingPoints = [];
+    selectedTags.painPoints = [];
+    selectedTags.scene = '';
+    selectedTags.atmosphere = '';
+    selectedTags.brandTone = '';
+    selectedTags.targetAges = [];
+    selectedTags.targetGenders = [];
+    selectedTags.targetIdentities = [];
+    selectedTags.clothingTemplates = [];
+    selectedTags.heTemplates = [];
+    selectedTags.personType = '';
+    selectedTags.degradeLevel = 0;
+  }
+  
+  // Switch to main app view
+  hideCategoryPage();
+  showMainApp();
+  
+  // Render dimensions based on template
+  applyCategoryTemplateDimensions(tpl);
+  renderAllDimensions();
+  updatePreview();
+  updateAnalysis();
+}
+
+// Apply category template dimensions - show/hide relevant sections
+function applyCategoryTemplateDimensions(tpl) {
+  const dims = tpl.dimensions || [];
+  
+  // Map dimension keys to their parent container elements
+  const dimSectionElements = {
+    'clothingType': () => {
+      // Category + clothing type section
+      const catSection = document.querySelector('#dimCategory')?.closest('.dim-section');
+      const clothSub = document.getElementById('clothingSubTypes');
+      return { main: catSection, sub: clothSub };
+    },
+    'sellingPoint': () => {
+      const el = document.querySelector('#dimSellingPoint')?.closest('.dim-section');
+      return { main: el };
+    },
+    'painPoint': () => {
+      const el = document.querySelector('#dimPainPoint')?.closest('.dim-section');
+      return { main: el };
+    },
+    'scene': () => {
+      const el = document.querySelector('#dimScene')?.closest('.dim-section');
+      return { main: el };
+    },
+    'atmosphere': () => {
+      const el = document.querySelector('#dimAtmosphere')?.closest('.dim-section');
+      return { main: el };
+    },
+    'brandTone': () => {
+      const el = document.querySelector('#dimBrandTone')?.closest('.dim-section');
+      return { main: el };
+    },
+    'targetAudience': () => {
+      const el = document.querySelector('#dimTargetAudience')?.closest('.dim-section');
+      return { main: el };
+    },
+    'personType': () => {
+      const el = document.querySelector('#personTypeOptions')?.closest('.person-type-section')?.closest('.dim-section');
+      return { main: el };
+    },
+    'heTemplate': () => {
+      const el = document.getElementById('heTemplateGroup');
+      return { main: el };
+    }
+  };
+  
+  // Hide all dim sections first
+  Object.values(dimSectionElements).forEach(getEl => {
+    const refs = getEl();
+    if (refs.main) refs.main.style.display = 'none';
+    if (refs.sub) refs.sub.style.display = 'none';
+  });
+  
+  // Show only the dimensions specified in the template
+  dims.forEach(dimKey => {
+    const getEl = dimSectionElements[dimKey];
+    if (getEl) {
+      const refs = getEl();
+      if (refs.main) refs.main.style.display = '';
+      if (refs.sub && tpl.useExistingTags) refs.sub.style.display = '';
+    }
+  });
+  
+  // Handle industry mode section visibility
+  const industrySection = document.querySelector('.industry-mode-section');
+  if (industrySection) {
+    // In category template mode, hide the manual industry mode selector
+    // since it's auto-set by the template
+    if (appMode === 'categoryTemplate') {
+      industrySection.style.display = 'none';
+    } else {
+      industrySection.style.display = '';
+    }
+  }
+  
+  // Update the chip rendering based on useExistingTags
+  if (!tpl.useExistingTags && tpl.placeholderTags) {
+    applyPlaceholderTags(tpl);
+  }
+}
+
+// Apply placeholder tags for non-clothing categories
+function applyPlaceholderTags(tpl) {
+  const ph = tpl.placeholderTags || {};
+  
+  // Render selling points from placeholder
+  if (ph.sellingPoint) {
+    const el = document.getElementById('dimSellingPoint');
+    if (el) {
+      el.innerHTML = '<div class="chip-group">' + ph.sellingPoint.map(item => {
+        const active = selectedTags.sellingPoints.includes(item) ? ' active' : '';
+        return '<div class="chip chip-orange' + active + '" onclick="toggleSellingPoint(\'' + item.replace(/'/g, "\'") + '\')">' + item + '</div>';
+      }).join('') + '</div>';
+    }
+  }
+  
+  // Render scene from placeholder
+  if (ph.scene) {
+    const el = document.getElementById('dimScene');
+    if (el) {
+      el.innerHTML = ph.scene.map(s => {
+        const active = selectedTags.scene === s ? ' active' : '';
+        return '<div class="chip chip-cyan' + active + '" onclick="selectScene(\'' + s.replace(/'/g, "\'") + '\')">' + s + '</div>';
+      }).join('');
+    }
+  }
+  
+  // Render atmosphere from placeholder
+  if (ph.atmosphere) {
+    const el = document.getElementById('dimAtmosphere');
+    if (el) {
+      el.innerHTML = ph.atmosphere.map(a => {
+        const active = selectedTags.atmosphere === a ? ' active' : '';
+        return '<div class="chip chip-purple' + active + '" onclick="selectAtmosphere(\'' + a.replace(/'/g, "\'") + '\')">' + a + '</div>';
+      }).join('');
+    }
+  }
+  
+  // Brand tone - use existing if available
+  if (!ph.brandTone) {
+    // Use existing brandTone data
+    renderBrandToneChips();
+  }
+  
+  // Target audience - use existing if available
+  if (!ph.targetAudience) {
+    renderTargetAudienceChips();
+  }
+}
+
+// Switch app mode between categoryTemplate and legacy
+function switchAppMode(mode) {
+  appMode = mode;
+  localStorage.setItem('poster_v11_app_mode', mode);
+  
+  // Update toggle buttons
+  document.getElementById('modeBtnCategoryTemplate').classList.toggle('active-mode', mode === 'categoryTemplate');
+  document.getElementById('modeBtnLegacy').classList.toggle('active-mode', mode === 'legacy');
+  
+  if (mode === 'legacy') {
+    // Legacy mode: show all dimensions, show industry mode selector
+    showAllDimSections();
+    document.querySelector('.industry-mode-section').style.display = '';
+    document.getElementById('legacyNotice').classList.add('visible');
+    document.getElementById('categoryNavBar').style.display = 'none';
+    renderAllDimensions();
+    updatePreview();
+  } else {
+    // Category template mode
+    document.getElementById('legacyNotice').classList.remove('visible');
+    if (selectedCategoryTemplate) {
+      const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
+      if (tpl) {
+        applyCategoryTemplateDimensions(tpl);
+        renderAllDimensions();
+        updatePreview();
+      }
+    } else {
+      showCategoryPage();
+    }
+  }
+}
+
+// Show all dimension sections (for legacy mode)
+function showAllDimSections() {
+  document.querySelectorAll('.dim-section').forEach(el => { el.style.display = ''; });
+  const clothSub = document.getElementById('clothingSubTypes');
+  if (clothSub) clothSub.style.display = '';
+  const heGroup = document.getElementById('heTemplateGroup');
+  if (heGroup) heGroup.style.display = '';
+  const industrySection = document.querySelector('.industry-mode-section');
+  if (industrySection) industrySection.style.display = '';
+}
+
+// Show/hide category page and main app
+function showCategoryPage() {
+  document.getElementById('categoryPage').classList.remove('hidden');
+  document.getElementById('mainApp').style.display = 'none';
+  renderCategoryPage();
+}
+
+function hideCategoryPage() {
+  document.getElementById('categoryPage').classList.add('hidden');
+}
+
+function showMainApp() {
+  document.getElementById('mainApp').style.display = 'block';
+  
+  // Update category nav bar
+  const navBar = document.getElementById('categoryNavBar');
+  const catDisplay = document.getElementById('currentCatDisplay');
+  if (selectedCategoryTemplate && appMode === 'categoryTemplate') {
+    const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
+    navBar.style.display = '';
+    catDisplay.innerHTML = tpl.icon + ' ' + selectedCategoryTemplate + ' <span style="font-weight:400;color:var(--text2);font-size:10px;margin-left:4px">(' + tpl.group + ')</span>';
+  } else {
+    navBar.style.display = 'none';
+  }
+}
+
+
 // ============ PROMPT BUILDING ============
+
+// ============ V11.1 #2 / #3: 叠加促销 与 搭配单品 ============
+// 设计原则：不修改原有 buildAutoPrompt / buildPromoPromptLines 的任何一行，
+// 改为在其外层包一层，原逻辑整体作为 Core 保留，新能力以增量方式追加。
+
+const EXTRA_PROMO_OPTIONS = [
+  { key: 'bulk_tier',     label: '满件折扣', en: '' },
+  { key: 'free_shipping', label: '免运费',   en: 'FREE SHIPPING' },
+  { key: 'limited_time',  label: '限时抢购', en: 'LIMITED TIME ONLY' },
+  { key: 'gift',          label: '加赠好礼', en: 'FREE GIFT INCLUDED' },
+  { key: 'new_customer',  label: '新客立减', en: 'NEW CUSTOMER DEAL' },
+  { key: 'clearance',     label: '清仓特价', en: 'FINAL CLEARANCE' }
+];
+
+function renderExtraPromoChips() {
+  const box = document.getElementById('extraPromoChips');
+  if (!box) return;
+  if (!promoConfig.extraPromos) promoConfig.extraPromos = [];
+  box.innerHTML = EXTRA_PROMO_OPTIONS.map(o =>
+    '<button class="chip chip-orange' + (promoConfig.extraPromos.indexOf(o.key) >= 0 ? ' active' : '') +
+    '" onclick="toggleExtraPromo(\'' + o.key + '\')">' + o.label + '</button>'
+  ).join('');
+  const bulkBox = document.getElementById('bulkTierBox');
+  if (bulkBox) bulkBox.style.display = promoConfig.extraPromos.indexOf('bulk_tier') >= 0 ? 'block' : 'none';
+}
+
+function toggleExtraPromo(key) {
+  if (!promoConfig.extraPromos) promoConfig.extraPromos = [];
+  const i = promoConfig.extraPromos.indexOf(key);
+  if (i >= 0) promoConfig.extraPromos.splice(i, 1);
+  else promoConfig.extraPromos.push(key);
+  renderExtraPromoChips();
+  if (typeof updatePreview === 'function') updatePreview();
+}
+
+function onExtraPromoInput() {
+  const pcs = document.getElementById('bulkPieces');
+  const dis = document.getElementById('bulkDiscount');
+  if (pcs) promoConfig.bulkPieces = parseInt(pcs.value) || 2;
+  if (dis) promoConfig.bulkDiscount = dis.value || '10% OFF';
+  if (typeof updatePreview === 'function') updatePreview();
+}
+
+// 主促销存在时才显示叠加区：没有主促销就谈不上"叠加"
+function syncExtraPromoVisibility() {
+  const g = document.getElementById('extraPromoGroup');
+  if (!g) return;
+  const hasMain = !!(document.getElementById('promoType') && document.getElementById('promoType').value);
+  g.style.display = hasMain ? 'block' : 'none';
+  if (!hasMain) { promoConfig.extraPromos = []; renderExtraPromoChips(); }
+}
+
+// 叠加促销 → 副层文案。刻意压制字号层级，避免与主促销抢视觉焦点
+function buildExtraPromoLines() {
+  const list = (promoConfig && promoConfig.extraPromos) || [];
+  if (!list.length) return [];
+  const texts = [];
+  list.forEach(k => {
+    if (k === 'bulk_tier') {
+      const pcs = promoConfig.bulkPieces || 2;
+      const dis = promoConfig.bulkDiscount || '10% OFF';
+      texts.push('BUY ' + pcs + '+ GET EXTRA ' + dis);
+    } else {
+      const o = EXTRA_PROMO_OPTIONS.find(x => x.key === k);
+      if (o && o.en) texts.push(o.en);
+    }
+  });
+  if (!texts.length) return [];
+  const lines = [];
+  lines.push('\n=== SECONDARY PROMOTION (SUB-LAYER, MUST NOT OVERPOWER THE MAIN BADGE) ===');
+  lines.push('Additional stacked offers to display: ' + texts.map(t => '"' + t + '"').join(' , '));
+  lines.push('HIERARCHY: These are SECONDARY. Render them in a small ribbon/strip at the BOTTOM of the poster, or as a small corner tag.');
+  lines.push('SIZE LIMIT: Each secondary line must be at most 1/3 the font size of the main discount badge.');
+  lines.push('The main discount stays the single dominant hero element; secondary offers only support it.');
+  lines.push('Keep every number, currency symbol and percent sign EXACTLY as written above.');
+  lines.push('=== END SECONDARY PROMOTION ===\n');
+  return lines;
+}
+
+// V11.1 #4: 文字准确性约束。图像模型渲染数字/百分号本就不稳，
+// 这里用强约束把出错率压下来。注意这只能"改善"，做不到 100%——
+// 要彻底根治，唯一可靠的路子是 AI 只出留白底图、文字用 Canvas 叠加。
+const TEXT_ACCURACY_LINES = [
+  '\n=== TEXT RENDERING ACCURACY (CRITICAL) ===',
+  'Reproduce every character, digit, currency symbol and percent sign EXACTLY as specified above.',
+  'Do NOT alter, round, swap, duplicate or re-order any number. Numbers must match digit-for-digit.',
+  'Use clean, standard, fully-formed Latin letterforms. No garbled, broken, invented or illegible glyphs.',
+  'No CJK characters. No random letter strings. If unsure about a character, render the specified text verbatim.',
+  '=== END TEXT RENDERING ACCURACY ===\n'
+];
+
+// 包装层：原促销逻辑照常执行，其后追加叠加促销副层与文字准确性约束
+function buildPromoPromptLines() {
+  let lines = [];
+  try { lines = buildPromoPromptLinesCore() || []; } catch (e) { console.warn('promo core failed', e); lines = []; }
+  const extra = buildExtraPromoLines();
+  if (!extra.length) return lines.length ? lines.concat(TEXT_ACCURACY_LINES) : lines;
+  // 没有主促销却选了叠加项时，把叠加项提升为主展示，避免用户白选
+  if (!lines.length) {
+    const list = (promoConfig && promoConfig.extraPromos) || [];
+    const texts = [];
+    list.forEach(k => {
+      if (k === 'bulk_tier') texts.push('BUY ' + (promoConfig.bulkPieces || 2) + '+ GET EXTRA ' + (promoConfig.bulkDiscount || '10% OFF'));
+      else { const o = EXTRA_PROMO_OPTIONS.find(x => x.key === k); if (o && o.en) texts.push(o.en); }
+    });
+    return ['\n=== PROMOTION BADGE ===',
+            'Show these promotional offers prominently: ' + texts.map(t => '"' + t + '"').join(' , '),
+            'Keep every number and percent sign EXACTLY as written.',
+            '=== END PROMOTION ===\n'].concat(TEXT_ACCURACY_LINES);
+  }
+  return lines.concat(extra).concat(TEXT_ACCURACY_LINES);
+}
+
+// 搭配单品 → 提示词。最关键的是锁死主商品，否则模型会顺手把在售商品重新设计
+function buildPairingPromptLines() {
+  const tSel = document.getElementById('pairingType');
+  if (!tSel || !tSel.value) return [];
+  const PAIR_EN = {
+    bottoms: 'bottoms', pants: 'trousers', jeans: 'jeans', skirt: 'skirt', shorts: 'shorts',
+    top: 'top garment', outerwear: 'outerwear jacket', shoes: 'shoes', bag: 'handbag',
+    accessory: 'fashion accessories', full_look: 'a complete coordinated outfit'
+  };
+  const STYLE_EN = {
+    matching: 'color-coordinated, harmonious tones', contrast: 'bold contrasting colors',
+    casual: 'casual everyday styling', commute: 'smart office / commute styling',
+    street: 'street fashion styling', elegant: 'elegant and refined styling'
+  };
+  const sSel = document.getElementById('pairingStyle');
+  const pairEn = PAIR_EN[tSel.value] || 'matching item';
+  const styleEn = STYLE_EN[(sSel && sSel.value) || 'matching'] || 'color-coordinated';
+  return [
+    '\n=== OUTFIT PAIRING (CRITICAL PRODUCT-INTEGRITY RULE) ===',
+    'ADD a matching ' + pairEn + ' to complete the look, styled as: ' + styleEn + '.',
+    'ABSOLUTE CONSTRAINT: The original product being sold must remain EXACTLY unchanged —',
+    'identical color, identical pattern, identical cut, identical fabric texture, identical buttons and details.',
+    'Do NOT redesign, recolor, restyle, resize or modify the original product in ANY way.',
+    'The paired item is a NEW added element only; the original product is the hero and must stay pixel-faithful to the reference.',
+    'The paired item must not cover, occlude or distract from the original product.',
+    '=== END OUTFIT PAIRING ===\n'
+  ];
+}
+
+function onPairingChange() {
+  const sel = document.getElementById('pairingType');
+  const warn = document.getElementById('pairingWarn');
+  if (warn) warn.style.display = (sel && sel.value) ? 'block' : 'none';
+  if (typeof updatePreview === 'function') updatePreview();
+}
+
+// V11.1 #4: 出口兜底清理。
+// 原有 stripCJK 只删汉字、不删中文标点，"限时5折，满2件9折" 会被清成 "5，2 9"，
+// 模型把这堆残渣当文字画进图里——这正是用户看到的"乱码"。
+// 这里统一收口：全角字母数字转半角保留信息，中日韩标点转空格丢弃。
+function cleanupResidualPunct(text) {
+  if (!text) return text;
+  let s = text;
+  // 全角 ASCII 区整体转半角：％→% ＄→$ ５０→50。
+  // 早期版本曾把非字母数字一律丢弃，结果 "５０％ ＯＦＦ" 被清成 "50 OFF"，折扣直接失真。
+  s = s.replace(/[\uff01-\uff5e]/g, function (ch) {
+    return String.fromCharCode(ch.charCodeAt(0) - 0xfee0);
+  });
+  // CJK 专有标点（。、「」〈〉等）无半角对应，直接转空格
+  s = s.replace(/[\u3000-\u303f]/g, ' ');
+  s = s.replace(/[\uffe0-\uffe6]/g, function (ch) {
+    const map = { '\uffe0': 'c', '\uffe1': '£', '\uffe5': '¥', '\uffe6': '₩' };
+    return map[ch] || ' ';
+  });
+  // 清掉标点消失后留下的空括号、连续分隔符等碎片
+  s = s.replace(/\(\s*\)|\[\s*\]|（\s*）/g, ' ');
+  s = s.replace(/ {2,}/g, ' ');
+  s = s.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n');
+  return s.trim();
+}
+
+// 包装层：原提示词逻辑（含全部三个 return 分支）照常执行，其后追加搭配约束。
+// 搭配约束为纯英文，位于 stripCJK / sanitizePromptText 之后，不会被清除。
 function buildAutoPrompt() {
+  let p = '';
+  try { p = buildAutoPromptCore() || ''; } catch (e) { console.error('buildAutoPromptCore failed', e); throw e; }
+  const pairing = buildPairingPromptLines();
+  if (pairing.length) p += '\n' + pairing.join('\n');
+  // 覆盖全部三个分支的统一出口清理（自定义模板分支不经过 sanitizePromptText，只能在这兜住）
+  p = cleanupResidualPunct(p);
+  return p;
+}
+
+function buildAutoPromptCore() {
   const name = document.getElementById('productName').value.trim();
-  const extra = document.getElementById('extraNote').value.trim();
+  const extra = getPromptField('extraNote'); // V11.1 #1: 用翻译后的英文，避免被 stripCJK 清空
   const size = document.getElementById('imageSize').value;
   const quality = document.getElementById('imageQuality').value;
   const customTemplate = localStorage.getItem('poster_ai_custom_prompts') || '';
@@ -1547,7 +2362,7 @@ function buildAutoPrompt() {
       .replace('{服装类型}', TL('clothingType', selectedTags.clothingType) || '');
     prompt += `\n\n=== LANGUAGE REQUIREMENT ===\nALL text MUST be in ${getTargetLangName()} ONLY. ABSOLUTELY NO Chinese, Japanese, Korean, or CJK characters anywhere in the image. If any non-${getTargetLangName()} text appears, it is a FAILURE.\n=== END LANGUAGE REQUIREMENT ===\nNo watermarks. No logos.`;
     // V9.2: 自定义模板也加入促销和产品特性
-    const features2 = document.getElementById('productFeatures')?.value.trim() || '';
+    const features2 = getPromptField('productFeatures'); // V11.1 #1
     if (features2) prompt += `\nPRODUCT-SPECIFIC FEATURES (must be accurate): ${features2}`;
     const promoLines2 = buildPromoPromptLines();
     if (promoLines2.length) prompt += '\n' + promoLines2.join('\n');
@@ -1556,6 +2371,58 @@ function buildAutoPrompt() {
     prompt += `\nLANGUAGE: All text MUST be in ${getTargetLangName()} only. NO Chinese/Japanese/Korean characters anywhere in the image.`;
     return stripCJK(filterBannedWords(prompt));
   }
+
+  // V11.0: Category template mode - simplified prompt for non-clothing categories
+  if (appMode === 'categoryTemplate' && selectedCategoryTemplate) {
+    const catTpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
+    if (catTpl && !catTpl.useExistingTags) {
+      // Non-clothing category: simplified prompt
+      const lines2 = [];
+      let subject2 = name || 'product';
+      lines2.push('Create a professional e-commerce poster for: "' + subject2 + '"');
+      lines2.push('Product category: ' + selectedCategoryTemplate);
+      
+      const features3 = getPromptField('productFeatures'); // V11.1 #1
+      if (features3) {
+        lines2.push('\nPRODUCT-SPECIFIC FEATURES (MUST be accurately described):');
+        lines2.push(features3);
+      }
+      
+      if (selectedTags.sellingPoints.length) lines2.push('Key selling points: ' + selectedTags.sellingPoints.join(', '));
+      if (selectedTags.scene) lines2.push('Usage scene: ' + selectedTags.scene);
+      const styleParts2 = [];
+      if (selectedTags.atmosphere) styleParts2.push(selectedTags.atmosphere.split('-')[0]);
+      if (selectedTags.brandTone) styleParts2.push(selectedTags.brandTone);
+      if (styleParts2.length) lines2.push('Visual style: ' + styleParts2.join(', '));
+      const audience2 = buildAudienceText();
+      if (audience2) lines2.push('Target audience: ' + audience2);
+      
+      // Reference product
+      if (productImages.length > 0) {
+        lines2.push('\nREFERENCE PRODUCT (STYLE GUIDE ONLY): Use uploaded image for product identity reference only. Create a fresh creative composition.');
+      }
+      
+      // People & face quality
+      lines2.push('\nPEOPLE & FACE QUALITY (CRITICAL):');
+      lines2.push('- Maximum 1-2 people in the image.');
+      lines2.push('- ALL faces MUST be photorealistic, natural skin texture.');
+      lines2.push('- NO distorted faces, NO blurry faces, NO plastic/waxy skin.');
+      lines2.push('- For small images prefer ZERO people. Use product-only compositions.');
+      
+      // Language requirement
+      const targetLang2 = getTargetLangName();
+      lines2.push('\n=== LANGUAGE REQUIREMENT ===');
+      lines2.push('ALL text MUST be in ' + targetLang2 + ' ONLY. NO Chinese/Japanese/Korean characters.');
+      lines2.push('=== END LANGUAGE REQUIREMENT ===');
+      lines2.push('No watermarks. No logos.');
+      
+      if (extra) lines2.push('Additional: ' + extra);
+      lines2.push('Aspect ratio: ' + size + ', Quality: ' + quality + ', professional commercial photography, photorealistic');
+      
+      return stripCJK(filterBannedWords(lines2.join('\n')));
+    }
+  }
+
   if (!selectedTags.category && !name) return 'Please select tags or enter product name...';
   const lines = [];
   let subject = name || 'product';
@@ -1565,7 +2432,7 @@ function buildAutoPrompt() {
   lines.push(`Create a professional e-commerce poster for: "${subject}"`);
   if (selectedTags.category) lines.push(`Category: ${TL('category', selectedTags.category) || selectedTags.category}`);
   // V9.2 Fix #3: 产品实际特性优先于通用标签描述
-  const features = document.getElementById('productFeatures')?.value.trim() || '';
+  const features = getPromptField('productFeatures'); // V11.1 #1
   if (features) {
     lines.push(`\nPRODUCT-SPECIFIC FEATURES (MUST be accurately described on the poster, overrides generic tags):`);
     lines.push(features);
@@ -2117,6 +2984,9 @@ async function doGenerate() {
   // V9.2 Fix #4: 生成前检查存储空间
   checkStorageQuota();
   const name = document.getElementById('productName').value.trim() || '未命名产品';
+  // V11.1 #1：必须先翻译再组装提示词。
+  // 否则中文补充说明会在 buildAutoPrompt 末尾被 stripCJK 清空，等于从未输入过。
+  await translateUserInputsIfNeeded(apiKey);
   const prompt = buildAutoPrompt();
   const model = document.getElementById('aiModel').value;
   const size = document.getElementById('imageSize').value;
@@ -2126,25 +2996,41 @@ async function doGenerate() {
   btn.disabled = true; btn.textContent = '⏳ 生成中...';
   setStatus('正在提交任务...', 'info');
   let resultImages = [];
+  // V11.1 修复：proxies 原本声明在 try 块内，但下方 catch 的降级重试也引用了它，
+  // 那条路径必然抛 ReferenceError。提升到 try 外层作用域。
+  const proxies = getProxyUrl();
   try {
     const imageUrls = [...productImages, ...refImages];
-    const body = { model, prompt, size, n: count, image_urls: imageUrls };
-    const proxies = getProxyUrl();
-    const submitResp = await fetchWithProxy('https://api.apimart.ai/v1/images/generations', {
-      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey }, body: JSON.stringify(body)
-    }, proxies);
-    const submitData = await submitResp.json();
-    if (submitData.code !== 200 || !submitData.data || !submitData.data[0]?.task_id) {
-      throw new Error(`提交失败 [${submitData.code||'unknown'}]: ${submitData.message||submitData.msg||JSON.stringify(submitData)}`);
-    }
-    const taskId = submitData.data[0].task_id;
-    setStatus(`任务已提交 (${taskId.slice(0,8)}...)，等待生成...`, 'info');
-    const result = await pollTask(taskId, apiKey);
+    // ===== V11.1 #6 核心修复：真正生成 N 张 =====
+    // 原版做法：发 1 个请求带 n=count，然后只取 submitData.data[0].task_id。
+    // 无论网关是"一次返回多个 task"还是"上游模型压根不支持 n>1"，
+    // 结果都是只拿回 1 张图。这里改为并发发起 count 个独立任务，
+    // 不再依赖上游对 n 参数的实现，并把每个任务返回的图全部收集。
+    _genProgress = { total: count, done: 0, elapsed: {} };
+    setStatus(count > 1 ? `正在并发提交 ${count} 个生成任务...` : '正在提交任务...', 'info');
+    const outcomes = await Promise.allSettled(
+      Array.from({ length: count }, (_, i) =>
+        generateOneImage({ model, prompt, size, imageUrls, apiKey, proxies, index: i, total: count })
+      )
+    );
+    let allImages = [];
+    const failMsgs = [];
+    outcomes.forEach(o => {
+      if (o.status === 'fulfilled' && o.value && o.value.length) allImages = allImages.concat(o.value);
+      else failMsgs.push((o.reason && o.reason.message) || '未知错误');
+    });
+    if (allImages.length === 0) throw new Error(failMsgs[0] || '全部任务均失败');
+    const result = { images: allImages };
     displayResults(result);
-    setStatus('✅ 生成完成！', 'success');
+    // 部分成功也要如实告知，不能假装全好了
+    if (failMsgs.length > 0) {
+      setStatus(`⚠️ 已生成 ${allImages.length} 张，另有 ${failMsgs.length} 个任务失败：${failMsgs[0]}`, 'warn');
+    } else {
+      setStatus(`✅ 生成完成！共 ${allImages.length} 张`, 'success');
+    }
     addRecord(name, true);
     // V9: Save full record
-    if (result && result.images) resultImages = result.images.map(img => img.url);
+    resultImages = allImages.map(img => img.url);
     saveV9Record(name, prompt, model, size, quality, count, resultImages);
     qualityScore = null;
   } catch (err) {
@@ -2193,10 +3079,175 @@ async function doGenerate() {
   }
 }
 
+// ============ V11.1 #1: 中文指令翻译层 ============
+// 背景：extraNote / productFeatures / 自定义促销文案里的中文，
+// 会在 buildAutoPrompt 末尾被 stripCJK() 与 sanitizePromptText() 整段清除，
+// 导致用户写的补充说明根本没送达模型——表现出来就是"AI 听不懂指令"。
+// 这里在组装提示词之前，先把中文转成英文图像指令。
+let _translatedInputs = { extraNote: '', productFeatures: '', promoCustom: '', _src: null };
+
+function hasCJK(s) {
+  return /[\u4e00-\u9fff\u3400-\u4dbf\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af]/.test(s || '');
+}
+
+// 供 buildAutoPrompt 读取：优先用翻译结果，没有则退回原文
+function getPromptField(id) {
+  const el = document.getElementById(id);
+  const raw = (el && el.value.trim()) || '';
+  if (!raw) return '';
+  // 防御：本函数会被 updatePreview 在页面早期调用，
+  // 那时 let _translatedInputs 可能仍处于暂时性死区，直接访问会抛 ReferenceError
+  let t = '';
+  try {
+    t = (typeof _translatedInputs !== 'undefined' && _translatedInputs) ? (_translatedInputs[id] || '') : '';
+  } catch (_) { t = ''; }
+  return t || raw;
+}
+
+// 离线兜底词典：翻译接口不可用时至少保住高频语义，不至于整段丢失
+const CN_FALLBACK_DICT = {
+  '暖调':'warm tone','冷调':'cool tone','高级感':'premium feel','细节':'detail shot','特写':'close-up',
+  '全身':'full body','半身':'half body','纯白背景':'pure white background','纯色背景':'solid color background',
+  '室内':'indoor','户外':'outdoor','阳光':'sunlight','逆光':'backlight','柔光':'soft light',
+  '模特':'model','正面':'front view','侧面':'side view','背面':'back view','俯拍':'top-down view',
+  '简约':'minimalist','清新':'fresh','复古':'vintage','ins风':'instagram style','日系':'japanese style',
+  '欧美':'western style','韩系':'korean style','街拍':'street style','棚拍':'studio shot',
+  '多角度':'multiple angles','展示细节':'show product details','放大':'zoom in','留白':'negative space'
+};
+
+function fallbackTranslate(text) {
+  if (!text) return '';
+  let out = text;
+  for (const cn in CN_FALLBACK_DICT) {
+    out = out.split(cn).join(' ' + CN_FALLBACK_DICT[cn] + ' ');
+  }
+  // 清掉未覆盖的中文，并一并处理中文标点，避免残留孤立符号被画进图里
+  out = out.replace(/[\u4e00-\u9fff\u3400-\u4dbf\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af]/g, ' ');
+  out = cleanupResidualPunct(out);
+  return out.replace(/\s{2,}/g, ' ').trim();
+}
+
+async function translateUserInputsIfNeeded(apiKey) {
+  const extra = (document.getElementById('extraNote') && document.getElementById('extraNote').value.trim()) || '';
+  const feat = (document.getElementById('productFeatures') && document.getElementById('productFeatures').value.trim()) || '';
+  const promoCustom = (typeof mainPromoState !== 'undefined' && mainPromoState && mainPromoState.customText) || '';
+  const srcKey = extra + '||' + feat + '||' + promoCustom;
+
+  if (!extra && !feat && !promoCustom) {
+    _translatedInputs = { extraNote: '', productFeatures: '', promoCustom: '', _src: srcKey };
+    return;
+  }
+  if (_translatedInputs._src === srcKey) return; // 内容没变，复用上次结果，不重复付费
+  // 纯英文输入无需翻译，直接透传，省一次调用
+  if (!hasCJK(srcKey)) {
+    _translatedInputs = { extraNote: extra, productFeatures: feat, promoCustom, _src: srcKey };
+    return;
+  }
+
+  setStatus('正在理解你的补充说明...', 'info');
+  try {
+    const proxies = getProxyUrl();
+    const sysPrompt = 'You are an e-commerce image prompt engineer. Translate the Chinese user input into precise, actionable ENGLISH image-generation instructions. Rules: (1) extra_note describes how the picture should look, translate it into visual/photographic terms; (2) product_features describes real product attributes, translate faithfully and do NOT invent facts; (3) promo_custom_text is marketing copy that will be printed on the poster, output SHORT punchy English marketing copy, keep all numbers and percentages EXACTLY as given. Reply with ONLY a JSON object with keys extra_note, product_features, promo_custom_text. No markdown, no explanation.';
+    const userPayload = JSON.stringify({ extra_note: extra, product_features: feat, promo_custom_text: promoCustom });
+    const resp = await fetchWithProxy('https://api.apimart.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'system', content: sysPrompt }, { role: 'user', content: userPayload }],
+        temperature: 0.2
+      })
+    }, proxies);
+    const data = await resp.json();
+    let content = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    if (!content) throw new Error('翻译无返回');
+    content = content.replace(/```json/gi, '').replace(/```/g, '').trim();
+    const parsed = JSON.parse(content);
+    _translatedInputs = {
+      extraNote: (parsed.extra_note || '').trim(),
+      productFeatures: (parsed.product_features || '').trim(),
+      promoCustom: (parsed.promo_custom_text || '').trim(),
+      _src: srcKey
+    };
+  } catch (e) {
+    console.warn('翻译层失败，改用离线词典兜底:', e);
+    _translatedInputs = {
+      extraNote: fallbackTranslate(extra),
+      productFeatures: fallbackTranslate(feat),
+      promoCustom: fallbackTranslate(promoCustom),
+      _src: srcKey
+    };
+  }
+}
+
+// ============ V11.1 #6: 单任务生成单元（供并发调用） ============
+let _genProgress = { total: 0, done: 0, elapsed: {} };
+
+function renderGenProgress() {
+  const p = _genProgress;
+  if (!p || !p.total) return;
+  const vals = Object.values(p.elapsed);
+  const maxEl = vals.length ? Math.max.apply(null, vals) : 0;
+  const mins = Math.floor(maxEl / 60), secs = maxEl % 60;
+  const tail = p.total > 1 ? ` (${p.done}/${p.total} 张已完成)` : '';
+  setStatus(`生成中...${tail} 已等待 ${mins}分${secs}秒`, 'info');
+}
+
+async function generateOneImage(opts) {
+  const { model, prompt, size, imageUrls, apiKey, proxies, index, total } = opts;
+  // 多张并发时若用完全相同的提示词，出来的图会高度雷同，这里加构图扰动
+  const finalPrompt = (total > 1 && index > 0)
+    ? prompt + '\n\n=== VARIATION ' + (index + 1) + ' of ' + total + ' ===' +
+      '\n- Use a distinctly different camera angle, composition and background arrangement from the other variations.' +
+      '\n- Keep the product itself EXACTLY identical across all variations: same color, same shape, same details.'
+    : prompt;
+  const body = { model, prompt: finalPrompt, size, n: 1, image_urls: imageUrls };
+  const submitResp = await fetchWithProxy('https://api.apimart.ai/v1/images/generations', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+    body: JSON.stringify(body)
+  }, proxies);
+  const submitData = await submitResp.json();
+  if (submitData.code !== 200 || !submitData.data || !submitData.data.length) {
+    throw new Error(`提交失败 [${submitData.code || 'unknown'}]: ${submitData.message || submitData.msg || JSON.stringify(submitData)}`);
+  }
+  // 若网关一次返回多个 task，全部收下（原版此处只取 data[0]，其余被静默丢弃）
+  const taskIds = submitData.data.map(d => d && d.task_id).filter(Boolean);
+  if (!taskIds.length) throw new Error('提交成功但未返回 task_id');
+  const settled = await Promise.allSettled(
+    taskIds.map(tid => pollTask(tid, apiKey, 120, (el) => {
+      _genProgress.elapsed[index] = el;
+      renderGenProgress();
+    }))
+  );
+  let imgs = [];
+  settled.forEach(r => {
+    if (r.status === 'fulfilled' && r.value && r.value.images) imgs = imgs.concat(r.value.images);
+  });
+  if (!imgs.length) {
+    const bad = settled.find(r => r.status === 'rejected');
+    throw new Error((bad && bad.reason && bad.reason.message) || '任务完成但未返回图片');
+  }
+  _genProgress.done++;
+  renderGenProgress();
+  return imgs;
+}
+
 function getProxyUrl() {
-  const allProxies = ['https://corsproxy.io/?','https://api.allorigins.win/raw?url=','https://corsproxy.org/?','https://thingproxy.freeboard.io/fetch/',''];
+  // V11.1 #5：直连提到第一位。浏览器对跨域的拒绝是毫秒级同步返回的，
+  // 探测直连几乎零成本；若 APIMart 本身支持 CORS，整条免费代理链都可跳过。
+  const allProxies = ['','https://corsproxy.io/?','https://api.allorigins.win/raw?url=','https://corsproxy.org/?','https://thingproxy.freeboard.io/fetch/'];
   const userPref = document.getElementById('proxySelect')?.value || 'auto';
-  if (userPref === 'auto') return allProxies;
+  if (userPref === 'auto') {
+    // V11.1 #5：记住上次跑通的通道并优先复用，避免每次请求都从头试错。
+    try {
+      const lastGood = localStorage.getItem('poster_last_good_proxy');
+      if (lastGood !== null && allProxies.includes(lastGood)) {
+        return [lastGood].concat(allProxies.filter(p => p !== lastGood));
+      }
+    } catch(_) {}
+    return allProxies;
+  }
   return [userPref];
 }
 
@@ -2206,18 +3257,32 @@ async function fetchWithProxy(url, options, proxies) {
     try {
       const proxy = proxies[i];
       const proxyUrl = proxy ? (proxy + encodeURIComponent(url)) : url;
-      const resp = await fetch(proxyUrl, { ...options, signal: AbortSignal.timeout(15000) });
-      if (resp.ok) return resp;
+      // V11.1 #5：直连用短超时快速探测，公共代理才给足 15 秒。
+      // 原版所有通道一律等满 15 秒，前几个代理挂掉就要白白耗掉 45 秒。
+      const timeout = proxy ? 15000 : 8000;
+      const resp = await fetch(proxyUrl, { ...options, signal: AbortSignal.timeout(timeout) });
+      if (resp.ok) {
+        try { localStorage.setItem('poster_last_good_proxy', proxy); } catch(_) {}
+        return resp;
+      }
       lastErr = `HTTP ${resp.status}`;
     } catch (e) { lastErr = e.message; continue; }
   }
-  throw new Error(`所有代理均失败 (${lastErr})，请检查网络或API Key`);
+  // 通道全灭时清掉记忆，防止被锁死在一个已失效的通道上
+  try { localStorage.removeItem('poster_last_good_proxy'); } catch(_) {}
+  throw new Error(`所有通道均失败 (${lastErr})，请检查网络或API Key`);
 }
 
-async function pollTask(taskId, apiKey, maxAttempts = 120) {
+async function pollTask(taskId, apiKey, maxAttempts = 120, onTick = null) {
   const proxies = getProxyUrl();
-  for (let i = 0; i < maxAttempts; i++) {
-    await sleep(3000);
+  const started = Date.now();
+  const MAX_WAIT_MS = 6 * 60 * 1000;
+  let round = 0;
+  while (Date.now() - started < MAX_WAIT_MS) {
+    // V11.1 #5：首轮立即查询。原版一上来就 sleep(3000)，
+    // 哪怕图早就好了也要先干等 3 秒。之后改为递进间隔，前密后疏。
+    if (round > 0) await sleep(round < 5 ? 2000 : (round < 15 ? 3000 : 5000));
+    round++;
     try {
       const resp = await fetchWithProxy(`https://api.apimart.ai/v1/tasks/${taskId}`, {
         method: 'GET', headers: { 'Authorization': 'Bearer ' + apiKey }
@@ -2227,9 +3292,9 @@ async function pollTask(taskId, apiKey, maxAttempts = 120) {
         const status = data.data.status;
         if (status === 'completed') return data.data.result;
         if (status === 'failed') throw new Error(`任务失败: ${data.data.error || '未知错误'}`);
-        const mins = Math.floor((i+1)*3/60);
-        const secs = ((i+1)*3)%60;
-        setStatus(`生成中... 已等待${mins}分${secs}秒 (${i+1}/${maxAttempts})`, 'info');
+        const el = Math.floor((Date.now() - started) / 1000);
+        if (typeof onTick === 'function') onTick(el);
+        else setStatus(`生成中... 已等待${Math.floor(el/60)}分${el%60}秒`, 'info');
       }
     } catch (e) { if (e.message.includes('任务失败')) throw e; }
   }
@@ -2384,6 +3449,9 @@ function loadRecordToEditor(id) {
     }
     const pt = document.getElementById('promoType');
     if (pt) { pt.value = promoConfig.type; onPromoChange(); }
+    // V10.3: 恢复配色方案 UI
+    promoConfig.colorScheme = promoConfig.colorScheme || '强销售转化';
+    renderPromoColorSchemes();
   }
   // V9.2: 恢复产品特性
   const pf = document.getElementById('productFeatures');
@@ -2663,11 +3731,46 @@ function getApiKey() {
   return acc?.apiKey || document.getElementById('apiKeyInput').value.trim();
 }
 
+// ============ V10.3: PROMO COLOR SCHEME ============
+function renderPromoColorSchemes() {
+  const container = document.getElementById('promoColorSchemeChips');
+  if (!container) return;
+  const activeKey = promoConfig.colorScheme || '强销售转化';
+  container.innerHTML = PROMO_COLOR_SCHEMES.map(s => {
+    const isActive = s.key === activeKey;
+    return '<div class="chip' + (isActive ? ' active' : '') + '" onclick="selectPromoColorScheme(\'' + s.key + '\')" title="' + s.desc + '">'
+      + '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + s.color + ';margin-right:4px;vertical-align:middle;border:1px solid rgba(0,0,0,0.1)"></span>'
+      + s.name
+      + '</div>';
+  }).join('');
+}
+
+function selectPromoColorScheme(key) {
+  promoConfig.colorScheme = key;
+  // 反向联动：促销配色 → 品牌调性
+  selectedTags.brandTone = key;
+  const dimId = 'dimBrandTone';
+  const dimEl = document.getElementById(dimId);
+  if (dimEl) {
+    dimEl.querySelectorAll('.chip').forEach(chip => chip.classList.remove('active'));
+    const idx = PROMO_COLOR_SCHEMES.findIndex(s => s.key === key);
+    const brandChips = dimEl.querySelectorAll('.chip');
+    if (idx >= 0 && brandChips[idx]) brandChips[idx].classList.add('active');
+  }
+  // 更新配色选择器 active 状态
+  const chips = document.querySelectorAll('#promoColorSchemeChips .chip');
+  chips.forEach(chip => chip.classList.remove('active'));
+  const idx = PROMO_COLOR_SCHEMES.findIndex(s => s.key === key);
+  if (idx >= 0 && chips[idx]) chips[idx].classList.add('active');
+  updatePreview();
+}
+
 // ============ V9.2: PROMOTION HANDLERS (Fix #1, #2, #5) ============
 function onPromoChange() {
   try {
   promoConfig.type = document.getElementById('promoType').value;
   promoConfig.freeShipping = document.getElementById('freeShippingToggle')?.checked || false;
+  promoConfig.colorScheme = promoConfig.colorScheme || '强销售转化';
   promoConfig.isLegacy = LEGACY_PROMO_TYPES.has(promoConfig.type);
   if (promoConfig.isLegacy) {
     promoConfig.buyCount = parseInt(document.getElementById('buyCount')?.value) || 3;
@@ -2911,7 +4014,7 @@ function buildPromoDisplayString() {
   return '';
 }
 
-function buildPromoPromptLines() {
+function buildPromoPromptLinesCore() {
   if (!promoConfig.type) return [];
   const lang = getDetectedLanguage();
   const isEn = lang.startsWith('en');
@@ -2920,7 +4023,14 @@ function buildPromoPromptLines() {
   if (!promoStr) return [];
   // P0-2 修复: custom 只显示 customText 单段
   if (promoConfig.type === 'custom') {
-    const txt = mainPromoState.text || promoStr;
+    // V11.1 #4: 优先取翻译层产出的英文文案。
+    // 原本中文自定义文案会在下游被 stripCJK 整段清除，图上只剩断字残片——
+    // 用户看到的"乱码"正是这么来的，并非模型渲染能力问题。
+    let txt = '';
+    try {
+      txt = (typeof _translatedInputs !== 'undefined' && _translatedInputs && _translatedInputs.promoCustom) || '';
+    } catch (_) { txt = ''; }
+    txt = txt || mainPromoState.text || promoStr;
     lines.push('\n=== CUSTOM PROMOTION BADGE ===');
     lines.push('Show this EXACT text as a single prominent badge: "'+txt+'"');
     lines.push('Treat the custom text exactly as written; do not paraphrase or translate.');
@@ -2931,7 +4041,8 @@ function buildPromoPromptLines() {
   lines.push('\n=== PROMOTION BADGE (CRITICAL - MOST PROMINENT ELEMENT ON THE POSTER) ===');
   lines.push('Promotion: "'+promoStr+'"');
   lines.push('SIZE: The promotion badge/banner MUST occupy at least 30-35% of the ENTIRE image height, centered in the top 1/3 area');
-  lines.push('STYLE: Huge bold text, red/orange/yellow high-contrast color block on clean background, impossible to miss');
+  const colorScheme = PROMO_COLOR_SCHEMES.find(s => s.key === (promoConfig.colorScheme || '强销售转化')) || PROMO_COLOR_SCHEMES[0];
+  lines.push('STYLE: Huge bold text, ' + colorScheme.promptDesc + ', on clean background, impossible to miss');
   lines.push('LAYOUT: The viewer\'s eye should see the DISCOUNT FIRST, then the product. Discount is the hero element.');
   lines.push('REQUIREMENT: Use LARGE font size (minimum 1/4 of image width for the discount text). Make it BOLD and EYE-CATCHING.');
   
@@ -3016,7 +4127,7 @@ function buildPromoPromptLines() {
       case 'flash_sale': {
         const p = mainPromoState.price || 0;
         lines.push('- Show a "Flash Sale $'+p+'" badge with countdown/urgency styling at the top.');
-        lines.push('- Use a bright, attention-grabbing color (red/orange/yellow) for the badge.');
+        lines.push('- Use ' + colorScheme.promptDesc.split(',')[0] + ' color for the badge.');
         break;
       }
     }
@@ -3272,6 +4383,41 @@ function init() {
   checkStorageQuota();
   // V10.2: 初次触发 onPromoChange (确保所有 UI 状态正确)
   if (typeof onPromoChange === 'function') onPromoChange();
+  // V10.3: 渲染促销配色方案选择器
+  renderPromoColorSchemes();
+  // V11.1 #2: 渲染叠加促销选项，并按有无主促销决定展示与否
+  if (typeof renderExtraPromoChips === 'function') renderExtraPromoChips();
+  if (typeof syncExtraPromoVisibility === 'function') syncExtraPromoVisibility();
+  
+  // V11.0: Category Template Mode initialization
+  renderCategoryPage();
+  if (appMode === 'categoryTemplate') {
+    if (selectedCategoryTemplate && CATEGORY_TEMPLATES[selectedCategoryTemplate]) {
+      // Restore previously selected category
+      hideCategoryPage();
+      showMainApp();
+      const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
+      selectedIndustryMode = tpl.industryMode;
+      selectedTags.industryMode = tpl.industryMode;
+      applyCategoryTemplateDimensions(tpl);
+      renderAllDimensions();
+    } else {
+      // No category selected yet, show category page
+      showCategoryPage();
+    }
+  } else {
+    // Legacy mode
+    hideCategoryPage();
+    showMainApp();
+    document.getElementById('legacyNotice').classList.add('visible');
+    renderAllDimensions();
+  }
+  
+  // Update mode toggle buttons
+  const btn1 = document.getElementById('modeBtnCategoryTemplate');
+  const btn2 = document.getElementById('modeBtnLegacy');
+  if (btn1) btn1.classList.toggle('active-mode', appMode === 'categoryTemplate');
+  if (btn2) btn2.classList.toggle('active-mode', appMode === 'legacy');
 }
 
 init();
