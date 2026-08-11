@@ -89,6 +89,11 @@ header .actions span{font-size:11px;color:var(--text2)}
 .result-area .images{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:8px}
 .result-area .images img{width:100%;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer}
 .result-area .images img:hover{border-color:var(--accent)}
+.result-area .images .img-cell{position:relative}
+.result-area .images .dl-btn{position:absolute;top:5px;right:5px;width:24px;height:24px;border:none;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:12px;line-height:1;cursor:pointer;opacity:.85}
+.result-area .images .dl-btn:hover{background:var(--accent);opacity:1}
+.history-table .hist-gallery{display:flex;flex-wrap:wrap;gap:3px;max-width:150px}
+.history-table .hist-gallery .thumb{width:34px;height:34px}
 .status-bar{padding:6px 10px;border-radius:6px;margin-bottom:8px;font-size:11px;display:none}
 .status-bar.info{background:rgba(99,101,241,.1);border:1px solid rgba(99,101,241,.3);color:var(--accent2);display:block}
 .status-bar.success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--success);display:block}
@@ -462,23 +467,10 @@ header .actions span{font-size:11px;color:var(--text2)}
         </div>
         <!-- V11.1 #3: 搭配单品 -->
         <div class="form-group">
-          <label>👗 搭配单品 <small style="color:var(--text2)">(可选，为主商品搭配其他品类)</small></label>
-          <div class="form-row">
-            <select id="pairingType" onchange="onPairingChange()">
-              <option value="">不搭配（默认）</option>
-              <option value="bottoms">下装（通用）</option>
-              <option value="pants">裤子</option>
-              <option value="jeans">牛仔裤</option>
-              <option value="skirt">裙子</option>
-              <option value="shorts">短裤</option>
-              <option value="top">上衣</option>
-              <option value="outerwear">外套</option>
-              <option value="shoes">鞋履</option>
-              <option value="bag">包袋</option>
-              <option value="accessory">配饰</option>
-              <option value="full_look">整套穿搭</option>
-            </select>
-            <select id="pairingStyle" onchange="updatePreview()">
+          <label>👗 搭配单品 <small style="color:var(--text2)">(可多选，为主商品搭配多个品类)</small></label>
+          <div class="chip-group" id="pairingChips"></div>
+          <div class="form-row" style="margin-top:5px">
+            <select id="pairingStyle" onchange="onPairingChange()">
               <option value="matching">同色系协调</option>
               <option value="contrast">撞色对比</option>
               <option value="casual">休闲日常</option>
@@ -560,6 +552,21 @@ header .actions span{font-size:11px;color:var(--text2)}
         <div class="form-group">
           <label>🎨 配色方案 <small style="color:var(--text2)">(与品牌调性联动，选品牌调性后自动匹配)</small></label>
           <div class="chip-group" id="promoColorSchemeChips"></div>
+        </div>
+        <!-- V11.2 #1: 折扣底色与大小 -->
+        <div class="form-group" style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px">
+          <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;margin:0">
+            <input type="checkbox" id="promoBadgeBg" checked onchange="onPromoChange()" style="width:auto"> 🏷️ <b>折扣带底色</b>
+          </label>
+          <span style="font-size:9px;color:var(--text2)">取消勾选则只显示彩色文字、无背景色块</span>
+        </div>
+        <div class="form-group">
+          <label>📐 折扣显示大小 <small style="color:var(--text2)">(占画面比例)</small></label>
+          <select id="promoBadgeSize" onchange="onPromoChange()">
+            <option value="small">小 · 点缀（约 15-20% 面积）</option>
+            <option value="medium" selected>中 · 标准（约 30% 面积）</option>
+            <option value="large">大 · 醒目（约 40% 面积）</option>
+          </select>
         </div>
         <div class="form-group" style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#fffbeb;border:1px solid #fde68a;border-radius:6px">
           <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;margin:0">
@@ -771,6 +778,12 @@ header .actions span{font-size:11px;color:var(--text2)}
         </div>
         <div class="form-group">
           <label>📝 提示词预览 <span class="auto-badge">自动组合</span></label>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;padding:5px 8px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:6px">
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;margin:0">
+              <input type="checkbox" id="llmPromptToggle" onchange="toggleLlmPromptMode()" style="width:auto"> 🧠 <b>智能提示词</b>
+            </label>
+            <span style="font-size:9px;color:var(--text2)">开启后由 AI 整体生成提示词，更懂"修改姿势"等自由描述（每次多 1-3 秒）</span>
+          </div>
           <div class="prompt-preview" id="promptPreview">填写产品信息后自动显示...</div>
         </div>
       </div>
@@ -1427,7 +1440,8 @@ let tagWeights = Object.assign({}, TAG_WEIGHTS);
 let v9Records = JSON.parse(localStorage.getItem('poster_v9_records') || '[]');
 let favorites = new Set(v9Records.filter(r => r.favorited).map(r => r.id));
 // V9.2: Promotion config state (Fix #1, #2, #5)
-let promoConfig = { type: '', buyCount: 3, getCount: 2, discountValue: '', giftDesc: '', freeShipping: false, colorScheme: '强销售转化', extraPromos: [], bulkPieces: 2, bulkDiscount: '10% OFF' }; // V11.1 #2: extraPromos 等为新增，旧记录读取时自动补默认值
+let promoConfig = { type: '', buyCount: 3, getCount: 2, discountValue: '', giftDesc: '', freeShipping: false, colorScheme: '强销售转化', extraPromos: [], bulkPieces: 2, bulkDiscount: '10% OFF', badgeBg: true, badgeSize: 'medium' }; // V11.2 #1: badgeBg/badgeSize 折扣底色与大小；V11.1 #2: extraPromos 等为新增，旧记录读取时自动补默认值
+let pairingConfig = { list: [], style: 'matching' }; // V11.2 #3: 搭配单品支持多选
 // V10.3: 促销配色方案 (适用于所有品类)
 const PROMO_COLOR_SCHEMES = [
   { key: '简约高级', name: '简约高级', color: '#212121', desc: '极简黑白+微金点缀', promptDesc: 'sleek black and white monochrome with subtle gold accents, ultra-premium minimalist style' },
@@ -2272,38 +2286,63 @@ function buildPromoPromptLines() {
 }
 
 // 搭配单品 → 提示词。最关键的是锁死主商品，否则模型会顺手把在售商品重新设计
+const PAIR_EN = {
+  bottoms: 'bottoms', pants: 'trousers', jeans: 'jeans', skirt: 'skirt', shorts: 'shorts',
+  top: 'top garment', outerwear: 'outerwear jacket', shoes: 'shoes', bag: 'handbag',
+  accessory: 'fashion accessories', full_look: 'a complete coordinated outfit'
+};
+const PAIR_LABEL = {
+  bottoms: '下装', pants: '裤子', jeans: '牛仔裤', skirt: '裙子', shorts: '短裤',
+  top: '上衣', outerwear: '外套', shoes: '鞋履', bag: '包袋',
+  accessory: '配饰', full_look: '整套穿搭'
+};
+const STYLE_EN = {
+  matching: 'color-coordinated, harmonious tones', contrast: 'bold contrasting colors',
+  casual: 'casual everyday styling', commute: 'smart office / commute styling',
+  street: 'street fashion styling', elegant: 'elegant and refined styling'
+};
+
+function renderPairingChips() {
+  const box = document.getElementById('pairingChips');
+  if (!box) return;
+  box.innerHTML = Object.keys(PAIR_EN).map(k =>
+    `<span class="chip${pairingConfig.list.includes(k) ? ' active' : ''}" onclick="togglePairing('${k}')">${PAIR_LABEL[k] || k}</span>`
+  ).join('');
+}
+
+function togglePairing(k) {
+  const i = pairingConfig.list.indexOf(k);
+  if (i >= 0) pairingConfig.list.splice(i, 1); else pairingConfig.list.push(k);
+  renderPairingChips();
+  onPairingChange();
+}
+
 function buildPairingPromptLines() {
-  const tSel = document.getElementById('pairingType');
-  if (!tSel || !tSel.value) return [];
-  const PAIR_EN = {
-    bottoms: 'bottoms', pants: 'trousers', jeans: 'jeans', skirt: 'skirt', shorts: 'shorts',
-    top: 'top garment', outerwear: 'outerwear jacket', shoes: 'shoes', bag: 'handbag',
-    accessory: 'fashion accessories', full_look: 'a complete coordinated outfit'
-  };
-  const STYLE_EN = {
-    matching: 'color-coordinated, harmonious tones', contrast: 'bold contrasting colors',
-    casual: 'casual everyday styling', commute: 'smart office / commute styling',
-    street: 'street fashion styling', elegant: 'elegant and refined styling'
-  };
-  const sSel = document.getElementById('pairingStyle');
-  const pairEn = PAIR_EN[tSel.value] || 'matching item';
-  const styleEn = STYLE_EN[(sSel && sSel.value) || 'matching'] || 'color-coordinated';
-  return [
-    '\n=== OUTFIT PAIRING (CRITICAL PRODUCT-INTEGRITY RULE) ===',
-    'ADD a matching ' + pairEn + ' to complete the look, styled as: ' + styleEn + '.',
-    'ABSOLUTE CONSTRAINT: The original product being sold must remain EXACTLY unchanged —',
-    'identical color, identical pattern, identical cut, identical fabric texture, identical buttons and details.',
-    'Do NOT redesign, recolor, restyle, resize or modify the original product in ANY way.',
-    'The paired item is a NEW added element only; the original product is the hero and must stay pixel-faithful to the reference.',
-    'The paired item must not cover, occlude or distract from the original product.',
-    '=== END OUTFIT PAIRING ===\n'
-  ];
+  if (!pairingConfig.list || !pairingConfig.list.length) return [];
+  const styleEn = STYLE_EN[pairingConfig.style] || STYLE_EN.matching;
+  const pairEns = pairingConfig.list.map(k => PAIR_EN[k] || 'matching item');
+  const pairLabels = pairingConfig.list.map(k => PAIR_LABEL[k] || k);
+  const lines = ['\n=== OUTFIT PAIRING (CRITICAL PRODUCT-INTEGRITY RULE) ==='];
+  if (pairEns.length === 1) {
+    lines.push('ADD a matching ' + pairEns[0] + ' (' + pairLabels[0] + ') to complete the look, styled as: ' + styleEn + '.');
+  } else {
+    lines.push('ADD these matching items to complete the look, styled as: ' + styleEn + ':');
+    pairEns.forEach((pe, idx) => lines.push('- ' + pe + ' (' + (pairLabels[idx] || pe) + ')'));
+    lines.push('Arrange all paired items together around the hero product in a coordinated ensemble.');
+  }
+  lines.push('ABSOLUTE CONSTRAINT: The original product being sold must remain EXACTLY unchanged —');
+  lines.push('identical color, identical pattern, identical cut, identical fabric texture, identical buttons and details.');
+  lines.push('Do NOT redesign, recolor, restyle, resize or modify the original product in ANY way.');
+  lines.push('The paired items are NEW added elements only; the original product is the hero and must stay pixel-faithful to the reference.');
+  lines.push('The paired items must not cover, occlude or distract from the original product.');
+  lines.push('=== END OUTFIT PAIRING ===\n');
+  return lines;
 }
 
 function onPairingChange() {
-  const sel = document.getElementById('pairingType');
+  pairingConfig.style = (document.getElementById('pairingStyle') && document.getElementById('pairingStyle').value) || 'matching';
   const warn = document.getElementById('pairingWarn');
-  if (warn) warn.style.display = (sel && sel.value) ? 'block' : 'none';
+  if (warn) warn.style.display = (pairingConfig.list && pairingConfig.list.length) ? 'block' : 'none';
   if (typeof updatePreview === 'function') updatePreview();
 }
 
@@ -2651,9 +2690,41 @@ function buildAudienceText() {
 }
 
 // ============ PREVIEW ============
-function updatePreview() {
-  document.getElementById('promptPreview').textContent = buildAutoPrompt();
+function toggleLlmPromptMode() {
+  llmPromptMode = document.getElementById('llmPromptToggle')?.checked === true;
+  localStorage.setItem('poster_llm_prompt', llmPromptMode ? '1' : '0');
+  if (llmPromptMode && !getApiKey()) setStatus('⚠️ 开启智能提示词需要 API Key（用于调用大模型）', 'warn');
+  updatePreview();
+}
+
+let _pvTimer;
+async function updatePreview() {
+  const pv = document.getElementById('promptPreview');
+  if (!pv) return;
   updateSelectionSummary();
+  const ak = getApiKey();
+  if (llmPromptMode && ak) {
+    // 智能提示词模式：防抖后整体生成
+    clearTimeout(_pvTimer);
+    _pvTimer = setTimeout(async () => {
+      const el = document.getElementById('promptPreview');
+      if (!el) return;
+      el.textContent = '🧠 正在用 AI 生成提示词…';
+      try { el.textContent = await buildAutoPromptLLM(getApiKey()); }
+      catch (e) { console.warn('LLM 预览失败，回退模板', e); el.textContent = buildAutoPrompt(); }
+    }, 500);
+    return;
+  }
+  // 模板模式：先立即渲染（中文补充可能暂未翻译），防抖后再翻译刷新，避免每次按键都打接口
+  pv.textContent = buildAutoPrompt();
+  if (ak) {
+    clearTimeout(_pvTimer);
+    _pvTimer = setTimeout(async () => {
+      try { await translateUserInputsIfNeeded(getApiKey()); } catch (_) {}
+      const el = document.getElementById('promptPreview');
+      if (el && !llmPromptMode) el.textContent = buildAutoPrompt();
+    }, 500);
+  }
 }
 
 // ============ AI ANALYSIS PANEL ============
@@ -2987,7 +3058,8 @@ async function doGenerate() {
   // V11.1 #1：必须先翻译再组装提示词。
   // 否则中文补充说明会在 buildAutoPrompt 末尾被 stripCJK 清空，等于从未输入过。
   await translateUserInputsIfNeeded(apiKey);
-  const prompt = buildAutoPrompt();
+  // V11.2 #2: 智能提示词模式开启时，整体交给大模型生成英文提示词（硬约束后缀仍追加）
+  const prompt = (llmPromptMode && apiKey) ? await buildAutoPromptLLM(apiKey) : buildAutoPrompt();
   const model = document.getElementById('aiModel').value;
   const size = document.getElementById('imageSize').value;
   const quality = document.getElementById('imageQuality').value;
@@ -3086,6 +3158,10 @@ async function doGenerate() {
 // 这里在组装提示词之前，先把中文转成英文图像指令。
 let _translatedInputs = { extraNote: '', productFeatures: '', promoCustom: '', _src: null };
 
+// V11.2 #2: LLM 智能提示词模式（可选开关）。默认关=走原模板，零改动；
+// 开启后把"结构化参数 + 中文自由描述"整体交给大模型生成英文提示词，硬约束后缀仍追加。
+let llmPromptMode = localStorage.getItem('poster_llm_prompt') === '1';
+
 function hasCJK(s) {
   return /[\u4e00-\u9fff\u3400-\u4dbf\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af]/.test(s || '');
 }
@@ -3178,6 +3254,82 @@ async function translateUserInputsIfNeeded(apiKey) {
       _src: srcKey
     };
   }
+}
+
+// ============ V11.2 #2: LLM 智能提示词模式 ============
+// 开启后，把"所有结构化参数 + 中文自由描述"整体交给大模型生成一段通顺的英文提示词，
+// 最后仍追加硬约束后缀（禁中文 / 人脸质量 / 锁定主商品 / 折扣准确），保证控图能力不丢失。
+function collectPromptInputs() {
+  const gv = id => (document.getElementById(id) && document.getElementById(id).value.trim()) || '';
+  const mp = (typeof mainPromoState !== 'undefined' && mainPromoState) ? mainPromoState : {};
+  const pcSafe = (typeof promoConfig !== 'undefined' && promoConfig) ? promoConfig : {};
+  return {
+    productName: gv('productName'),
+    category: (typeof selectedTags !== 'undefined' && selectedTags) ? (selectedTags.category || '') : '',
+    clothingType: (typeof selectedTags !== 'undefined' && selectedTags) ? (selectedTags.clothingType || '') : '',
+    sellingPoints: (typeof selectedTags !== 'undefined' && selectedTags && selectedTags.sellingPoints) ? selectedTags.sellingPoints.slice() : [],
+    painPoints: (typeof selectedTags !== 'undefined' && selectedTags && selectedTags.painPoints) ? selectedTags.painPoints.slice() : [],
+    scene: (typeof selectedTags !== 'undefined' && selectedTags) ? (selectedTags.scene || '') : '',
+    atmosphere: (typeof selectedTags !== 'undefined' && selectedTags) ? (selectedTags.atmosphere || '') : '',
+    brandTone: (typeof selectedTags !== 'undefined' && selectedTags) ? (selectedTags.brandTone || '') : '',
+    audience: {
+      ages: (typeof selectedTags !== 'undefined' && selectedTags && selectedTags.targetAges) ? selectedTags.targetAges.slice() : [],
+      genders: (typeof selectedTags !== 'undefined' && selectedTags && selectedTags.targetGenders) ? selectedTags.targetGenders.slice() : [],
+      identities: (typeof selectedTags !== 'undefined' && selectedTags && selectedTags.targetIdentities) ? selectedTags.targetIdentities.slice() : []
+    },
+    personType: (typeof selectedPersonType !== 'undefined') ? selectedPersonType || '' : '',
+    industryMode: (typeof selectedIndustryMode !== 'undefined') ? selectedIndustryMode || 'normal_clothing' : 'normal_clothing',
+    imageSize: gv('imageSize'),
+    quality: gv('imageQuality'),
+    targetLang: (typeof getTargetLangName === 'function') ? getTargetLangName() : 'English',
+    promo: {
+      type: pcSafe.type || '',
+      main: {
+        percent: mp.percent || '', customText: mp.customText || '',
+        amount: mp.amount || 0, fullX: mp.fullX || 0, getY: mp.getY || 0, minusY: mp.minusY || 0,
+        pieceY: mp.pieceY || '', zDiscount: mp.zDiscount || '', customZ: mp.customZ || '',
+        buyN: mp.buyN || 0, getM: mp.getM || 0, price: mp.price || 0, stackable: !!mp.stackable
+      },
+      extraPromos: (pcSafe.extraPromos || []).slice(),
+      bulkPieces: pcSafe.bulkPieces || 2, bulkDiscount: pcSafe.bulkDiscount || '10% OFF',
+      freeShipping: !!pcSafe.freeShipping,
+      badgeBg: pcSafe.badgeBg !== false, badgeSize: pcSafe.badgeSize || 'medium',
+      colorScheme: pcSafe.colorScheme || '强销售转化'
+    },
+    extraNote: gv('extraNote'),
+    productFeatures: gv('productFeatures'),
+    pairing: (typeof pairingConfig !== 'undefined' && pairingConfig.list) ? pairingConfig.list.slice() : [],
+    pairingStyle: (typeof pairingConfig !== 'undefined' && pairingConfig.style) ? pairingConfig.style || 'matching' : 'matching'
+  };
+}
+
+async function buildAutoPromptLLM(apiKey) {
+  const cfg = collectPromptInputs();
+  const sys = 'You are a senior e-commerce image-generation prompt engineer. You are given a JSON of product configuration. Some text fields (extraNote, productFeatures) are in Chinese — translate their MEANING into English visual/photographic terms, but keep ALL numbers, percentages, currency and discount values EXACTLY as given. Output ONE coherent, detailed ENGLISH image-generation prompt (no markdown, no code fences, no explanations). Rules: (1) The product must be the clear hero of the image; (2) If a promotion is present, render it prominently and ACCURATELY (every digit/percent exact); (3) If pairing items are present, ADD them but keep the ORIGINAL product EXACTLY unchanged (same color, pattern, cut, fabric); (4) Output ONLY English — ABSOLUTELY NO Chinese/Japanese/Korean characters; (5) Describe concrete visual/photographic details: lighting, composition, background, model pose, material texture.';
+  const user = JSON.stringify(cfg);
+  const proxies = getProxyUrl();
+  const resp = await fetchWithProxy('https://api.apimart.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+    body: JSON.stringify({ model: 'gpt-4o-mini', temperature: 0.4, messages: [ { role: 'system', content: sys }, { role: 'user', content: user } ] })
+  }, proxies);
+  const data = await resp.json();
+  let text = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+  if (!text) throw new Error('LLM 无返回');
+  text = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+  text = stripCJK(filterBannedWords(text));
+  // 追加硬约束后缀，保证控图能力不被 LLM 自由发挥破坏
+  text += '\n\n=== HARD CONSTRAINTS (MUST HOLD) ===';
+  text += '\n- ALL text in the image MUST be in ' + cfg.targetLang + ' ONLY. NO Chinese/Japanese/Korean characters anywhere.';
+  text += '\n- ALL faces MUST be photorealistic, natural skin texture, no distortion, no plastic/waxy skin.';
+  text += '\n- For small/thumbnail images prefer ZERO people. No watermarks. No logos.';
+  if (cfg.pairing && cfg.pairing.length) {
+    text += '\n- The original product being sold MUST remain EXACTLY unchanged (color, pattern, cut, fabric, details). Paired items are added elements only.';
+  }
+  if (cfg.promo && cfg.promo.type) {
+    text += '\n- Reproduce every discount number, currency and percent sign EXACTLY as specified. No garbled or invented glyphs.';
+  }
+  return cleanupResidualPunct(text);
 }
 
 // ============ V11.1 #6: 单任务生成单元（供并发调用） ============
@@ -3306,8 +3458,9 @@ function displayResults(result) {
   const container = document.getElementById('resultImages');
   area.style.display = 'block';
   if (result && result.images && result.images.length > 0) {
-    container.innerHTML = result.images.map(img =>
-      `<img src="${img.url}" onclick="viewImage('${img.url}')" title="点击查看大图">`
+    const base = (document.getElementById('productName').value.trim() || 'poster').replace(/['"\\]/g, '');
+    container.innerHTML = result.images.map((img, i) =>
+      `<div class="img-cell"><img src="${img.url}" onclick="viewImage('${img.url}')" title="点击查看大图"><button class="dl-btn" title="下载原图" onclick="downloadImage('${img.url}','${base}_${i+1}.png')">⬇</button></div>`
     ).join('');
   } else {
     container.innerHTML = '<p style="color:var(--text2)">未获取到图片结果</p>';
@@ -3317,6 +3470,19 @@ function displayResults(result) {
 function viewImage(url) {
   document.getElementById('imgViewerSrc').src = url;
   document.getElementById('imgViewer').classList.remove('hidden');
+}
+
+// V11.2 #4: 单图下载。跨域图床可能忽略 download 属性，此时退化为新标签页打开让用户右键保存
+function downloadImage(url, name) {
+  const a = document.createElement('a');
+  a.href = url; a.download = name || 'image'; a.target = '_blank'; a.rel = 'noopener';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+function downloadRecordImages(recId) {
+  const rec = v9Records.find(r => r.id === recId);
+  if (!rec || !rec.imageUrls || !rec.imageUrls.length) return;
+  rec.imageUrls.forEach((u, j) => downloadImage(u, `${rec.productName}_${rec.version}_${j+1}.png`));
 }
 
 // ============ V9: SAVE RECORD ============
@@ -3477,14 +3643,16 @@ function renderHistoryCenter() {
   empty.style.display = 'none'; table.style.display = 'table';
   const sorted = [...v9Records].reverse();
   tbody.innerHTML = sorted.map(rec => {
-    const thumb = rec.imageUrls && rec.imageUrls.length ? rec.imageUrls[0] : (rec.productImages && rec.productImages.length ? rec.productImages[0] : '');
+    const gallery = (rec.imageUrls && rec.imageUrls.length)
+      ? `<div class="hist-gallery">${rec.imageUrls.map((u,k)=>`<img class="thumb" src="${u}" onclick="viewImage('${u}')" title="图${k+1}">`).join('')}</div>`
+      : (rec.productImages && rec.productImages.length ? '<span style="color:var(--text2);font-size:9px">参考图</span>' : '<span style="color:var(--text2)">—</span>');
     const langInfo = COUNTRY_LANG[rec.country] || {};
     const tagSummary = [
       rec.tags.category, ...(rec.tags.sellingPoints||[]).slice(0,2), rec.tags.scene, rec.tags.atmosphere
     ].filter(Boolean).join(' · ');
     const date = rec.createdAt ? new Date(rec.createdAt).toLocaleString('zh-CN', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
     return `<tr>
-      <td>${thumb ? `<img class="thumb" src="${thumb}" onclick="viewImage('${thumb}')">` : '<span style="color:var(--text2)">—</span>'}</td>
+      <td>${gallery}</td>
       <td style="font-weight:500">${rec.productName}</td>
       <td><span class="version-badge">${rec.version}</span></td>
       <td>${langInfo.flag||''} ${langInfo.name||rec.country||''}</td>
@@ -3492,7 +3660,7 @@ function renderHistoryCenter() {
       <td style="font-size:9px;color:var(--text2)">${date}</td>
       <td><div class="actions-cell">
         <span class="fav-star${rec.favorited?' active':''}" onclick="toggleFavorite(${rec.id})">${rec.favorited?'★':'☆'}</span>
-        ${rec.imageUrls&&rec.imageUrls.length?`<button class="btn btn-outline btn-sm" onclick="viewImage('${rec.imageUrls[0]}')">🖼️</button>`:''}
+        ${rec.imageUrls&&rec.imageUrls.length?`<button class="btn btn-outline btn-sm" onclick="downloadRecordImages(${rec.id})">⬇️ ${rec.imageUrls.length}张</button>`:''}
         <button class="btn btn-primary btn-sm" onclick="loadRecordToEditor(${rec.id})">📝 编辑</button>
         <button class="btn btn-danger btn-sm" onclick="deleteV9Record(${rec.id})">🗑️</button>
       </div></td>
@@ -3501,6 +3669,7 @@ function renderHistoryCenter() {
 }
 
 // ============ V9: BATCH EXPORT ============
+// V11.2 #4: 先尽力打 zip；跨域图床(CORS)拉取失败的，退化为逐张新标签页打开让用户右键保存
 async function exportBatchImages() {
   if (v9Records.length === 0) return alert('暂无记录可导出');
   const recordsWithImages = v9Records.filter(r => r.imageUrls && r.imageUrls.length);
@@ -3509,24 +3678,39 @@ async function exportBatchImages() {
   try {
     const zip = new JSZip();
     const imgFolder = zip.folder('poster_v9_images');
-    for (let i = 0; i < recordsWithImages.length; i++) {
-      const rec = recordsWithImages[i];
+    let ok = 0, fail = 0; const failed = [];
+    for (const rec of recordsWithImages) {
       for (let j = 0; j < rec.imageUrls.length; j++) {
+        const url = rec.imageUrls[j];
+        const safeName = (rec.productName || 'poster').replace(/['"\\/]/g, '');
+        const name = `${safeName}_${rec.version}_${j+1}.png`;
         try {
-          const resp = await fetch(rec.imageUrls[j]);
+          const resp = await fetch(url, { mode: 'cors' });
+          if (!resp.ok) throw new Error('HTTP ' + resp.status);
           const blob = await resp.blob();
           const ext = blob.type.includes('png') ? 'png' : 'jpg';
-          imgFolder.file(`${rec.productName}_${rec.version}_${j+1}.${ext}`, blob);
-        } catch(e) { console.warn('Skip image:', e); }
+          imgFolder.file(name.replace(/\.png$/, '.' + ext), blob);
+          ok++;
+        } catch (e) {
+          fail++; failed.push(url);
+          console.warn('跳过(跨域)图片:', url);
+        }
       }
     }
-    const content = await zip.generateAsync({type: 'blob'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(content);
-    a.download = `poster_v9_images_${new Date().toISOString().slice(0,10)}.zip`;
-    a.click();
-    setStatus('✅ 图片打包完成', 'success');
-  } catch(err) {
+    if (ok > 0) {
+      const content = await zip.generateAsync({ type: 'blob' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(content);
+      a.download = `poster_v9_images_${new Date().toISOString().slice(0,10)}.zip`;
+      a.click();
+    }
+    if (fail > 0) {
+      setStatus(`⚠️ 已打包 ${ok} 张，${fail} 张因图床跨域限制无法下载，已在新标签页打开，请右键保存`, 'warn');
+      failed.forEach(u => window.open(u, '_blank'));
+    } else {
+      setStatus(`✅ 图片打包完成（${ok} 张）`, 'success');
+    }
+  } catch (err) {
     setStatus('❌ 打包失败: ' + err.message, 'error');
   }
 }
@@ -3770,6 +3954,8 @@ function onPromoChange() {
   try {
   promoConfig.type = document.getElementById('promoType').value;
   promoConfig.freeShipping = document.getElementById('freeShippingToggle')?.checked || false;
+  promoConfig.badgeBg = document.getElementById('promoBadgeBg')?.checked !== false; // 默认勾选
+  promoConfig.badgeSize = document.getElementById('promoBadgeSize')?.value || 'medium';
   promoConfig.colorScheme = promoConfig.colorScheme || '强销售转化';
   promoConfig.isLegacy = LEGACY_PROMO_TYPES.has(promoConfig.type);
   if (promoConfig.isLegacy) {
@@ -4040,11 +4226,20 @@ function buildPromoPromptLinesCore() {
   // 🔴 CRITICAL: 折扣必须显眼 — 占据顶部1/3区域，至少30%面积
   lines.push('\n=== PROMOTION BADGE (CRITICAL - MOST PROMINENT ELEMENT ON THE POSTER) ===');
   lines.push('Promotion: "'+promoStr+'"');
-  lines.push('SIZE: The promotion badge/banner MUST occupy at least 30-35% of the ENTIRE image height, centered in the top 1/3 area');
   const colorScheme = PROMO_COLOR_SCHEMES.find(s => s.key === (promoConfig.colorScheme || '强销售转化')) || PROMO_COLOR_SCHEMES[0];
-  lines.push('STYLE: Huge bold text, ' + colorScheme.promptDesc + ', on clean background, impossible to miss');
+  // V11.2 #1: 折扣底色与大小 —— 支持取消底色、调节占用面积
+  const _bg = promoConfig.badgeBg !== false;
+  const _sz = promoConfig.badgeSize || 'medium';
+  const _szPct = _sz === 'small' ? '15-20%' : _sz === 'large' ? '38-42%' : '30-35%';
+  const _szWord = _sz === 'small' ? 'moderate' : _sz === 'large' ? 'huge' : 'large';
+  const _szMin = _sz === 'small' ? '1/8' : _sz === 'large' ? '1/3' : '1/4';
+  const _bgDesc = _bg
+    ? (colorScheme.promptDesc + ', on a solid color block background, impossible to miss')
+    : (colorScheme.promptDesc + ' colored text with NO background fill — transparent, no banner block, just bold colored lettering');
+  lines.push('SIZE: The promotion badge/banner MUST occupy at least ' + _szPct + ' of the ENTIRE image height, centered in the top 1/3 area');
+  lines.push('STYLE: ' + _szWord + ' bold text, ' + _bgDesc);
   lines.push('LAYOUT: The viewer\'s eye should see the DISCOUNT FIRST, then the product. Discount is the hero element.');
-  lines.push('REQUIREMENT: Use LARGE font size (minimum 1/4 of image width for the discount text). Make it BOLD and EYE-CATCHING.');
+  lines.push('REQUIREMENT: Use ' + _szWord + ' font size (minimum ' + _szMin + ' of image width for the discount text). Make it BOLD and EYE-CATCHING.');
   
   if (promoConfig.type === 'buy_x_get_y') {
     const total = promoConfig.buyCount + promoConfig.getCount;
@@ -4388,6 +4583,13 @@ function init() {
   // V11.1 #2: 渲染叠加促销选项，并按有无主促销决定展示与否
   if (typeof renderExtraPromoChips === 'function') renderExtraPromoChips();
   if (typeof syncExtraPromoVisibility === 'function') syncExtraPromoVisibility();
+  // V11.2 #3: 渲染搭配单品多选 chips
+  if (typeof renderPairingChips === 'function') renderPairingChips();
+  // V11.2 #1: 折扣底色/大小默认值
+  const _bb = document.getElementById('promoBadgeBg'); if (_bb) _bb.checked = promoConfig.badgeBg !== false;
+  const _bs = document.getElementById('promoBadgeSize'); if (_bs) _bs.value = promoConfig.badgeSize || 'medium';
+  // V11.2 #2: 智能提示词开关状态
+  const _lt = document.getElementById('llmPromptToggle'); if (_lt) _lt.checked = llmPromptMode === true;
   
   // V11.0: Category Template Mode initialization
   renderCategoryPage();
