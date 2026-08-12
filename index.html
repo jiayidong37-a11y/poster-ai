@@ -92,6 +92,11 @@ header .actions span{font-size:11px;color:var(--text2)}
 .result-area .images .img-cell{position:relative}
 .result-area .images .dl-btn{position:absolute;top:5px;right:5px;width:24px;height:24px;border:none;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:12px;line-height:1;cursor:pointer;opacity:.85}
 .result-area .images .dl-btn:hover{background:var(--accent);opacity:1}
+/* V11.3 fix#1: 折扣角标 HTML 叠加层 —— 不依赖 canvas/CORS，显示永远生效 */
+.promo-badge{position:absolute;left:50%;transform:translateX(-50%);top:6%;z-index:2;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;color:#fff;letter-spacing:.02em;line-height:1.1;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.28);white-space:pre-line;pointer-events:none;max-width:86%}
+.promo-badge.pb-lg{font-size:clamp(16px,7cqw,34px);padding:3.5% 7%;width:76%}
+.promo-badge.pb-md{font-size:clamp(14px,5.5cqw,28px);padding:3% 6%;width:70%}
+.promo-badge.pb-sm{font-size:clamp(11px,4cqw,20px);padding:2.5% 5%;width:64%}
 .history-table .hist-gallery{display:flex;flex-wrap:wrap;gap:3px;max-width:150px}
 .history-table .hist-gallery .thumb{width:34px;height:34px}
 .status-bar{padding:6px 10px;border-radius:6px;margin-bottom:8px;font-size:11px;display:none}
@@ -1742,16 +1747,18 @@ function toggleSellingPoint(name) {
   const idx = selectedTags.sellingPoints.indexOf(name);
   if (idx >= 0) selectedTags.sellingPoints.splice(idx, 1);
   else { if (selectedTags.sellingPoints.length >= 5) selectedTags.sellingPoints.shift(); selectedTags.sellingPoints.push(name); }
+  if (isNonClothingTemplate()) { reRenderChipsForTemplate(); return; }
   renderSellingPointChips(); updatePreview(); updateAnalysis();
 }
 function togglePainPoint(name) {
   const idx = selectedTags.painPoints.indexOf(name);
   if (idx >= 0) selectedTags.painPoints.splice(idx, 1);
   else { if (selectedTags.painPoints.length >= 3) selectedTags.painPoints.shift(); selectedTags.painPoints.push(name); }
+  if (isNonClothingTemplate()) { reRenderChipsForTemplate(); return; }
   renderPainPointChips(); updatePreview(); updateAnalysis();
 }
-function selectScene(name) { selectedTags.scene = selectedTags.scene === name ? '' : name; renderSceneChips(); updatePreview(); updateAnalysis(); }
-function selectAtmosphere(name) { selectedTags.atmosphere = selectedTags.atmosphere === name ? '' : name; renderAtmosphereChips(); updatePreview(); updateAnalysis(); }
+function selectScene(name) { selectedTags.scene = selectedTags.scene === name ? '' : name; if (isNonClothingTemplate()) { reRenderChipsForTemplate(); return; } renderSceneChips(); updatePreview(); updateAnalysis(); }
+function selectAtmosphere(name) { selectedTags.atmosphere = selectedTags.atmosphere === name ? '' : name; if (isNonClothingTemplate()) { reRenderChipsForTemplate(); return; } renderAtmosphereChips(); updatePreview(); updateAnalysis(); }
 function selectBrandTone(name) {
   selectedTags.brandTone = selectedTags.brandTone === name ? '' : name;
   // 正向联动：品牌调性 → 促销配色
@@ -2100,11 +2107,34 @@ function applyPlaceholderTags(tpl) {
   }
 }
 
+// V11.3 fix#2: 判断是否处于“非服装品类模板”模式。
+// 该模式下 selectedTags.category 为空，卖点/场景等来自模板占位标签（placeholderTags），
+// 不能回退到 tagData['服装'] 的重渲染（否则点一下卖点就跳回服装选项）。
+function isNonClothingTemplate() {
+  try {
+    if (appMode !== 'categoryTemplate' || !selectedCategoryTemplate) return false;
+    const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
+    return !!(tpl && !tpl.useExistingTags);
+  } catch (e) { return false; }
+}
+
+// 非服装模板模式下，点击卖点/痛点/场景/氛围后，用模板占位标签重渲染，
+// 保持该品类的选项不变（只更新高亮态），避免回退到服装。
+function reRenderChipsForTemplate() {
+  const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
+  if (tpl) applyPlaceholderTags(tpl);
+  renderBrandToneChips();
+  renderTargetAudienceChips();
+  updatePreview();
+  updateAnalysis();
+}
+
 // Switch app mode between categoryTemplate and legacy
 function switchAppMode(mode) {
   appMode = mode;
   localStorage.setItem('poster_v11_app_mode', mode);
-  
+
+
   // Update toggle buttons
   document.getElementById('modeBtnCategoryTemplate').classList.toggle('active-mode', mode === 'categoryTemplate');
   document.getElementById('modeBtnLegacy').classList.toggle('active-mode', mode === 'legacy');
@@ -3181,6 +3211,7 @@ function getPromptField(id) {
 }
 
 // 离线兜底词典：翻译接口不可用时至少保住高频语义，不至于整段丢失
+// V11.3 fix#3: 扩充常见生图/电商短语，降低"补充说明被静默清空"的概率。
 const CN_FALLBACK_DICT = {
   '暖调':'warm tone','冷调':'cool tone','高级感':'premium feel','细节':'detail shot','特写':'close-up',
   '全身':'full body','半身':'half body','纯白背景':'pure white background','纯色背景':'solid color background',
@@ -3188,7 +3219,24 @@ const CN_FALLBACK_DICT = {
   '模特':'model','正面':'front view','侧面':'side view','背面':'back view','俯拍':'top-down view',
   '简约':'minimalist','清新':'fresh','复古':'vintage','ins风':'instagram style','日系':'japanese style',
   '欧美':'western style','韩系':'korean style','街拍':'street style','棚拍':'studio shot',
-  '多角度':'multiple angles','展示细节':'show product details','放大':'zoom in','留白':'negative space'
+  '多角度':'multiple angles','展示细节':'show product details','放大':'zoom in','留白':'negative space',
+  // ---- V11.3 扩充 ----
+  '产品':'product','商品':'product','背景':'background','场景':'scene','构图':'composition','角度':'angle',
+  '主体':'subject','居中':'centered','虚化':'blurred background','景深':'depth of field','浅景深':'shallow depth of field',
+  '主图':'main product shot','细节图':'detail shots','卖点':'key selling points','效果':'effect','质感':'texture',
+  '颜色':'color','色彩':'color palette','色调':'color tone','饱和度':'saturation','亮度':'brightness','对比度':'contrast',
+  '自然光':'natural light','侧光':'side lighting','顶光':'top lighting','暖光':'warm lighting','冷光':'cool lighting',
+  '真实':'realistic','自然':'natural','干净':'clean','简洁':'minimal','大气':'grand','高级':'premium','精致':'refined',
+  '有质感':'textured','立体':'three-dimensional','立体感':'three-dimensional feel','明亮':'bright','通透':'clear and bright',
+  '聚焦':'focus on','突出':'highlight','强调':'emphasize','清晰':'sharp and clear','高清':'high resolution','超清':'ultra high definition',
+  '家居':'home','办公':'office','咖啡厅':'cafe','街道':'street','商店':'store','旅游':'travel','度假':'vacation','沙滩':'beach',
+  '日常':'everyday','生活':'lifestyle','氛围感':'atmosphere','ins风格':'instagram aesthetic','摆拍':'staged photo',
+  '模特手拿':'model holding','产品展示':'product showcase','包装':'packaging','礼盒':'gift box','赠品':'free gift',
+  '漂浮':'floating','平铺':'flat lay','悬挂':'hanging','动态':'dynamic','静物':'still life','俯视':'bird\'s eye view',
+  '更换背景':'replace background','无背景':'no background','透明背景':'transparent background','去水印':'no watermark',
+  '发光':'glowing','光晕':'halo','梦幻':'dreamy','柔和':'soft','温润':'warm and soft','现代感':'modern feel','科技感':'tech feel',
+  '渐变色':'gradient','大理石':'marble','木纹':'wood texture','磨砂':'frosted','哑光':'matte','亮面':'glossy',
+  '适合海报':'suitable for poster','电商主图':'e-commerce main image','广告图':'advertisement image','营销':'marketing'
 };
 
 function fallbackTranslate(text) {
@@ -3202,6 +3250,21 @@ function fallbackTranslate(text) {
   out = cleanupResidualPunct(out);
   return out.replace(/\s{2,}/g, ' ').trim();
 }
+
+// V11.3 fix#3: 语言代码 → 英文名，用于翻译层输出目标市场语言
+const LANG_CODE_TO_NAME = {
+  'en-GB':'English (UK)', 'en-US':'English (US)', 'en':'English',
+  'nl':'Dutch (Nederlands)', 'fr':'French (Français)', 'de':'German (Deutsch)',
+  'es':'Spanish (Español)', 'it':'Italian (Italiano)', 'pt':'Portuguese (Português)',
+  'pl':'Polish (Polski)', 'sv':'Swedish (Svenska)', 'da':'Danish (Dansk)',
+  'no':'Norwegian (Norsk)', 'fi':'Finnish (Suomi)', 'el':'Greek (Ελληνικά)',
+  'cs':'Czech (Čeština)', 'ro':'Romanian (Română)', 'hu':'Hungarian (Magyar)',
+  'bg':'Bulgarian (Български)', 'hr':'Croatian (Hrvatski)', 'sk':'Slovak (Slovenčina)',
+  'uk':'Ukrainian (Українська)', 'ru':'Russian (Русский)',
+  'tr':'Turkish (Türkçe)', 'ar':'Arabic (العربية)', 'he':'Hebrew (עברית)',
+  'ja':'Japanese (日本語)', 'ko':'Korean (한국어)', 'th':'Thai (ไทย)',
+  'vi':'Vietnamese (Tiếng Việt)', 'id':'Indonesian (Bahasa Indonesia)'
+};
 
 async function translateUserInputsIfNeeded(apiKey) {
   const extra = (document.getElementById('extraNote') && document.getElementById('extraNote').value.trim()) || '';
@@ -3223,7 +3286,20 @@ async function translateUserInputsIfNeeded(apiKey) {
   setStatus('正在理解你的补充说明...', 'info');
   try {
     const proxies = getProxyUrl();
-    const sysPrompt = 'You are an e-commerce image prompt engineer. Translate the Chinese user input into precise, actionable ENGLISH image-generation instructions. Rules: (1) extra_note describes how the picture should look, translate it into visual/photographic terms; (2) product_features describes real product attributes, translate faithfully and do NOT invent facts; (3) promo_custom_text is marketing copy that will be printed on the poster, output SHORT punchy English marketing copy, keep all numbers and percentages EXACTLY as given. Reply with ONLY a JSON object with keys extra_note, product_features, promo_custom_text. No markdown, no explanation.';
+    // V11.3 fix#3: 按所选市场语言(genLanguage)输出，不再写死 English。
+    // 这样补充说明里的"可印刷文案"(如促销语)能落到对应语言，图片上的文字才匹配目标市场。
+    const targetLang = (typeof getDetectedLanguage === 'function') ? getDetectedLanguage() : 'en-GB';
+    const langName = LANG_CODE_TO_NAME[targetLang] || 'English';
+    // 全部字段（补充说明 extra_note、产品特性 product_features、促销文案 promo_custom_text）
+    // 都翻译成目标市场语言 —— 用户要求"使用对应的语言"，让图上文字与目标市场一致。
+    // 若目标市场本身是英语，则等价于之前的纯英文输出，行为不回退。
+    const sysPrompt = 'You are an e-commerce image prompt engineer. Translate the Chinese user input into the target market language: ' + langName
+      + ' (the language this poster/image will be shown in). Output ALL of the following in ' + langName + ' ONLY: '
+      + '(1) "extra_note": how the picture should look, in visual/photographic terms; '
+      + '(2) "product_features": real product attributes, translated faithfully, do NOT invent facts; '
+      + '(3) "promo_custom_text": SHORT punchy marketing copy that will be printed on the poster, keep all numbers and percentages EXACTLY as given. '
+      + 'If the target language is English just output English. '
+      + 'Reply with ONLY a JSON object with keys: extra_note, product_features, promo_custom_text, all in ' + langName + '. No markdown, no explanation.';
     const userPayload = JSON.stringify({ extra_note: extra, product_features: feat, promo_custom_text: promoCustom });
     const resp = await fetchWithProxy('https://api.apimart.ai/v1/chat/completions', {
       method: 'POST',
@@ -3459,18 +3535,282 @@ function displayResults(result) {
   area.style.display = 'block';
   if (result && result.images && result.images.length > 0) {
     const base = (document.getElementById('productName').value.trim() || 'poster').replace(/['"\\]/g, '');
-    container.innerHTML = result.images.map((img, i) =>
-      `<div class="img-cell"><img src="${img.url}" onclick="viewImage('${img.url}')" title="点击查看大图"><button class="dl-btn" title="下载原图" onclick="downloadImage('${img.url}','${base}_${i+1}.png')">⬇</button></div>`
-    ).join('');
+    // V11.3 fix#1: 折扣角标 —— HTML 叠加层显示（永远生效，不依赖 canvas/CORS），
+    // 下载时尽力用 canvas 合成为带角标图片，CORS 失败则退回原图。
+    // 仅当"促销已设置 + 有角标内容"时才叠加；否则完全保持原样。
+    const promoText = buildPromoDisplayString();
+    const doOverlay = !!(promoText && promoConfig && promoConfig.type);
+    container.innerHTML = result.images.map((img, i) => {
+      const cellId = 'imgCell_' + Date.now() + '_' + i;
+      const badgeHtml = doOverlay ? buildPromoBadgeHtml(promoText) : '';
+      return `<div class="img-cell" id="${cellId}"><img src="${img.url}" crossorigin="anonymous" onclick="viewImage('${img.url}')" title="点击查看大图">${badgeHtml}<button class="dl-btn" title="下载原图" onclick="downloadImage('${img.url}','${base}_${i+1}.png')">⬇</button></div>`;
+    }).join('');
+    // 下载时尽力把角标烘焙进图片（canvas）；跨域/失败则保持原图下载，不报错
+    if (doOverlay) {
+      const cells = container.querySelectorAll('.img-cell');
+      result.images.forEach((img, i) => {
+        const cell = cells[i]; if (!cell) return;
+        const im = cell.querySelector('img');
+        if (!im) return;
+        const done = () => {
+          renderPromoOverlay(img.url, promoText, function(data) {
+            if (!data || !data.canvas || !data.dataUrl) return;
+            const dl = cell.querySelector('.dl-btn');
+            if (dl) dl.setAttribute('onclick', `downloadImage('${data.dataUrl}','${base}_${i+1}.png')`);
+            // V11.3 fix#1: 用图片真实背景主色重绘屏幕上的角标 → 真正融入该图背景
+            if (data.sampledColor) {
+              const badge = cell.querySelector('.promo-badge');
+              if (badge) recolorBadgeFromSample(badge, data.sampledColor);
+            }
+          });
+        };
+        if (im.complete && im.naturalWidth > 0) done();
+        else { im.onload = done; im.onerror = function(){}; }
+      });
+    }
   } else {
     container.innerHTML = '<p style="color:var(--text2)">未获取到图片结果</p>';
   }
+}
+
+// V11.3 fix#1: 生成角标 HTML（CSS 叠加层，颜色/尺寸/位置全部可控，始终可显示）
+function buildPromoBadgeHtml(text) {
+  let sz = 'pb-md';
+  try {
+    const s = (promoConfig && promoConfig.badgeSize) || 'medium';
+    sz = s === 'small' ? 'pb-sm' : s === 'large' ? 'pb-lg' : 'pb-md';
+  } catch (e) {}
+  let schemeKey = '强销售转化';
+  try { schemeKey = (promoConfig && promoConfig.colorScheme) || schemeKey; } catch (e) {}
+  const scheme = (typeof PROMO_COLOR_SCHEMES !== 'undefined' ? PROMO_COLOR_SCHEMES.find(s => s.key === schemeKey) : null) || (PROMO_COLOR_SCHEMES && PROMO_COLOR_SCHEMES[0]) || { color:'#e53935' };
+  // 无底色模式：文字直出，仅加阴影，不用色块
+  const noBg = !(promoConfig && promoConfig.badgeBg !== false);
+  if (noBg) {
+    return `<div class="promo-badge ${sz}" style="background:transparent;color:${scheme.color};text-shadow:0 2px 8px rgba(0,0,0,.4)">${text}</div>`;
+  }
+  const base = hexToRgb(scheme.color || '#e53935');
+  return `<div class="promo-badge ${sz}" style="background:linear-gradient(135deg,rgba(${Math.min(255,base.r+20)},${Math.min(255,base.g+20)},${Math.min(255,base.b+20)},0.85),rgba(${Math.max(0,base.r-20)},${Math.max(0,base.g-20)},${Math.max(0,base.b-20)},0.85));border:1px solid rgba(255,255,255,.35)">${text}</div>`;
+}
+
+// V11.3 fix#1: 用采样的图片背景主色重绘屏幕上的角标 → 让角标真正融入该图的背景色系
+function recolorBadgeFromSample(badge, colorStr) {
+  try {
+    const c = hexToRgb(colorStr);
+    const noBg = !(promoConfig && promoConfig.badgeBg !== false);
+    if (noBg) {
+      badge.style.background = 'transparent';
+      badge.style.color = `rgb(${c.r},${c.g},${c.b})`;
+    } else {
+      badge.style.background = `linear-gradient(135deg,rgba(${Math.min(255,c.r+22)},${Math.min(255,c.g+22)},${Math.min(255,c.b+22)},0.86),rgba(${Math.max(0,c.r-18)},${Math.max(0,c.g-18)},${Math.max(0,c.b-18)},0.86))`;
+    }
+  } catch (e) {}
 }
 
 function viewImage(url) {
   document.getElementById('imgViewerSrc').src = url;
   document.getElementById('imgViewer').classList.remove('hidden');
 }
+
+// ============ V11.3 #1: Canvas 叠加折扣角标 ============
+// 思路：AI 只生成干净产品场景图，折扣角标用代码精确绘制 —— 字体、颜色、圆角、透明度、
+// 阴影、位置全部可控，保证清晰且“融入背景”。
+// V11.3 fix: 生成图来自跨域图床，直接 drawImage 会把 canvas 污染，toDataURL 抛 SecurityError，
+// 叠加因此静默回退成“AI 画的丑角标”。这里改为先用代理链把图片字节拉下来转成 dataURL，
+// dataURL 与页面同源、永不污染 canvas → 角标一定生效。全部失败才回退原始 <img>，绝不报错。
+function renderPromoOverlay(url, promoText, onDone) {
+  let fired = false;
+  const finish = (data) => { if (!fired) { fired = true; if (onDone) onDone(data); } };
+  const renderFromDataUrl = (dataUrl) => {
+    const img = new Image();
+    img.onload = function() {
+      try {
+        const cv = document.createElement('canvas');
+        cv.width = img.naturalWidth || img.width;
+        cv.height = img.naturalHeight || img.height;
+        const ctx = cv.getContext('2d');
+        if (!ctx) { finish(null); return; }
+        ctx.drawImage(img, 0, 0, cv.width, cv.height);
+        const sampledColor = drawPromoBadge(ctx, cv.width, cv.height, promoText);
+        const out = cv.toDataURL('image/png'); // dataURL 同源，不会抛 SecurityError
+        finish({ canvas: cv, dataUrl: out, sampledColor: sampledColor });
+      } catch (e) { finish(null); }
+    };
+    img.onerror = function() { finish(null); };
+    img.src = dataUrl;
+  };
+  // 1) 若能直接跨域读取（图床本身开了CORS），最快路径：用 crossOrigin 直接画
+  try {
+    const probe = new Image();
+    probe.crossOrigin = 'anonymous';
+    probe.onload = function() {
+      // 直接 drawImage 到 canvas 并尝试导出，能成功说明同源可读 → 用这个图
+      try {
+        const cv = document.createElement('canvas');
+        cv.width = probe.naturalWidth; cv.height = probe.naturalHeight;
+        const ctx = cv.getContext('2d');
+        ctx.drawImage(probe, 0, 0, cv.width, cv.height);
+        const sampledColor = drawPromoBadge(ctx, cv.width, cv.height, promoText);
+        const out = cv.toDataURL('image/png');
+        if (!fired) { fired = true; onDone({ canvas: cv, dataUrl: out, sampledColor: sampledColor }); }
+      } catch (e) { fetchBytesViaProxy(); } // 被污染 → 走代理拉取
+    };
+    probe.onerror = function() { fetchBytesViaProxy(); };
+    probe.src = url;
+  } catch (e) { fetchBytesViaProxy(); }
+
+  // 2) 代理拉取图片字节 → dataURL（同源，永不污染）。这也顺带解决跨域下载受限问题。
+  async function fetchBytesViaProxy() {
+    try {
+      const proxies = (typeof getProxyUrl === 'function') ? getProxyUrl() : [''];
+      let resp = null, lastErr;
+      for (let i = 0; i < proxies.length; i++) {
+        try {
+          const p = proxies[i];
+          const target = p ? (p + encodeURIComponent(url)) : url;
+          const r = await fetch(target, { signal: AbortSignal.timeout(p ? 15000 : 8000) });
+          if (r.ok) { resp = r; break; }
+          lastErr = 'HTTP ' + r.status;
+        } catch (e) { lastErr = e.message; }
+      }
+      if (!resp) { finish(null); return; }
+      const buf = await resp.arrayBuffer();
+      // 尽量保留原格式，缩小体积；JPEG通常比PNG小，且无透明通道需求
+      const isJpeg = /jpe?g$/i.test(url.split('?')[0]) || (resp.headers.get('content-type') || '').includes('jpeg');
+      const mime = isJpeg ? 'image/jpeg' : 'image/png';
+      const base64 = arrayBufferToBase64(buf);
+      const dataUrl = 'data:' + mime + ';base64,' + base64;
+      renderFromDataUrl(dataUrl);
+    } catch (e) { finish(null); }
+  }
+}
+
+function arrayBufferToBase64(buffer) {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}
+
+// 从画布合成图打开大图查看（避免直接看跨域 base64 的问题，直接看 dataURL 即可）
+function openViewerFromCanvas(data) {
+  if (data && data.dataUrl) { viewImage(data.dataUrl); }
+}
+
+// 核心：在画布上绘制“与画面同色系、柔和、精致”的折扣角标。
+// V11.3 fix#1: 返回最终使用的基底色（采样色或配色兜底色），供 HTML 叠加层同步重绘。
+function drawPromoBadge(ctx, W, H, text) {
+  // 0) 从画面取主色调：采样顶部 1/3 区域的平均颜色，作为角标基底色 → 天然融入背景
+  const avg = sampleTopColor(ctx, W, H);
+  // 1) 配色方案兜底（仍可用）
+  let schemeKey = '强销售转化';
+  try { schemeKey = (promoConfig && promoConfig.colorScheme) || schemeKey; } catch (e) {}
+  const scheme = PROMO_COLOR_SCHEMES.find(s => s.key === schemeKey) || PROMO_COLOR_SCHEMES[0];
+  const baseColor = avg || scheme.color || '#e53935';
+  const baseRGB = hexToRgb(baseColor);
+
+  // 2) 尺寸：占用画面高度的比例
+  let szRatio = 0.30; // medium 默认 30%
+  try {
+    const sz = (promoConfig && promoConfig.badgeSize) || 'medium';
+    szRatio = sz === 'small' ? 0.16 : sz === 'large' ? 0.40 : 0.30;
+  } catch (e) {}
+  const badgeH = Math.max(40, Math.round(H * szRatio));
+  const badgeW = Math.max(120, Math.round(W * 0.72));
+  const x = (W - badgeW) / 2;
+  const y = Math.max(8, Math.round(H * 0.06));
+
+  // 3) 圆角 + 柔和阴影 + 半透明同色系填充（75% 透明度，模拟设计感包装标签）
+  ctx.save();
+  // 柔影
+  ctx.shadowColor = 'rgba(0,0,0,0.30)';
+  ctx.shadowBlur = Math.max(10, Math.round(badgeH * 0.16));
+  ctx.shadowOffsetY = Math.max(4, Math.round(badgeH * 0.08));
+  roundRectPath(ctx, x, y, badgeW, badgeH, Math.round(badgeH * 0.18));
+  ctx.fillStyle = `rgba(${baseRGB.r},${baseRGB.g},${baseRGB.b},0.78)`;
+  ctx.fill();
+  // 细微渐变：从场景色稍亮→稍暗，更自然
+  const grad = ctx.createLinearGradient(x, y, x, y + badgeH);
+  grad.addColorStop(0, `rgba(${Math.min(255,baseRGB.r+24)},${Math.min(255,baseRGB.g+24)},${Math.min(255,baseRGB.b+24)},0.85)`);
+  grad.addColorStop(1, `rgba(${Math.max(0,baseRGB.r-16)},${Math.max(0,baseRGB.g-16)},${Math.max(0,baseRGB.b-16)},0.85)`);
+  roundRectPath(ctx, x, y, badgeW, badgeH, Math.round(badgeH * 0.18));
+  ctx.fillStyle = grad;
+  ctx.fill();
+  // 细描边（同色系，低对比）
+  ctx.lineWidth = Math.max(1.5, badgeH * 0.02);
+  ctx.strokeStyle = `rgba(${Math.min(255,baseRGB.r+40)},${Math.min(255,baseRGB.g+40)},${Math.min(255,baseRGB.b+40)},0.55)`;
+  roundRectPath(ctx, x, y, badgeW, badgeH, Math.round(badgeH * 0.18));
+  ctx.stroke();
+
+  // 4) 文字：白色粗体（若场景色太浅则用深色文字保证可读）
+  ctx.shadowColor = 'rgba(0,0,0,0.35)';
+  ctx.shadowBlur = Math.max(4, Math.round(badgeH * 0.06));
+  ctx.shadowOffsetY = Math.max(2, Math.round(badgeH * 0.04));
+  const lum = 0.299*baseRGB.r + 0.587*baseRGB.g + 0.114*baseRGB.b;
+  const textColor = lum > 180 ? '#212121' : '#ffffff';
+  const fontSize = Math.round(badgeH * 0.42);
+  ctx.fillStyle = textColor;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  // 自适应字号：过长则缩小换行
+  const lines = wrapText(text, badgeW * 0.86, fontSize, 'bold ' + fontSize + 'px Arial, sans-serif', ctx);
+  const lineH = fontSize * 1.12;
+  let ty = y + (badgeH - lines.length * lineH) / 2 + lineH * 0.35;
+  for (const ln of lines) {
+    ctx.font = 'bold ' + fontSize + 'px Arial, sans-serif';
+    ctx.fillText(ln, x + badgeW / 2, ty);
+    ty += lineH;
+  }
+  ctx.restore();
+  return baseColor; // 返回基底色，供 HTML 叠加层同步重绘以融入背景
+}
+
+function roundRectPath(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function hexToRgb(hex) {
+  hex = String(hex || '').replace('#','');
+  if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+  const n = parseInt(hex, 16);
+  if (isNaN(n)) return { r: 229, g: 57, b: 53 };
+  return { r: (n>>16)&255, g: (n>>8)&255, b: n&255 };
+}
+// 采样画面上部区域的平均主色（融入背景的关键）
+function sampleTopColor(ctx, W, H) {
+  try {
+    const sx = Math.round(W*0.25), sy = Math.round(H*0.02);
+    const sw = Math.round(W*0.5), sh = Math.max(1, Math.round(H*0.18));
+    const d = ctx.getImageData(sx, sy, sw, sh).data;
+    let r=0,g=0,b=0,n=0;
+    for (let i=0;i<d.length;i+=40) { r+=d[i]; g+=d[i+1]; b+=d[i+2]; n++; }
+    if (!n) return null;
+    r=Math.round(r/n); g=Math.round(g/n); b=Math.round(b/n);
+    return `rgb(${r},${g},${b})`;
+  } catch (e) { return null; } // 跨域取不到像素 → 用配色兜底
+}
+// 按可用宽度折行（支持中英文）
+function wrapText(text, maxW, fontSize, baseFont, ctx) {
+  text = String(text || '');
+  ctx.font = baseFont;
+  const chars = text.split('');
+  const lines = [];
+  let line = '';
+  for (const ch of chars) {
+    if (ctx.measureText(line + ch).width > maxW && line) { lines.push(line); line = ch; }
+    else line += ch;
+  }
+  if (line) lines.push(line);
+  return lines.length ? lines : [text];
+}
+// ============ END V11.3 #1 ============
 
 // V11.2 #4: 单图下载。跨域图床可能忽略 download 属性，此时退化为新标签页打开让用户右键保存
 function downloadImage(url, name) {
@@ -4227,19 +4567,20 @@ function buildPromoPromptLinesCore() {
   lines.push('\n=== PROMOTION BADGE (CRITICAL - MOST PROMINENT ELEMENT ON THE POSTER) ===');
   lines.push('Promotion: "'+promoStr+'"');
   const colorScheme = PROMO_COLOR_SCHEMES.find(s => s.key === (promoConfig.colorScheme || '强销售转化')) || PROMO_COLOR_SCHEMES[0];
-  // V11.2 #1: 折扣底色与大小 —— 支持取消底色、调节占用面积
+  // V11.3 #1: 折扣角标“融入背景、不显脏” —— 去掉生硬色块/硬文字，改为与画面同色系、柔和半透明、有质感的设计元素（仅改样式描述，不碰其它逻辑）
   const _bg = promoConfig.badgeBg !== false;
   const _sz = promoConfig.badgeSize || 'medium';
   const _szPct = _sz === 'small' ? '15-20%' : _sz === 'large' ? '38-42%' : '30-35%';
   const _szWord = _sz === 'small' ? 'moderate' : _sz === 'large' ? 'huge' : 'large';
   const _szMin = _sz === 'small' ? '1/8' : _sz === 'large' ? '1/3' : '1/4';
   const _bgDesc = _bg
-    ? (colorScheme.promptDesc + ', on a solid color block background, impossible to miss')
-    : (colorScheme.promptDesc + ' colored text with NO background fill — transparent, no banner block, just bold colored lettering');
+    ? ('a refined rounded badge with a SOFT semi-transparent fill (about 75% opacity) TINTED FROM THE SCENE\'S DOMINANT COLOR, with a subtle gradient and a gentle soft shadow, so it sits naturally on the image like designed packaging — elegant and cohesive, NOT a harsh flat color block')
+    : ('elegant lettering in a tone that HARMONIZES WITH THE SCENE\'S COLOR PALETTE, with a soft halo/shadow so it reads clearly yet feels part of the composition — no harsh floating text');
   lines.push('SIZE: The promotion badge/banner MUST occupy at least ' + _szPct + ' of the ENTIRE image height, centered in the top 1/3 area');
-  lines.push('STYLE: ' + _szWord + ' bold text, ' + _bgDesc);
-  lines.push('LAYOUT: The viewer\'s eye should see the DISCOUNT FIRST, then the product. Discount is the hero element.');
-  lines.push('REQUIREMENT: Use ' + _szWord + ' font size (minimum ' + _szMin + ' of image width for the discount text). Make it BOLD and EYE-CATCHING.');
+  lines.push('STYLE: ' + _szWord + ' bold but tasteful text, ' + _bgDesc);
+  lines.push('BLENDING: The badge must look like professional commercial product photography — pick colors that BELONG TO THE SAME PALETTE as the background/scene, with soft edges and natural lighting. Avoid clip-art, hard flat rectangles, stark black/white blocks, or clashing colors that pop out unnaturally from the scene.');
+  lines.push('LAYOUT: The viewer\'s eye should see the DISCOUNT FIRST, then the product. Discount is the hero element, but it should FEEL DESIGNED, not pasted on.');
+  lines.push('REQUIREMENT: Use ' + _szWord + ' font size (minimum ' + _szMin + ' of image width for the discount text). Make it clear and eye-catching WITHOUT looking cheap or out of place.');
   
   if (promoConfig.type === 'buy_x_get_y') {
     const total = promoConfig.buyCount + promoConfig.getCount;
