@@ -4,7 +4,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI电商品类模板化生图工作台 V11.2</title>
+<title>FB评论种草工作台 V11.2</title>
 <script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <style>
@@ -412,7 +412,7 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- V11.0: Category Selection Page (Page 0) -->
 <div class="category-page" id="categoryPage">
   <div class="category-page-header">
-    <h2>🎨 AI电商品类模板化生图工作台</h2>
+    <h2>🎨 FB评论种草工作台 V11.2</h2>
     <p>选择您的商品品类，我们将为您匹配最适合的标签维度与生成策略</p>
   </div>
   
@@ -434,10 +434,11 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- Main App -->
 <div class="container" id="mainApp" style="display:block">
   <header>
-    <h1>🎨 AI电商品类模板化生图工作台 V11.0</h1>
+    <h1>🎨 FB评论种草工作台 V11.2</h1>
     <div class="actions">
       <span id="userInfo"></span>
       <span id="roleInfo" class="tag" style="margin-right:4px"></span>
+      <button class="btn btn-outline btn-sm" onclick="switchAppMode(appMode==='legacy'?'categoryTemplate':'legacy')" style="font-size:10px;padding:3px 8px" id="headerModeBtn">切到传统模式</button>
       <button class="btn btn-outline btn-sm" id="adminBtn" onclick="openAdmin()">⚙️ 管理</button>
     </div>
   </header>
@@ -522,7 +523,10 @@ header .actions span{font-size:11px;color:var(--text2)}
               <option value="腰带">腰带</option>
               <option value="眼镜">眼镜</option>
               <option value="首饰">首饰</option>
+              <option value="全套">🎯 全套搭配（上衣+裤+鞋+配饰）</option>
+              <option value="自定义">✏️ 自定义...</option>
             </select>
+            <input type="text" id="pairingCustomCategory" placeholder="输入自定义搭配品类名称" style="display:none;margin-top:4px;width:100%;padding:4px 6px;font-size:11px;border:1px solid var(--border);border-radius:4px">
           </div>
           <div class="form-group" style="margin-bottom:0">
             <label>🎨 搭配风格 <small style="color:var(--text2)">(可选)</small></label>
@@ -546,27 +550,13 @@ header .actions span{font-size:11px;color:var(--text2)}
           <div class="form-group">
             <label>活动类型</label>
             <select id="promoType" onchange="onPromoChange()">
-              <option value="">无促销活动</option>
-              <optgroup label="── 经典 7 种 (向后兼容) ──">
-                <option value="buy_x_get_y">买X送Y</option>
-                <option value="discount">折扣优惠</option>
-                <option value="buy_2nd_disc">买一件第二件X折</option>
-                <option value="tiered_disc">梯级折扣(买1/2/3件不同折扣)</option>
-                <option value="free_shipping">免运费</option>
-                <option value="bundle">组合套装</option>
-                <option value="gift">买就送赠品</option>
-              </optgroup>
-              <optgroup label="── V10.2 新增 9 种 ──">
-                <option value="percent">百分比折扣 (-X% OFF)</option>
-                <option value="amount">立减金额 (Save $X)</option>
-                <option value="full_x_get_y">满X享Y折 (Spend $X get Y% off)</option>
-                <option value="full_x_minus_y">满X减Y (Spend $X save $Y)</option>
-                <option value="full_x_piece_y_z">满X件第Y件Z折</option>
-                <option value="piece_half">第Y件半价 (5/6/7/8折+自定义)</option>
-                <option value="buy_n_get_m">买N送M</option>
-                <option value="flash_sale">限时特价</option>
-                <option value="custom">自定义文案</option>
-              </optgroup>
+              <option value="">-- 选择促销类型 --</option>
+              <option value="discount">折扣优惠</option>
+              <option value="buy_x_get_y">买X送Y</option>
+              <option value="tiered_disc">梯级折扣</option>
+              <option value="gift">买就送赠品</option>
+              <option value="promo_code">自定义折扣码</option>
+              <option value="custom">自定义文案</option>
             </select>
           </div>
           <div class="form-group" id="buyCountGroup" style="display:none">
@@ -601,13 +591,9 @@ header .actions span{font-size:11px;color:var(--text2)}
           <div id="overlayPromoInputs" style="margin-top:6px"></div>
         </div>
         
-        <div class="form-group" style="margin-top:8px;border-top:1px dashed var(--border);padding-top:8px">
-          <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
-            <input type="checkbox" id="tieredDiscountToggle" onchange="toggleTieredDiscount()" style="width:auto">
-            <span style="font-size:11px;font-weight:500">📊 启用阶梯优惠</span>
-            <small style="color:var(--text2)">(如: 买2件10%OFF, 买3件15%OFF)</small>
-          </label>
+        <div class="form-group" style="margin-top:8px;border-top:1px dashed var(--border);padding-top:8px" id="tieredDiscountSection">
           <div id="tieredDiscountPanel" style="display:none;margin-top:6px;padding:6px;background:#f5f3f0;border-radius:6px">
+            <div style="font-size:11px;font-weight:600;margin-bottom:6px">📊 阶梯优惠配置</div>
             <div id="tieredDiscountTiers"></div>
           </div>
         </div>
@@ -642,6 +628,10 @@ header .actions span{font-size:11px;color:var(--text2)}
           </div>
         </div>
 
+        <div id="tagCounter" style="font-size:10px;color:#718096;text-align:right;padding:4px 8px;margin-bottom:4px">
+          已选标签: <span id="tagCountNum" style="font-weight:700">0</span>/10
+        </div>
+
         <!-- Dim 2: 核心卖点 -->
         <div class="dim-section">
           <div class="dim-label"><span class="dot" style="background:var(--orange)"></span> 2. 核心卖点 <small style="color:var(--text2)">(多选)</small></div>
@@ -649,7 +639,7 @@ header .actions span{font-size:11px;color:var(--text2)}
         </div>
 
         <!-- Dim 3: 用户痛点 -->
-        <div class="dim-section">
+        <div class="dim-section" style="display:none" id="dimPainPointSection">
           <div class="dim-label"><span class="dot" style="background:var(--danger)"></span> 3. 用户痛点 <small style="color:var(--text2)">(多选)</small></div>
           <div class="chip-group" id="dimPainPoint"></div>
         </div>
@@ -661,7 +651,7 @@ header .actions span{font-size:11px;color:var(--text2)}
         </div>
 
         <!-- Dim 5: 氛围风格 -->
-        <div class="dim-section">
+        <div class="dim-section" style="display:none" id="dimAtmosphereSection">
           <div class="dim-label"><span class="dot" style="background:var(--purple)"></span> 5. 氛围风格</div>
           <div class="chip-group" id="dimAtmosphere"></div>
         </div>
@@ -673,7 +663,7 @@ header .actions span{font-size:11px;color:var(--text2)}
         </div>
 
         <!-- Dim 7: 目标人群 -->
-        <div class="dim-section">
+        <div class="dim-section" style="display:none" id="dimTargetAudienceSection">
           <div class="dim-label"><span class="dot" style="background:var(--success)"></span> 7. 目标人群 <small style="color:var(--text2)">(多选)</small></div>
           <div class="chip-group" id="dimTargetAudience"></div>
         </div>
@@ -692,6 +682,34 @@ header .actions span{font-size:11px;color:var(--text2)}
           </div>
         </div>
       </div>
+
+        <!-- V11.5: 画面人物数量 -->
+        <div class="form-group" id="imagePeopleCountGroup" style="margin-top:6px;padding:6px 8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px">
+          <label>👥 画面人物数量</label>
+          <select id="imagePeopleCount" onchange="onImagePeopleCountChange()" style="width:100%;padding:6px 8px;background:#f5f3f0;border:1px solid var(--border);border-radius:6px;font-size:12px">
+            <option value="1">1人 - 单人聚焦展示</option>
+            <option value="2">2人 - 多人展示</option>
+            <option value="3">3人 - 多人展示</option>
+            <option value="4">4人 - 多人展示</option>
+          </select>
+        </div>
+        <div id="multiPeopleOptions" style="display:none;margin-top:4px;padding:6px 8px;background:#fefce8;border:1px solid #fef08a;border-radius:6px">
+          <label style="font-size:10px;font-weight:600;margin-bottom:4px;display:block">多人展示模式</label>
+          <div style="display:flex;flex-wrap:wrap;gap:4px">
+            <label style="font-size:10px;display:inline-flex;align-items:center;gap:2px;cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:10px">
+              <input type="checkbox" style="width:auto;margin:0" value="different_outfits" onchange="onMultiPeopleModeChange()"> 不同穿搭搭配
+            </label>
+            <label style="font-size:10px;display:inline-flex;align-items:center;gap:2px;cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:10px">
+              <input type="checkbox" style="width:auto;margin:0" value="different_bodies" onchange="onMultiPeopleModeChange()"> 不同身材展示
+            </label>
+            <label style="font-size:10px;display:inline-flex;align-items:center;gap:2px;cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:10px">
+              <input type="checkbox" style="width:auto;margin:0" value="different_colors" onchange="onMultiPeopleModeChange()"> 不同颜色展示
+            </label>
+            <label style="font-size:10px;display:inline-flex;align-items:center;gap:2px;cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:10px">
+              <input type="checkbox" style="width:auto;margin:0" value="different_ages" onchange="onMultiPeopleModeChange()"> 不同年龄段展示
+            </label>
+          </div>
+        </div>
 
       <!-- Selection Summary -->
       <div class="selection-summary" id="selectionSummary">
@@ -784,6 +802,8 @@ header .actions span{font-size:11px;color:var(--text2)}
               <option value="gpt-image-2-lite">Image2-低价版 (快速)</option>
               <option value="gpt-image-2" selected>官方稳定版 (推荐)</option>
               <option value="nano-banana-pro">Banana Pro (高质量)</option>
+              <option value="doubao-seedream-5-0-pro">杜宝-梦想-5-0-专业版</option>
+              <option value="doubao-seedream-5-0-lite">杜宝-梦想-5.0-精简版</option>
             </select>
           </div>
           <div class="form-group">
@@ -914,8 +934,8 @@ header .actions span{font-size:11px;color:var(--text2)}
       </select>
     </div>
     <div id="seedingDynamicForm" class="form-group"></div>
-    <div style="display:flex;gap:8px;margin-bottom:8px">
-      <div style="flex:1">
+    <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+      <div style="flex:1;min-width:120px">
         <label style="font-size:10px;font-weight:600">语气风格</label>
         <select id="seedingTone" style="width:100%;padding:6px 8px;background:#f5f3f0;border:1px solid var(--border);border-radius:6px;font-size:12px">
           <option value="cute">可爱俏皮</option>
@@ -926,7 +946,7 @@ header .actions span{font-size:11px;color:var(--text2)}
           <option value="rational">冷静理性</option>
         </select>
       </div>
-      <div style="flex:1">
+      <div style="flex:1;min-width:120px">
         <label style="font-size:10px;font-weight:600">输出语言</label>
         <select id="seedingLang" style="width:100%;padding:6px 8px;background:#f5f3f0;border:1px solid var(--border);border-radius:6px;font-size:12px">
           <option value="auto">跟随海报语言（自动）</option>
@@ -945,6 +965,30 @@ header .actions span{font-size:11px;color:var(--text2)}
           <option value="ro">Română</option><option value="cs">Čeština</option>
           <option value="hi">हिन्दी</option><option value="bn">বাংলা</option>
           <option value="uk">Українська</option>
+        </select>
+      </div>
+      <div style="flex:0.7;min-width:100px">
+        <label style="font-size:10px;font-weight:600">生成数量</label>
+        <select id="seedingCount" onchange="document.getElementById('seedingCustomCountGroup').style.display=this.value==='custom'?'block':'none'" style="width:100%;padding:6px 8px;background:#f5f3f0;border:1px solid var(--border);border-radius:6px;font-size:12px">
+          <option value="1">1条</option>
+          <option value="2">2条</option>
+          <option value="3">3条</option>
+          <option value="5">5条</option>
+          <option value="custom">自定义</option>
+        </select>
+      </div>
+      <div style="flex:0.5;min-width:80px;display:none" id="seedingCustomCountGroup">
+        <label style="font-size:10px;font-weight:600">数量</label>
+        <input type="number" id="seedingCustomCount" min="1" max="10" value="4" style="width:100%;padding:6px 8px;background:#f5f3f0;border:1px solid var(--border);border-radius:6px;font-size:12px">
+      </div>
+      <div style="flex:0.7;min-width:100px">
+        <label style="font-size:10px;font-weight:600">Emoji 浓度</label>
+        <select id="seedingEmoji" style="width:100%;padding:6px 8px;background:#f5f3f0;border:1px solid var(--border);border-radius:6px;font-size:12px">
+          <option value="auto">跟随语气</option>
+          <option value="none">无 Emoji</option>
+          <option value="low">少量 (1-2个)</option>
+          <option value="medium">适中 (3-5个)</option>
+          <option value="high">丰富 (6+个)</option>
         </select>
       </div>
     </div>
@@ -1101,50 +1145,33 @@ const HE_TEMPLATE_PROMPTS = {
 
 // ============ V10.2: 9 种折扣类型字段定义 ============
 const MAIN_PROMO_TYPE_FIELDS = {
-  'percent':[
-    {id:'percent',label:'百分比折扣',type:'select',options:['10% OFF','20% OFF','30% OFF','50% OFF','自定义'],placeholder:''},
-    {id:'customText',label:'自定义文本',type:'text',placeholder:'如:立省 30%',showIf:'percent==自定义'}
+  'discount':[
+    {id:'discountMode',label:'折扣模式',type:'select',options:['百分比折扣','立减金额']},
+    {id:'percent',label:'百分比',type:'select',options:['10%','20%','30%','40%','50%','60%','70%','80%','自定义'],showIf:'discountMode==百分比折扣'},
+    {id:'customPercent',label:'自定义百分比',type:'text',placeholder:'如:65',showIf:'percent==自定义'},
+    {id:'amount',label:'立减金额(USD)',type:'number',placeholder:'如:10',showIf:'discountMode==立减金额'}
   ],
-  'amount':[
-    {id:'amount',label:'立减金额',type:'number',unit:'USD',placeholder:'如:10'}
+  'buy_x_get_y':[
+    {id:'buyN',label:'买 N 件',type:'number',placeholder:'如:2'},
+    {id:'getM',label:'送 M 件',type:'number',placeholder:'如:1'}
   ],
-  'full_x_get_y':[
-    {id:'fullX',label:'满 X',type:'number',unit:'USD',placeholder:'如:100'},
-    {id:'getY',label:'享 Y 折 (%)',type:'number',placeholder:'如:80 (即8折)'},
-    {id:'stackable',label:'可叠加',type:'checkbox'}
+  'tiered_disc':[],
+  'gift':[
+    {id:'giftDesc',label:'赠品描述',type:'text',placeholder:'如:买即送精美收纳袋'}
   ],
-  'full_x_minus_y':[
-    {id:'fullX',label:'满 X',type:'number',unit:'USD',placeholder:'如:100'},
-    {id:'minusY',label:'减 Y',type:'number',unit:'USD',placeholder:'如:20'},
-    {id:'stackable',label:'可叠加',type:'checkbox'}
-  ],
-  'full_x_piece_y_z':[
-    {id:'fullX',label:'满 X 件',type:'number',placeholder:'如:2'},
-    {id:'pieceY',label:'第 Y 件',type:'number',placeholder:'如:2'},
-    {id:'zDiscount',label:'享 Z 折扣',type:'select',options:['5折','6折','7折','8折','半价','免费','自定义']},
-    {id:'customZ',label:'自定义 Z 文案',type:'text',placeholder:'如:买二送一',showIf:'zDiscount==自定义'}
-  ],
-  'piece_half':[
-    {id:'pieceY',label:'第 Y 件 (5/6/7/8折+自定义)',type:'select',options:['2','3','4','5','6','7','8折','自定义']},
-    {id:'zDiscount',label:'具体折扣',type:'select',options:['5折','6折','7折','8折','半价','自定义'],showIf:'pieceY==自定义'},
-    {id:'customText',label:'自定义文案',type:'text',placeholder:'如:第2件1元',showIf:'pieceY==自定义'}
-  ],
-  'buy_n_get_m':[
-    {id:'buyN',label:'买 N',type:'number',placeholder:'如:2'},
-    {id:'getM',label:'送 M',type:'number',placeholder:'如:1'}
-  ],
-  'flash_sale':[
-    {id:'price',label:'价格',type:'number',unit:'USD',placeholder:'如:19.99'}
+  'promo_code':[
+    {id:'code',label:'折扣码',type:'text',placeholder:'如:SAVE20'},
+    {id:'codeDesc',label:'折扣说明',type:'text',placeholder:'如:全场满$50可用'}
   ],
   'custom':[
-    {id:'text',label:'自定义文案',type:'text',placeholder:'如:今日特惠 立省50%'}
+    {id:'text',label:'自定义文案',type:'text',placeholder:'如:今日特惠 买二送一'}
   ]
 };
-const LEGACY_PROMO_TYPES = new Set(['buy_x_get_y','discount','buy_2nd_disc','tiered_disc','free_shipping','bundle','gift']);
-const NEW_PROMO_TYPES = new Set(['percent','amount','full_x_get_y','full_x_minus_y','full_x_piece_y_z','piece_half','buy_n_get_m','flash_sale','custom']);
+const PROMO_TYPES = new Set(['discount','buy_x_get_y','tiered_disc','gift','promo_code','custom']);
+const LEGACY_OLD_TYPES = new Set(['percent','amount','full_x_get_y','full_x_minus_y','full_x_piece_y_z','piece_half','buy_n_get_m','flash_sale','buy_2nd_disc','free_shipping','bundle']);
 
 // ============ V10.2: 促销 main state ============
-let mainPromoState = {type:'',percent:'30% OFF',customText:'',amount:0,fullX:0,getY:0,minusY:0,stackable:false,pieceY:0,zDiscount:'5折',customZ:'',buyN:0,getM:0,price:0,text:'',freeShipping:false};
+let mainPromoState = {type:'',discountMode:'百分比折扣',percent:'30%',customPercent:'',amount:0,buyN:0,getM:0,giftDesc:'',code:'',codeDesc:'',text:'',freeShipping:false};
 
 // 英文序数
 function ordinalEn(n){const s=['th','st','nd','rd'];const v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
@@ -1571,10 +1598,48 @@ let activePasteTarget = 'product'; // 粘贴目标由鼠标悬停 zone 决定，
 let qualityScore = null;
 let genRecords = JSON.parse(localStorage.getItem('poster_ai_records') || '[]');
 let selectedTags = {
-  category: '', clothingType: '', sellingPoints: [], painPoints: [],
-  scenes: [], atmosphere: '', brandTone: '',
-  targetAges: [], targetGenders: [], targetIdentities: [],
+  category: '', clothingType: '', sellingPoints: [], 
+  scenes: [],  brandTone: '',
+  
   clothingTemplates: [], personType: '', industryMode: 'normal_clothing', heTemplates: [], degradeLevel: 0
+
+function getTotalTagCount() {
+  var count = 0;
+  if (selectedTags.sellingPoints) count += selectedTags.sellingPoints.length;
+  if (selectedTags.scenes) count += selectedTags.scenes.length;
+  if (selectedTags.brandTone && selectedTags.brandTone.length > 0) count += 1;
+  if (selectedTags.personType && selectedTags.personType.length > 0) count += 1;
+  return count;
+}
+
+function updateTagCounter() {
+  var el = document.getElementById('tagCountNum');
+  if (el) {
+    var total = getTotalTagCount();
+    el.textContent = total;
+    el.style.color = total >= 10 ? '#e53e3e' : (total >= 7 ? '#ed8936' : '#718096');
+  }
+}
+
+
+var imagePeopleCount = 1;
+var multiPeopleModes = [];
+
+function onImagePeopleCountChange() {
+  imagePeopleCount = parseInt(document.getElementById('imagePeopleCount').value) || 1;
+  var multiDiv = document.getElementById('multiPeopleOptions');
+  if (multiDiv) multiDiv.style.display = imagePeopleCount > 1 ? 'block' : 'none';
+  updatePreview();
+}
+
+function onMultiPeopleModeChange() {
+  multiPeopleModes = [];
+  document.querySelectorAll('#multiPeopleOptions input[type=checkbox]:checked').forEach(function(cb) {
+    multiPeopleModes.push(cb.value);
+  });
+  updatePreview();
+}
+
 };
 let tagData = null;
 // V9 new state
@@ -1664,7 +1729,6 @@ function translateTagToPrompt(dimension, tagName) {
 }
 
 
-
 // V11.2 P0-5: Model Profile (Target Person Portrait)
 const MODEL_RACE_OPTIONS = [
   { value: 'asian_female', label: '亚洲女性', prompt: 'Asian female model' },
@@ -1701,7 +1765,7 @@ const MODEL_STYLE_OPTIONS = [
   { value: 'lifestyle', label: '生活自然感', prompt: 'natural lifestyle candid authentic feel' },
   { value: 'professional', label: '专业职业感', prompt: 'professional occupation uniform work-ready appearance' }
 ];
-let modelProfile = { race: '', body: '', age: '', style: '' };
+let modelProfile = { race: '', body: '', age: '' };
 
 function selectModelRace(val) {
   modelProfile.race = modelProfile.race === val ? '' : val;
@@ -1715,11 +1779,6 @@ function selectModelBody(val) {
 }
 function selectModelAge(val) {
   modelProfile.age = modelProfile.age === val ? '' : val;
-  renderModelProfileSection();
-  updatePreview(); updateAnalysis();
-}
-function selectModelStyle(val) {
-  modelProfile.style = modelProfile.style === val ? '' : val;
   renderModelProfileSection();
   updatePreview(); updateAnalysis();
 }
@@ -1746,12 +1805,6 @@ function renderModelProfileSection() {
     html += '<div class="chip chip-success' + (modelProfile.age===o.value?' active':'') + '" onclick="selectModelAge(\'' + o.value + '\')">' + o.label + '</div>';
   });
   html += '</div></div>';
-  // Style
-  html += '<div><div style="font-size:10px;color:var(--text2);margin-bottom:3px">✨ 外貌风格</div><div class="chip-group">';
-  MODEL_STYLE_OPTIONS.forEach(o => {
-    html += '<div class="chip' + (modelProfile.style===o.value?' active':'') + '" onclick="selectModelStyle(\'' + o.value + '\')">' + o.label + '</div>';
-  });
-  html += '</div></div>';
   el.innerHTML = html;
 }
 
@@ -1767,10 +1820,6 @@ function buildModelProfilePrompt() {
   }
   if (modelProfile.age) {
     const o = MODEL_AGE_OPTIONS.find(x => x.value === modelProfile.age);
-    if (o) parts.push(o.prompt);
-  }
-  if (modelProfile.style) {
-    const o = MODEL_STYLE_OPTIONS.find(x => x.value === modelProfile.style);
     if (o) parts.push(o.prompt);
   }
   if (parts.length === 0) return '';
@@ -1808,6 +1857,11 @@ function toggleTieredDiscount() {
   const panel = document.getElementById('tieredDiscountPanel');
   if (panel) panel.style.display = tieredDiscountConfig.enabled ? 'block' : 'none';
   updatePreview();
+}
+// Legacy compat: tieredDiscountToggle checkbox removed, now controlled by promoType selection
+function _legacyTieredToggleCompat() {
+  var tdToggle = document.getElementById('tieredDiscountToggle');
+  if (tdToggle) { tdToggle.checked = tieredDiscountConfig.enabled; }
 }
 
 function updateTieredDiscount(idx, field, value) {
@@ -1880,12 +1934,11 @@ let selectedCategoryTemplate = localStorage.getItem('poster_v11_selected_categor
 let categorySelectionsCache = {}; // Cache selections per category for restoring when switching back
 
 
-
 // V11.1 Fix #3: 搭配单品状态
 let pairingConfig = { category: '', style: '' };
-const PAIRING_CATEGORIES = ['不搭配', '上衣', '裤装', '裙装', '外套', '鞋', '包', '帽子', '围巾', '腰带', '眼镜', '首饰'];
+const PAIRING_CATEGORIES = ['不搭配', '上衣', '裤装', '裙装', '外套', '鞋', '包', '帽子', '围巾', '腰带', '眼镜', '首饰', '全套', '自定义'];
 const PAIRING_STYLES = ['不限风格', '同色系呼应', '撞色对比', '材质混搭', '风格统一', '休闲运动', '正式商务'];
-const PAIRING_CATEGORY_EN = { '上衣':'top','裤装':'pants','裙装':'skirt','外套':'jacket','鞋':'shoes','包':'bag','帽子':'hat','围巾':'scarf','腰带':'belt','眼镜':'glasses','首饰':'jewelry' };
+const PAIRING_CATEGORY_EN = { '上衣':'top','裤装':'pants','裙装':'skirt','外套':'jacket','鞋':'shoes','包':'bag','帽子':'hat','围巾':'scarf','腰带':'belt','眼镜':'glasses','首饰':'jewelry','全套':'complete outfit (top+bottom+shoes+accessories)','自定义':'custom pairing' };
 const PAIRING_STYLE_EN = { '同色系呼应':'tonal coordination','撞色对比':'contrast color pairing','材质混搭':'mixed texture styling','风格统一':'unified style','休闲运动':'casual sporty','正式商务':'formal business' };
 
 // ============ TAG MANAGEMENT ============
@@ -1935,7 +1988,7 @@ function renderAllDimensions() {
     applyPlaceholderTags(tpl); // This handles sellingPoint, scene, atmosphere with placeholders
     // brandTone and targetAudience use existing data
     renderBrandToneChips();
-    renderTargetAudienceChips();
+    
     renderPersonTypeOptions();
     // Hide pain point section for non-clothing
     const ppSection = document.querySelector('#dimPainPoint')?.closest('.dim-section');
@@ -1948,9 +2001,9 @@ function renderAllDimensions() {
     if (heGroup) heGroup.style.display = tpl.dimensions.includes('heTemplate') ? '' : 'none';
   } else {
     // Full render for clothing categories or legacy mode
-    renderCategoryChips(); renderSellingPointChips(); renderPainPointChips();
-    renderSceneChips(); renderAtmosphereChips(); renderModelProfileSection(); renderBrandToneChips();
-    renderTargetAudienceChips(); renderPersonTypeOptions(); updateClothingVisibility(); renderHETemplates();
+    renderCategoryChips(); renderSellingPointChips(); 
+    renderSceneChips(); renderModelProfileSection(); renderBrandToneChips();
+    renderPersonTypeOptions(); updateClothingVisibility(); renderHETemplates();
     
     // In legacy mode, show everything
     if (appMode === 'legacy') {
@@ -2161,8 +2214,8 @@ function resetDegrade() {
 
 // ============ TAG SELECTION HANDLERS ============
 function selectCategory(name) {
-  if (selectedTags.category === name) { selectedTags.category = ''; selectedTags.clothingType = ''; selectedTags.sellingPoints = []; selectedTags.painPoints = []; }
-  else { selectedTags.category = name; selectedTags.clothingType = ''; selectedTags.sellingPoints = []; selectedTags.painPoints = []; }
+  if (selectedTags.category === name) { selectedTags.category = ''; selectedTags.clothingType = ''; selectedTags.sellingPoints = []; }
+  else { selectedTags.category = name; selectedTags.clothingType = ''; selectedTags.sellingPoints = []; }
   autoDetectIndustryMode();
   renderAllDimensions(); updatePreview(); updateAnalysis();
 }
@@ -2170,7 +2223,7 @@ function selectClothingType(name) { selectedTags.clothingType = selectedTags.clo
 function toggleSellingPoint(name) {
   const idx = selectedTags.sellingPoints.indexOf(name);
   if (idx >= 0) selectedTags.sellingPoints.splice(idx, 1);
-  else { if (selectedTags.sellingPoints.length >= 5) selectedTags.sellingPoints.shift(); selectedTags.sellingPoints.push(name); }
+  else { if (getTotalTagCount() >= 10) { alert('\u6807\u7b7e\u603b\u6570\u5df2\u8fbe\u4e0a\u9650\uff0810\u4e2a\uff09\uff0c\u8bf7\u79fb\u9664\u90e8\u5206\u6807\u7b7e\u540e\u518d\u6dfb\u52a0'); return; } if (selectedTags.sellingPoints.length >= 5) selectedTags.sellingPoints.shift(); selectedTags.sellingPoints.push(name); }
   // V11.2 Fix: 在品类模板模式下，用 placeholder 重新渲染而不是从 tagData 渲染
   if (appMode === 'categoryTemplate' && selectedCategoryTemplate) {
     const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
@@ -2181,18 +2234,12 @@ function toggleSellingPoint(name) {
   }
   updatePreview(); updateAnalysis();
 }
-function togglePainPoint(name) {
-  const idx = selectedTags.painPoints.indexOf(name);
-  if (idx >= 0) selectedTags.painPoints.splice(idx, 1);
-  else { if (selectedTags.painPoints.length >= 3) selectedTags.painPoints.shift(); selectedTags.painPoints.push(name); }
-  renderPainPointChips(); updatePreview(); updateAnalysis();
-}
 function selectScene(name) { toggleScene(name); }
 function toggleScene(name) {
   if (!selectedTags.scenes) selectedTags.scenes = [];
   const idx = selectedTags.scenes.indexOf(name);
   if (idx >= 0) selectedTags.scenes.splice(idx, 1);
-  else { if (selectedTags.scenes.length >= 3) selectedTags.scenes.shift(); selectedTags.scenes.push(name); }
+  else { if (getTotalTagCount() >= 10) { alert('\u6807\u7b7e\u603b\u6570\u5df2\u8fbe\u4e0a\u9650\uff0810\u4e2a\uff09\uff0c\u8bf7\u79fb\u9664\u90e8\u5206\u6807\u7b7e\u540e\u518d\u6dfb\u52a0'); return; } if (selectedTags.scenes.length >= 3) selectedTags.scenes.shift(); selectedTags.scenes.push(name); }
   // V11.2 Fix
   if (appMode === 'categoryTemplate' && selectedCategoryTemplate) {
     const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
@@ -2209,14 +2256,15 @@ function selectAtmosphere(name) {
   if (appMode === 'categoryTemplate' && selectedCategoryTemplate) {
     const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
     if (tpl && tpl.placeholderTags) { applyPlaceholderTags(tpl); }
-    else { renderAtmosphereChips(); }
+    else { }
   } else {
-    renderAtmosphereChips();
+    
   }
   updatePreview(); updateAnalysis();
 }
 function selectBrandTone(name) {
   selectedTags.brandTone = selectedTags.brandTone === name ? '' : name;
+  if (selectedTags.brandTone && getTotalTagCount() > 10) { alert('\u6807\u7b7e\u603b\u6570\u5df2\u8fbe\u4e0a\u9650\uff0810\u4e2a\uff09\uff0c\u8bf7\u79fb\u9664\u90e8\u5206\u6807\u7b7e\u540e\u518d\u6dfb\u52a0'); selectedTags.brandTone = ''; renderBrandToneChips(); updateTagCounter(); return; }
   // 视觉风格直接同步到 promoConfig.colorScheme
   promoConfig.colorScheme = selectedTags.brandTone || '强销售转化';
   renderBrandToneChips(); updatePreview(); updateAnalysis();
@@ -2225,19 +2273,19 @@ function toggleTargetAge(name) {
   if (!selectedTags.targetAges) selectedTags.targetAges = [];
   const idx = selectedTags.targetAges.indexOf(name);
   if (idx >= 0) selectedTags.targetAges.splice(idx, 1); else selectedTags.targetAges.push(name);
-  renderTargetAudienceChips(); updatePreview(); updateAnalysis();
+  updatePreview(); updateAnalysis();
 }
 function toggleTargetGender(name) {
   if (!selectedTags.targetGenders) selectedTags.targetGenders = [];
   const idx = selectedTags.targetGenders.indexOf(name);
   if (idx >= 0) selectedTags.targetGenders.splice(idx, 1); else selectedTags.targetGenders.push(name);
-  renderTargetAudienceChips(); updatePreview(); updateAnalysis();
+  updatePreview(); updateAnalysis();
 }
 function toggleTargetIdentity(name) {
   if (!selectedTags.targetIdentities) selectedTags.targetIdentities = [];
   const idx = selectedTags.targetIdentities.indexOf(name);
   if (idx >= 0) selectedTags.targetIdentities.splice(idx, 1); else selectedTags.targetIdentities.push(name);
-  renderTargetAudienceChips(); updatePreview(); updateAnalysis();
+  updatePreview(); updateAnalysis();
 }
 // V9: Person Type
 function selectPersonType(id) {
@@ -2297,12 +2345,11 @@ function updateSelectionSummary() {
   const parts = [];
   if (selectedTags.category) parts.push(`<b>品类:</b> ${selectedTags.category}${selectedTags.clothingType?' / '+selectedTags.clothingType:''}`);
   if (selectedTags.sellingPoints.length) parts.push(`<b>卖点:</b> ${selectedTags.sellingPoints.join('、')}`);
-  if (selectedTags.painPoints.length) parts.push(`<b>痛点:</b> ${selectedTags.painPoints.join('、')}`);
+  // painPoints removed
   if (selectedTags.scenes && selectedTags.scenes.length) parts.push(`<b>场景:</b> ${selectedTags.scenes.join('、')}`);
-  if (selectedTags.atmosphere) parts.push(`<b>氛围:</b> ${selectedTags.atmosphere}`);
+  // atmosphere removed
   if (selectedTags.brandTone) parts.push(`<b>调性:</b> ${selectedTags.brandTone}`);
-  const aud = [...(selectedTags.targetAges||[]), ...(selectedTags.targetGenders||[]), ...(selectedTags.targetIdentities||[])];
-  if (aud.length) parts.push(`<b>人群:</b> ${aud.join(' ')}`);
+  // target audience removed
   if (selectedIndustryMode && selectedIndustryMode !== 'normal_clothing') {
     const mode = INDUSTRY_MODES[selectedIndustryMode];
     if (mode) parts.push(`<b>行业:</b> ${mode.icon} ${mode.name}`);
@@ -2338,7 +2385,6 @@ function onLanguageChange() {
   document.getElementById('langHint').textContent = '↳ 当前语言: ' + (langInfo ? langInfo.flag + ' ' + langInfo.name : 'English');
   updatePreview(); updateAnalysis();
 }
-
 
 
 // ============ V11.0: CATEGORY PAGE & DYNAMIC DIMENSION RENDERING ============
@@ -2534,27 +2580,12 @@ function applyPlaceholderTags(tpl) {
     }
   }
   
-  // Render atmosphere from placeholder
-  if (ph.atmosphere) {
-    const el = document.getElementById('dimAtmosphere');
-    if (el) {
-      el.innerHTML = ph.atmosphere.map(a => {
-        const active = selectedTags.atmosphere === a ? ' active' : '';
-        return '<div class="chip chip-purple' + active + '" onclick="selectAtmosphere(\'' + a.replace(/'/g, "\'") + '\')">' + a + '</div>';
-      }).join('');
-    }
-  }
-  
   // Brand tone - use existing if available
   if (!ph.brandTone) {
     // Use existing brandTone data
     renderBrandToneChips();
   }
   
-  // Target audience - use existing if available
-  if (!ph.targetAudience) {
-    renderTargetAudienceChips();
-  }
 }
 
 // Switch app mode between categoryTemplate and legacy
@@ -2588,6 +2619,9 @@ function switchAppMode(mode) {
       showCategoryPage();
     }
   }
+  // Update header mode button text
+  var headerBtn = document.getElementById('headerModeBtn');
+  if (headerBtn) headerBtn.textContent = mode === 'legacy' ? '切到品类模板' : '切到传统模式';
 }
 
 // Show all dimension sections (for legacy mode)
@@ -2632,14 +2666,31 @@ function showMainApp() {
 function onPairingChange() {
   pairingConfig.category = document.getElementById('pairingCategory')?.value || '';
   pairingConfig.style = document.getElementById('pairingStyle')?.value || '';
+  var customInput = document.getElementById('pairingCustomCategory');
+  if (customInput) {
+    customInput.style.display = (pairingConfig.category === '自定义') ? 'block' : 'none';
+  }
   updatePreview();
 }
 function buildPairingPromptLines() {
   if (!pairingConfig.category || pairingConfig.category === '不搭配') return [];
   const lines = [];
-  const catEn = PAIRING_CATEGORY_EN[pairingConfig.category] || pairingConfig.category;
-  lines.push('\n=== PAIRING ITEM ===');
-  lines.push('Add a pairing item: ' + catEn);
+  if (pairingConfig.category === '全套') {
+    lines.push('\n=== PAIRING ITEM ===');
+    lines.push('Pairing: complete outfit coordination - top + bottom + shoes + accessories, full coordinated look');
+  } else if (pairingConfig.category === '自定义') {
+    var customCat = (document.getElementById('pairingCustomCategory') || {}).value || '';
+    if (customCat) {
+      lines.push('\n=== PAIRING ITEM ===');
+      lines.push('Pairing: ' + customCat);
+    } else {
+      return [];
+    }
+  } else {
+    const catEn = PAIRING_CATEGORY_EN[pairingConfig.category] || pairingConfig.category;
+    lines.push('\n=== PAIRING ITEM ===');
+    lines.push('Add a pairing item: ' + catEn);
+  }
   if (pairingConfig.style && pairingConfig.style !== '不限风格') {
     const styleEn = PAIRING_STYLE_EN[pairingConfig.style] || pairingConfig.style;
     lines.push('Pairing style: ' + styleEn);
@@ -2656,6 +2707,7 @@ let _translateCache = {};
 let _lastTranslateKey = '';
 async function translateUserInputsIfNeeded() {
   const fields = [
+    { id: 'productName', key: 'productName' },
     { id: 'extraNote', key: 'extra' },
     { id: 'productFeatures', key: 'features' }
   ];
@@ -2675,6 +2727,7 @@ async function translateUserInputsIfNeeded() {
     return _translateCache;
   }
   const parts = [];
+  if (values.productName) parts.push('Product name: ' + values.productName);
   if (values.extra) parts.push('Additional notes: ' + values.extra);
   if (values.features) parts.push('Product features: ' + values.features);
   if (parts.length === 0) return values;
@@ -2721,6 +2774,7 @@ ${parts.join('\n')}`;
     if (translated) {
       const result = Object.assign({}, values);
       const translatedLines = translated.split('\n').filter(function(l) { return l.trim(); });
+      if (values.productName && translatedLines.length > 0) result.productName = translatedLines[0];
       if (values.extra && translatedLines.length > 0) result.extra = translatedLines[0];
       if (values.features && translatedLines.length > 1) result.features = translatedLines.slice(1).join(' ');
       _translateCache = result;
@@ -2779,7 +2833,7 @@ function buildAutoPrompt() {
     const promoLines2 = buildPromoPromptLines();
     if (promoLines2.length) prompt += '\n' + promoLines2.join('\n');
     if (productImages.length > 0) prompt += `\nREFERENCE PRODUCT: Use as product identity reference only. Create a fresh creative composition, do NOT copy-paste the product image.`;
-    prompt += `\nPEOPLE LIMIT: Maximum 1-2 people. All faces must be photorealistic and not distorted. For small images prefer zero people.`;
+    prompt += `\nPEOPLE LIMIT: Maximum ${imagePeopleCount} people. All faces must be photorealistic and not distorted. For small images prefer zero people.`;
     prompt += `\nLANGUAGE: All text MUST be in ${getTargetLangName()} only. NO Chinese/Japanese/Korean characters anywhere in the image.`;
     return stripCJK(cleanupResidualPunct(filterBannedWords(prompt)));
   }
@@ -2803,7 +2857,7 @@ function buildAutoPrompt() {
       if (selectedTags.sellingPoints.length) lines2.push('Key selling points: ' + selectedTags.sellingPoints.map(s=>translateTagToPrompt('sellingPoint',s)).join(', '));
       if (selectedTags.scenes && selectedTags.scenes.length) lines2.push('Usage scene: ' + selectedTags.scenes.map(s=>translateTagToPrompt('scene',s)).join(' + '));
       const styleParts2 = [];
-      if (selectedTags.atmosphere) styleParts2.push(selectedTags.atmosphere.split('-')[0]);
+      // atmosphere removed
       if (selectedTags.brandTone) styleParts2.push(selectedTags.brandTone);
       if (styleParts2.length) lines2.push('Visual style: ' + styleParts2.join(', '));
       const audience2 = buildAudienceText();
@@ -2818,7 +2872,7 @@ function buildAutoPrompt() {
       
       // People & face quality
       lines2.push('\nPEOPLE & FACE QUALITY (CRITICAL):');
-      lines2.push('- Maximum 1-2 people in the image.');
+      lines2.push('- ' + (imagePeopleCount > 1 ? imagePeopleCount + ' people in the image' : 'Maximum 1 person in the image') + '.');
       lines2.push('- ALL faces MUST be photorealistic, natural skin texture.');
       lines2.push('- NO distorted faces, NO blurry faces, NO plastic/waxy skin.');
       lines2.push('- For small images prefer ZERO people. Use product-only compositions.');
@@ -2866,7 +2920,7 @@ function buildAutoPrompt() {
   }
   if (selectedTags.scenes && selectedTags.scenes.length) lines.push(`Usage scene: ${selectedTags.scenes.map(s=>translateTagToPrompt('scene',s)).join(' + ')}`);
   const styleParts = [];
-  if (selectedTags.atmosphere) styleParts.push(translateTagToPrompt('atmosphere', selectedTags.atmosphere) || selectedTags.atmosphere.split('-')[0]);
+  // atmosphere removed
   if (selectedTags.brandTone) styleParts.push(translateTagToPrompt('brandTone', selectedTags.brandTone) || selectedTags.brandTone);
   if (styleParts.length) lines.push(`Visual style: ${styleParts.join(', ')}`);
   const audience = buildAudienceText();
@@ -2884,8 +2938,21 @@ function buildAutoPrompt() {
 
   // V9: Person type (with high-exposure override)
   if (isHE) {
-    // High-exposure: force professional model, natural pose
-    lines.push('Model type: adult professional e-commerce model, natural standing pose, product display posture');
+    var modelDesc = 'adult professional e-commerce model';
+    if (modelProfile.race) {
+      var raceOpt = MODEL_RACE_OPTIONS.find(function(x) { return x.value === modelProfile.race; });
+      if (raceOpt) modelDesc += ', ' + raceOpt.prompt;
+    }
+    if (modelProfile.body) {
+      var bodyOpt = MODEL_BODY_OPTIONS.find(function(x) { return x.value === modelProfile.body; });
+      if (bodyOpt) modelDesc += ', ' + bodyOpt.prompt;
+    }
+    if (modelProfile.age) {
+      var ageOpt = MODEL_AGE_OPTIONS.find(function(x) { return x.value === modelProfile.age; });
+      if (ageOpt) modelDesc += ', ' + ageOpt.prompt;
+    }
+    modelDesc += ', natural standing pose, product display posture';
+    lines.push('Model type: ' + modelDesc);
     lines.push('IMPORTANT: ambiguous poses, sensual poses, emphasizing body parts are NOT allowed. Product-focused commercial photography only.');
   } else if (selectedPersonType) {
     const pt = PERSON_TYPES.find(p=>p.id===selectedPersonType);
@@ -2920,19 +2987,19 @@ function buildAutoPrompt() {
       if (heScene) lines.push(`Recommended scene: ${heScene}`);
       else if (selectedTags.scenes && selectedTags.scenes.length) lines.push(`Scene: ${selectedTags.scenes.map(s=>translateTagToPrompt('scene',s)).join(' + ')}`);
       // Person pose constraint
-      lines.push('Pose: natural standing, front-facing display, slight movement only. 1 person maximum. No complex poses.');
+      lines.push('Pose: natural standing, front-facing display, slight movement only. Maximum ' + imagePeopleCount + ' person(s). No complex poses.');
       lines.push(SAFE_PROMPT_SUFFIX);
     } else {
       // Standard clothing prompt
-      const genders = (selectedTags.targetGenders && selectedTags.targetGenders.length) ? selectedTags.targetGenders : ['女性'];
+      const genderText = 'female';
       const genderText = genders.includes('女性') ? TL('gender','女性') : genders.includes('男性') ? TL('gender','男性') : 'model';
-      const ages = (selectedTags.targetAges && selectedTags.targetAges.length) ? selectedTags.targetAges.map(a=>TL('age',a)).join(', ') : '';
+      const ages = '';
       const sceneText = (selectedTags.scenes||[]).map(s=>translateTagToPrompt('scene',s)).join(' + ') || 'daily life';
       const sellText = selectedTags.sellingPoints.slice(0,2).map(s=>TL('sellingPoints',s)).join(' and ');
       const clothingEn = TL('clothingType', selectedTags.clothingType) || subject;
       lines.push(`\nScene: ${ages} ${genderText} in ${sceneText} setting wearing ${clothingEn}, showcasing ${sellText||'the fit and quality'}, realistic commercial photography style`);
     }
-  } else if (audience && selectedTags.scenes && selectedTags.scenes.length) {
+  } else if (selectedTags.scenes && selectedTags.scenes.length) {
     const sceneEn = selectedTags.scenes.map(s=>translateTagToPrompt('scene',s)).join(' + ');
     lines.push(`\nScene: ${audience} using ${subject} in ${sceneEn} setting, showing ${TL('sellingPoints',selectedTags.sellingPoints[0])||'product benefits'}`);
   }
@@ -2954,7 +3021,7 @@ function buildAutoPrompt() {
   }
   
   // V9.3: 氛围风格不延续 — 如果氛围不是强促销型，削弱促销元素
-  const isPromoAtmosphere = selectedTags.atmosphere === '销售型-强促销感';
+  const isPromoAtmosphere = false;
   
   // V11.1 Fix #3: 搭配单品信息
   const pairingLines = buildPairingPromptLines();
@@ -2975,16 +3042,33 @@ function buildAutoPrompt() {
   }
   
   // V9.3: 亲子装/儿童检查
-  const hasChildAge = (selectedTags.targetAges||[]).some(a => a.includes('18') || a === '全年龄段');
+  const hasChildAge = false;
   if (ct === '亲子装' || (ct && ct.includes('亲子'))) {
     lines.push(`\nFAMILY/CHILDREN CONSTRAINT: Only generate child models if the product actually has children\'s sizes.`);
     lines.push(`If no children\'s sizes: use adult models only, single adult or adult couple. NO children.`);
   }
   
   // V9.3 Fix #7: 人数限制和面部质量（大幅强化）
-  const genderCount = (selectedTags.targetGenders||[]).length || 0;
+  const genderCount = 0;
   const isMultiGender = genderCount >= 2;
-  const maxPeople = isMultiGender ? 2 : 1;
+  const maxPeople = imagePeopleCount || 1;
+  // V11.5: Multi-person display
+  if (imagePeopleCount > 1) {
+    lines.push('PEOPLE LIMIT: Show EXACTLY ' + imagePeopleCount + ' people in the image.');
+    if (multiPeopleModes.length > 0) {
+      var modeDesc = {
+        'different_outfits': 'each person wearing different outfit combinations',
+        'different_bodies': 'each person with different body types (slim, athletic, curvy, plus-size)',
+        'different_colors': 'each person wearing different color variants of the product',
+        'different_ages': 'each person from different age groups (20s, 30s, 40s, 50s)'
+      };
+      var modeTexts = multiPeopleModes.map(function(m) { return modeDesc[m] || m; });
+      lines.push('MULTI-PERSON DISPLAY: ' + modeTexts.join('; ') + '.');
+      lines.push('Each person should be clearly distinguishable and shown in a natural arrangement.');
+    }
+  } else {
+    lines.push('PEOPLE LIMIT: 1 person only. Single subject focus.');
+  }
   lines.push(`\nPEOPLE & FACE QUALITY (CRITICAL):`);
   lines.push(`- Maximum ${maxPeople} person(s) in the image. More people = exponentially worse face quality.`);
   if (maxPeople === 1) {
@@ -3065,17 +3149,14 @@ function buildAutoPrompt() {
 }
 
 function buildAudienceText() {
-  const parts = [];
-  if (selectedTags.targetAges && selectedTags.targetAges.length) parts.push(selectedTags.targetAges.map(a=>TL('age',a)).join(', '));
-  if (selectedTags.targetGenders && selectedTags.targetGenders.length) parts.push(selectedTags.targetGenders.map(g=>TL('gender',g)).join(', '));
-  if (selectedTags.targetIdentities && selectedTags.targetIdentities.length) parts.push(selectedTags.targetIdentities.map(i=>TL('identity',i)).join(', '));
-  return parts.join(', ');
+  return '';
 }
 
 // ============ PREVIEW ============
 function updatePreview() {
   document.getElementById('promptPreview').textContent = buildAutoPrompt();
   updateSelectionSummary();
+  updateTagCounter();
 }
 
 // ============ AI ANALYSIS PANEL ============
@@ -3089,11 +3170,11 @@ function updateAnalysis() {
     {name:'行业', filled:!!selectedIndustryMode&&selectedIndustryMode!=='normal_clothing'},
     {name:'品类', filled:!!selectedTags.category},
     {name:'卖点', filled:selectedTags.sellingPoints.length>0},
-    {name:'痛点', filled:selectedTags.painPoints.length>0},
+    // pain point removed
     {name:'场景', filled:(selectedTags.scenes||[]).length > 0},
-    {name:'氛围', filled:!!selectedTags.atmosphere},
+    // atmosphere removed
     {name:'调性', filled:!!selectedTags.brandTone},
-    {name:'人群', filled:!!(selectedTags.targetAges&&selectedTags.targetAges.length)||!!(selectedTags.targetGenders&&selectedTags.targetGenders.length)||!!(selectedTags.targetIdentities&&selectedTags.targetIdentities.length)},
+    // audience removed
     {name:'人物', filled:!!selectedPersonType}
   ];
   const filledCount = dims.filter(d=>d.filled).length;
@@ -3456,9 +3537,13 @@ async function doGenerate() {
     let translatedInputs = null;
     try { translatedInputs = await translateUserInputsIfNeeded(); } catch(e) { console.warn('Translation skipped:', e); }
     // 将翻译结果注入到对应字段（临时替换，生成完恢复）
+    const origName = document.getElementById('productName')?.value || '';
     const origExtra = document.getElementById('extraNote')?.value || '';
     const origFeatures = document.getElementById('productFeatures')?.value || '';
     if (translatedInputs) {
+      if (translatedInputs.productName && translatedInputs.productName !== origName) {
+        document.getElementById('productName').value = translatedInputs.productName;
+      }
       if (translatedInputs.extra && translatedInputs.extra !== origExtra) {
         document.getElementById('extraNote').value = translatedInputs.extra;
       }
@@ -3469,6 +3554,7 @@ async function doGenerate() {
     const prompt = buildAutoPrompt();
     // 恢复原始输入（用户看到的是中文，翻译只用于prompt）
     if (translatedInputs) {
+      document.getElementById('productName').value = origName;
       document.getElementById('extraNote').value = origExtra;
       document.getElementById('productFeatures').value = origFeatures;
     }
@@ -3694,14 +3780,9 @@ function saveV9Record(name, prompt, model, size, quality, count, imageUrls) {
       category: selectedTags.category,
       clothingType: selectedTags.clothingType,
       sellingPoints: [...selectedTags.sellingPoints],
-      painPoints: [...selectedTags.painPoints],
       scene: selectedTags.scenes ? selectedTags.scenes[0] : '',
       scenes: [...(selectedTags.scenes||[])],
-      atmosphere: selectedTags.atmosphere,
       brandTone: selectedTags.brandTone,
-      targetAges: [...(selectedTags.targetAges||[])],
-      targetGenders: [...(selectedTags.targetGenders||[])],
-      targetIdentities: [...(selectedTags.targetIdentities||[])],
       clothingTemplates: [...(selectedTags.clothingTemplates||[])],
       personType: selectedPersonType,
       industryMode: selectedIndustryMode,
@@ -3722,6 +3803,8 @@ function saveV9Record(name, prompt, model, size, quality, count, imageUrls) {
       pairingConfig: Object.assign({}, pairingConfig),
       overlayPromos: JSON.parse(JSON.stringify(overlayPromos)),
       modelProfile: Object.assign({}, modelProfile),
+      imagePeopleCount: imagePeopleCount,
+      multiPeopleModes: [...multiPeopleModes],
       tieredDiscountConfig: JSON.parse(JSON.stringify(tieredDiscountConfig))
     },
     tagWeights: Object.assign({}, tagWeights),
@@ -3801,19 +3884,32 @@ function loadRecordToEditor(id) {
   selectedTags.category = rec.tags.category || '';
   selectedTags.clothingType = rec.tags.clothingType || '';
   selectedTags.sellingPoints = rec.tags.sellingPoints ? [...rec.tags.sellingPoints] : [];
-  selectedTags.painPoints = rec.tags.painPoints ? [...rec.tags.painPoints] : [];
+  // painPoints removed (compat)
   selectedTags.scenes = rec.tags.scenes || (rec.tags.scene ? [rec.tags.scene] : []);
-  selectedTags.atmosphere = rec.tags.atmosphere || '';
+  // atmosphere removed (compat)
   selectedTags.brandTone = rec.tags.brandTone || '';
-  selectedTags.targetAges = rec.tags.targetAges ? [...rec.tags.targetAges] : [];
-  selectedTags.targetGenders = rec.tags.targetGenders ? [...rec.tags.targetGenders] : [];
-  selectedTags.targetIdentities = rec.tags.targetIdentities ? [...rec.tags.targetIdentities] : [];
+  // target audience removed (compat)
+  // target audience removed (compat)
+  // target audience removed (compat)
   selectedTags.clothingTemplates = rec.tags.clothingTemplates ? [...rec.tags.clothingTemplates] : [];
   selectedPersonType = rec.tags.personType || '';
   selectedTags.personType = selectedPersonType;
-  // V10.2: 恢复促销配置 (新 9 种 + 老 7 种兼容)
+  // V10.2: 恢复促销配置 (兼容旧类型迁移到custom)
   if (rec.tags.promoConfig) {
     promoConfig = Object.assign({}, rec.tags.promoConfig);
+    // Migrate old promo types to 'custom'
+    var _oldTypes = ['percent','amount','full_x_get_y','full_x_minus_y','full_x_piece_y_z','piece_half','buy_n_get_m','flash_sale','buy_2nd_disc','free_shipping','bundle'];
+    if (_oldTypes.indexOf(promoConfig.type) >= 0) {
+      var _oldText = '';
+      if (promoConfig.fields && promoConfig.fields.text) _oldText = promoConfig.fields.text;
+      else if (promoConfig.fields && promoConfig.fields.customText) _oldText = promoConfig.fields.customText;
+      else if (promoConfig.discountValue) _oldText = promoConfig.discountValue;
+      else _oldText = promoConfig.type;
+      promoConfig.type = 'custom';
+      mainPromoState.text = _oldText;
+      if (!promoConfig.fields) promoConfig.fields = {};
+      promoConfig.fields.text = _oldText;
+    }
     if (promoConfig.fields && typeof promoConfig.fields === 'object') {
       Object.keys(promoConfig.fields).forEach(k => {
         if (k in mainPromoState && k !== 'type' && k !== 'freeShipping') {
@@ -3823,7 +3919,6 @@ function loadRecordToEditor(id) {
     }
     const pt = document.getElementById('promoType');
     if (pt) { pt.value = promoConfig.type; onPromoChange(); }
-
 
 
   }
@@ -3845,13 +3940,28 @@ function loadRecordToEditor(id) {
     if (tdToggle) tdToggle.checked = tieredDiscountConfig.enabled;
     const tdPanel = document.getElementById('tieredDiscountPanel');
     if (tdPanel) tdPanel.style.display = tieredDiscountConfig.enabled ? 'block' : 'none';
+    const tdSection = document.getElementById('tieredDiscountSection');
+    if (tdSection) tdSection.style.display = tieredDiscountConfig.enabled ? 'block' : 'none';
     renderTieredDiscountPanel();
   }
   // V11.2 P0-5: Restore model profile
+  // V11.5: Restore image people count
+  if (rec.tags.imagePeopleCount) {
+    imagePeopleCount = rec.tags.imagePeopleCount;
+    var ipcEl = document.getElementById('imagePeopleCount');
+    if (ipcEl) ipcEl.value = imagePeopleCount;
+  }
+  if (rec.tags.multiPeopleModes && Array.isArray(rec.tags.multiPeopleModes)) {
+    multiPeopleModes = [...rec.tags.multiPeopleModes];
+    var mpCheckboxes = document.querySelectorAll('#multiPeopleOptions input[type=checkbox]');
+    mpCheckboxes.forEach(function(cb) { cb.checked = multiPeopleModes.includes(cb.value); });
+    var mpDiv = document.getElementById('multiPeopleOptions');
+    if (mpDiv && imagePeopleCount > 1) mpDiv.style.display = 'block';
+  }
   if (rec.tags.modelProfile) {
-    modelProfile = Object.assign({}, rec.tags.modelProfile);
+    modelProfile = { race: rec.tags.modelProfile.race || '', body: rec.tags.modelProfile.body || '', age: rec.tags.modelProfile.age || '' };
   } else {
-    modelProfile = { race: '', body: '', age: '', style: '' };
+    modelProfile = { race: '', body: '', age: '' };
   }
   if (rec.tags.overlayPromos && Array.isArray(rec.tags.overlayPromos)) {
     overlayPromos = JSON.parse(JSON.stringify(rec.tags.overlayPromos));
@@ -3863,9 +3973,14 @@ function loadRecordToEditor(id) {
     selectedCategoryTemplate = rec.categoryTemplate;
     localStorage.setItem('poster_v11_selected_category', selectedCategoryTemplate);
   }
-  // V11.2-P1: 恢复促销类型
+  // V11.2-P1: 恢复促销类型 (兼容旧类型)
   if (rec.promoType) {
-    promoConfig.type = rec.promoType;
+    var _oldTypes2 = ['percent','amount','full_x_get_y','full_x_minus_y','full_x_piece_y_z','piece_half','buy_n_get_m','flash_sale','buy_2nd_disc','free_shipping','bundle'];
+    if (_oldTypes2.indexOf(rec.promoType) >= 0) {
+      promoConfig.type = 'custom';
+    } else {
+      promoConfig.type = rec.promoType;
+    }
   }
   if (rec.country) document.getElementById('genLanguage').value = rec.country;
   renderAllDimensions(); updatePreview(); updateAnalysis();
@@ -4222,74 +4337,61 @@ function onPromoChange() {
   promoConfig.type = document.getElementById('promoType').value;
   promoConfig.freeShipping = document.getElementById('freeShippingToggle')?.checked || false;
   promoConfig.colorScheme = selectedTags.brandTone || promoConfig.colorScheme || '强销售转化';
-  promoConfig.isLegacy = LEGACY_PROMO_TYPES.has(promoConfig.type);
-  if (promoConfig.isLegacy) {
-    promoConfig.buyCount = parseInt(document.getElementById('buyCount')?.value) || 3;
-    promoConfig.getCount = parseInt(document.getElementById('getCount')?.value) || 2;
-    promoConfig.discountValue = document.getElementById('discountValue')?.value || '';
-    promoConfig.giftDesc = document.getElementById('giftDesc')?.value || '';
-    promoConfig.fields = null;
+  promoConfig.isLegacy = false;
+  
+  // Hide all legacy form groups
+  document.getElementById('buyCountGroup').style.display = 'none';
+  document.getElementById('getCountGroup').style.display = 'none';
+  document.getElementById('discountValueGroup').style.display = 'none';
+  document.getElementById('giftDescGroup').style.display = 'none';
+  
+  // Hide tiered discount panel by default
+  var tdSection = document.getElementById('tieredDiscountSection');
+  var tdPanel = document.getElementById('tieredDiscountPanel');
+  if (tdSection) tdSection.style.display = 'none';
+  if (tdPanel) tdPanel.style.display = 'none';
+  
+  if (!promoConfig.type) {
+    // No promo selected
     mainPromoState.type = '';
-    document.getElementById('buyCountGroup').style.display = (promoConfig.type==='buy_x_get_y'||promoConfig.type==='buy_2nd_disc'||promoConfig.type==='tiered_disc') ? 'block' : 'none';
-    document.getElementById('getCountGroup').style.display = (promoConfig.type==='buy_x_get_y'||promoConfig.type==='tiered_disc') ? 'block' : 'none';
-    document.getElementById('discountValueGroup').style.display = (promoConfig.type==='discount'||promoConfig.type==='buy_2nd_disc'||promoConfig.type==='tiered_disc') ? 'block' : 'none';
-    document.getElementById('giftDescGroup').style.display = promoConfig.type === 'gift' ? 'block' : 'none';
-    const dyn = document.getElementById('mainPromoFields');
+    promoConfig.fields = null;
+    var dyn = document.getElementById('mainPromoFields');
     if (dyn) { dyn.style.display = 'none'; dyn.innerHTML = ''; }
-    const buyLabel = document.querySelector('#buyCountGroup label');
-    const getLabel = document.querySelector('#getCountGroup label');
-    const discLabel = document.querySelector('#discountValueGroup label');
-    if (buyLabel) { if (promoConfig.type==='buy_2nd_disc') buyLabel.textContent='购买件数'; else if (promoConfig.type==='tiered_disc') buyLabel.textContent='起始件数'; else buyLabel.textContent='购买数量'; }
-    if (getLabel) { if (promoConfig.type==='tiered_disc') getLabel.textContent='折扣档数'; else getLabel.textContent='赠送数量'; }
-    if (discLabel) { if (promoConfig.type==='buy_2nd_disc') discLabel.innerHTML='第二件折扣 <small>(如: 50% OFF, 5折)</small>'; else if (promoConfig.type==='tiered_disc') discLabel.innerHTML='各级折扣 <small>(如: 15%/40%/60% OFF)</small>'; else discLabel.innerHTML='折扣力度 <small>(如: 50% OFF, 7折, 半价)</small>'; }
-  } else if (NEW_PROMO_TYPES.has(promoConfig.type)) {
-    document.getElementById('buyCountGroup').style.display = 'none';
-    document.getElementById('getCountGroup').style.display = 'none';
-    document.getElementById('discountValueGroup').style.display = 'none';
-    document.getElementById('giftDescGroup').style.display = 'none';
+  } else if (PROMO_TYPES.has(promoConfig.type)) {
+    // All 6 types use mainPromoFields rendering
     mainPromoState.type = promoConfig.type;
     mainPromoState.freeShipping = promoConfig.freeShipping;
     if (promoConfig.fields && typeof promoConfig.fields === 'object') {
-      Object.keys(promoConfig.fields).forEach(k => {
+      Object.keys(promoConfig.fields).forEach(function(k) {
         if (k === 'type' || k === 'freeShipping') return;
         if (k in mainPromoState) mainPromoState[k] = promoConfig.fields[k];
       });
     }
-    const dyn = document.getElementById('mainPromoFields');
+    var dyn = document.getElementById('mainPromoFields');
     if (dyn) dyn.style.display = 'block';
-    renderMainPromoFields();
+    
+    if (promoConfig.type === 'tiered_disc') {
+      // tiered_disc uses empty fields + independent panel
+      if (dyn) dyn.innerHTML = '';
+      tieredDiscountConfig.enabled = true;
+      if (tdSection) tdSection.style.display = 'block';
+      if (tdPanel) tdPanel.style.display = 'block';
+      renderTieredDiscountPanel();
+    } else {
+      renderMainPromoFields();
+    }
   } else {
+    // Unknown type
     promoConfig.fields = null;
     mainPromoState.type = '';
-    document.getElementById('buyCountGroup').style.display = 'none';
-    document.getElementById('getCountGroup').style.display = 'none';
-    document.getElementById('discountValueGroup').style.display = 'none';
-    document.getElementById('giftDescGroup').style.display = 'none';
-    const dyn = document.getElementById('mainPromoFields');
+    var dyn = document.getElementById('mainPromoFields');
     if (dyn) { dyn.style.display = 'none'; dyn.innerHTML = ''; }
   }
-  // 动态标签
-  const buyLabel = document.querySelector('#buyCountGroup label');
-  const getLabel = document.querySelector('#getCountGroup label');
-  const discLabel = document.querySelector('#discountValueGroup label');
-  if (buyLabel) {
-    if (promoConfig.type === 'buy_2nd_disc') buyLabel.textContent = '购买件数';
-    else if (promoConfig.type === 'tiered_disc') buyLabel.textContent = '起始件数';
-    else buyLabel.textContent = '购买数量';
-  }
-  if (getLabel) {
-    if (promoConfig.type === 'tiered_disc') getLabel.textContent = '折扣档数';
-    else getLabel.textContent = '赠送数量';
-  }
-  if (discLabel) {
-    if (promoConfig.type === 'buy_2nd_disc') discLabel.innerHTML = '第二件折扣 <small style="color:var(--text2)">(如: 50% OFF, 5折)</small>';
-    else if (promoConfig.type === 'tiered_disc') discLabel.innerHTML = '各级折扣 <small style="color:var(--text2)">(如: 15%/40%/60% OFF)</small>';
-    else discLabel.innerHTML = '折扣力度 <small style="color:var(--text2)">(如: 50% OFF, 7折, 半价)</small>';
-  }
+  
   // Update preview
-  const previewGroup = document.getElementById('promoPreviewGroup');
-  const text = document.getElementById('promoText');
-  const promoStr = buildPromoDisplayString();
+  var previewGroup = document.getElementById('promoPreviewGroup');
+  var text = document.getElementById('promoText');
+  var promoStr = buildPromoDisplayString();
   if (promoStr) {
     previewGroup.style.display = 'block';
     text.textContent = promoStr;
@@ -4351,7 +4453,6 @@ function onMainPromoChange(fieldId, value) {
   mainPromoState.freeShipping = document.getElementById('freeShippingToggle')?.checked || false;
   promoConfig.freeShipping = mainPromoState.freeShipping;
   promoConfig.fields = Object.assign({}, mainPromoState);
-  promoConfig.isLegacy = false;
   applyMainPromoShowIf();
   const previewGroup = document.getElementById('promoPreviewGroup');
   const text = document.getElementById('promoText');
@@ -4363,109 +4464,64 @@ function onMainPromoChange(fieldId, value) {
 
 function buildPromoDisplayString() {
   if (!promoConfig.type) return '';
-  const lang = getDetectedLanguage();
-  const isEn = lang.startsWith('en');
-  // V10.2 新 9 种
-  if (NEW_PROMO_TYPES.has(promoConfig.type)) {
-    let main = '';
-    switch (promoConfig.type) {
-      case 'percent': {
-        let txt = mainPromoState.percent || '30% OFF';
-        if (mainPromoState.percent === '自定义' && mainPromoState.customText) txt = mainPromoState.customText;
-        main = txt; break;
-      }
-      case 'amount': {
-        const amt = mainPromoState.amount || 0;
-        main = isEn ? 'Save $'+amt : '立省 $'+amt;
-        break;
-      }
-      case 'full_x_get_y': {
-        const x = mainPromoState.fullX || 0; const y = mainPromoState.getY || 0;
-        const offPct = 100 - y;
-        main = isEn ? 'Spend $'+x+' get '+offPct+'% off'+(mainPromoState.stackable ? ' (Stackable)' : '') : '满 $'+x+' 享 '+y+' 折'+(mainPromoState.stackable ? ' (可叠加)' : '');
-        break;
-      }
-      case 'full_x_minus_y': {
-        const x = mainPromoState.fullX || 0; const y = mainPromoState.minusY || 0;
-        main = isEn ? 'Spend $'+x+' save $'+y+(mainPromoState.stackable ? ' (Stackable)' : '') : '满 $'+x+' 减 $'+y+(mainPromoState.stackable ? ' (可叠加)' : '');
-        break;
-      }
-      case 'full_x_piece_y_z': {
-        const x = mainPromoState.fullX || 0; const y = mainPromoState.pieceY || 0;
-        let z = mainPromoState.zDiscount || '5折';
-        if (z === '自定义' && mainPromoState.customZ) z = mainPromoState.customZ;
-        const total = x + y;
-        main = isEn ? 'Buy '+total+', '+y+'th item '+z+' off' : '买 '+total+' 件 第 '+y+' 件 '+z;
-        break;
-      }
-      case 'piece_half': {
-        // V10.2: piece_half 扩展 5/6/7/8 折 + 自定义
-        const py = mainPromoState.pieceY || '2';
-        if (py === '自定义') {
-          const z = mainPromoState.zDiscount || '5折';
-          if (z === '自定义' && mainPromoState.customText) main = mainPromoState.customText;
-          else main = z;
+  var lang = getDetectedLanguage();
+  var isEn = lang.startsWith('en');
+  var main = '';
+  switch (promoConfig.type) {
+    case 'discount': {
+      if (mainPromoState.discountMode === '立减金额') {
+        var amt = mainPromoState.amount || 0;
+        main = isEn ? 'Save $' + amt : '立减 $' + amt;
+      } else {
+        var pct = mainPromoState.percent || '30%';
+        if (pct === '自定义' && mainPromoState.customPercent) {
+          main = mainPromoState.customPercent + '% OFF';
         } else {
-          const yNum = parseInt(py) || 2;
-          main = isEn ? ordinalEn(yNum) + ' item 20% off (5折)' : '第 '+py+' 件 5折';
+          main = pct + ' OFF';
         }
-        break;
       }
-      case 'buy_n_get_m': {
-        const n = mainPromoState.buyN || 0; const m = mainPromoState.getM || 0;
-        main = isEn ? 'Buy '+n+' Get '+m+' Free' : '买 '+n+' 送 '+m;
-        break;
-      }
-      case 'flash_sale': {
-        const p = mainPromoState.price || 0;
-        main = isEn ? 'Flash Sale $'+p : '限时特价 $'+p;
-        break;
-      }
-      case 'custom': {
-        // P0-2: 只显示 customText 单段
-        main = mainPromoState.text || (isEn ? 'Special Offer' : '特别优惠');
-        break;
-      }
+      break;
     }
-    if (!main) return '';
-    if (promoConfig.freeShipping) main += isEn ? ' + FREE SHIPPING' : ' + 免运费';
-    return main;
+    case 'buy_x_get_y': {
+      var n = mainPromoState.buyN || 0;
+      var m = mainPromoState.getM || 0;
+      main = isEn ? 'Buy ' + n + ' Get ' + m + ' Free' : '买' + n + '送' + m;
+      break;
+    }
+    case 'tiered_disc': {
+      if (tieredDiscountConfig.enabled && tieredDiscountConfig.tiers.length > 0) {
+        var tdLines = tieredDiscountConfig.tiers.map(function(t) { return '满' + t.count + '件 ' + t.discount; });
+        main = '梯级折扣: ' + tdLines.join(', ');
+      } else {
+        main = '梯级折扣';
+      }
+      break;
+    }
+    case 'gift': {
+      var gd = mainPromoState.giftDesc || (isEn ? 'Free Gift' : '送赠品');
+      main = gd;
+      break;
+    }
+    case 'promo_code': {
+      var code = mainPromoState.code || '';
+      var codeDesc = mainPromoState.codeDesc || '';
+      if (code) {
+        main = '折扣码: ' + code + (codeDesc ? ' - ' + codeDesc : '');
+      } else {
+        main = '折扣码';
+      }
+      break;
+    }
+    case 'custom': {
+      main = mainPromoState.text || (isEn ? 'Special Offer' : '特别优惠');
+      break;
+    }
   }
-  // 老 7 种兼容
-  if (promoConfig.type === 'buy_x_get_y') {
-    const total = promoConfig.buyCount + promoConfig.getCount;
-    return isEn
-      ? `Buy ${promoConfig.buyCount} Get ${promoConfig.getCount} FREE (Show ${total} units total)${promoConfig.freeShipping ? ' + FREE SHIPPING' : ''}`
-      : `买${promoConfig.buyCount}送${promoConfig.getCount}（共${total}包）${promoConfig.freeShipping ? ' + 免运费' : ''}`;
-  }
-  if (promoConfig.type === 'discount') {
-    const dv = promoConfig.discountValue || (isEn ? 'Special Discount' : '特价优惠');
-    return `${dv}${promoConfig.freeShipping ? (isEn ? ' + FREE SHIPPING' : ' + 免运费') : ''}`;
-  }
-  if (promoConfig.type === 'buy_2nd_disc') {
-    const dv = promoConfig.discountValue || (isEn ? '50% OFF' : '5折');
-    return isEn
-      ? `Buy 1 Get 2nd at ${dv}${promoConfig.freeShipping ? ' + FREE SHIPPING' : ''}`
-      : `买1件第2件${dv}${promoConfig.freeShipping ? ' + 免运费' : ''}`;
-  }
-  if (promoConfig.type === 'tiered_disc') {
-    const dv = promoConfig.discountValue || (isEn ? '15%/40%/60% OFF' : '15%/40%/60%折扣');
-    return isEn
-      ? `Tiered Discount: ${dv}${promoConfig.freeShipping ? ' + FREE SHIPPING' : ''}`
-      : `梯级折扣: ${dv}${promoConfig.freeShipping ? ' + 免运费' : ''}`;
-  }
-  if (promoConfig.type === 'free_shipping') {
-    return isEn ? 'FREE SHIPPING ONLY' : '免运费';
-  }
-  if (promoConfig.type === 'bundle') {
-    return isEn ? 'Bundle Deal' + (promoConfig.freeShipping ? ' + FREE SHIPPING' : '') : '组合套装' + (promoConfig.freeShipping ? ' + 免运费' : '');
-  }
-  if (promoConfig.type === 'gift') {
-    const gd = promoConfig.giftDesc || (isEn ? 'Free Gift' : '送赠品');
-    return `${gd}${promoConfig.freeShipping ? (isEn ? ' + FREE SHIPPING' : ' + 免运费') : ''}`;
-  }
-  return '';
+  if (!main) return '';
+  if (promoConfig.freeShipping) main += isEn ? ' + FREE SHIPPING' : ' + 免运费';
+  return main;
 }
+
 
 // V11.1 Fix #2: 叠加促销渲染和处理
 function renderOverlayPromoCheckboxes() {
@@ -4550,145 +4606,100 @@ function buildOverlayPromoPromptLines() {
 
 function buildPromoPromptLines() {
   if (!promoConfig.type) return [];
-  const lang = getDetectedLanguage();
-  const isEn = lang.startsWith('en');
-  const lines = [];
-  const promoStr = buildPromoDisplayString();
+  var lang = getDetectedLanguage();
+  var isEn = lang.startsWith('en');
+  var lines = [];
+  var promoStr = buildPromoDisplayString();
   if (!promoStr) return [];
-  // P0-2 修复: custom 只显示 customText 单段
+  
+  // custom type: show exact text
   if (promoConfig.type === 'custom') {
-    const txt = mainPromoState.text || promoStr;
+    var txt = mainPromoState.text || promoStr;
     lines.push('\n=== CUSTOM PROMOTION BADGE ===');
-    lines.push('Show this EXACT text as a single prominent badge: "'+txt+'"');
+    lines.push('Show this EXACT text as a single prominent badge: "' + txt + '"');
     lines.push('Treat the custom text exactly as written; do not paraphrase or translate.');
     lines.push('=== END CUSTOM PROMOTION ===\n');
     return lines;
   }
-  // V11.2: 折扣展示根据配色方案自适应
+  
+  // General promotion element
   lines.push('\n=== PROMOTION ELEMENT ===');
-  lines.push('Promotion: "'+promoStr+'"');
-  const colorScheme = PROMO_COLOR_SCHEMES.find(s => s.key === (selectedTags.brandTone || promoConfig.colorScheme || '强销售转化')) || PROMO_COLOR_SCHEMES[0];
-  // V11.2 P0-2: AI auto-adaptive discount visual (no fixed color binding)
+  lines.push('Promotion: "' + promoStr + '"');
+  var colorScheme = PROMO_COLOR_SCHEMES.find(function(s) { return s.key === (selectedTags.brandTone || promoConfig.colorScheme || '强销售转化'); }) || PROMO_COLOR_SCHEMES[0];
   lines.push('STYLE: The promotion badge/text should automatically harmonize with the poster\'s overall color palette and mood.');
   lines.push('INTEGRATION: Do NOT use a contrasting color block unless it naturally fits. Prefer subtle typography, semi-transparent overlays, or tonal matching.');
   lines.push('The discount should feel designed INTO the poster, not pasted ON top of it.');
   if (colorScheme && colorScheme.promptDesc) {
     lines.push('PREFERENCE HINT: ' + colorScheme.promptDesc + ' (use as soft guidance only, not mandatory)');
   }
-  // V11.1 Fix #4: 文字准确性约束
   lines.push('\nTEXT ACCURACY (CRITICAL): Text on poster must reproduce characters exactly as specified — no missing, no altered digits, no broken glyphs.');
   
-  if (promoConfig.type === 'buy_x_get_y') {
-    const total = promoConfig.buyCount + promoConfig.getCount;
-    lines.push(`\nPRODUCT QUANTITY (DOUBLE-CHECK):`);
-    lines.push(`- Buy ${promoConfig.buyCount} + Get ${promoConfig.getCount} FREE = MUST show EXACTLY ${total} product units`);
-    lines.push(`- CRITICAL: Show ${total} units total. Do NOT show only ${promoConfig.getCount} or only ${promoConfig.buyCount}. Count is ${total}.`);
-    lines.push(`- Layout: grid or fan arrangement, NO overlapping. Each unit distinct and fully visible.`);
-    lines.push(`- Label free items clearly with a "FREE" tag to distinguish from paid items.`);
-  }
-  if (promoConfig.type === 'buy_2nd_disc') {
-    const dv = promoConfig.discountValue || '50% OFF';
-    lines.push(`\nLAYOUT: Show 2 product units side by side. The 2nd unit has a "${dv}" badge. Do NOT show only one.`);
-    lines.push(`Highlight the 2nd item with a prominent "${dv}" sticker, making the saving obvious.`);
-  }
-  if (promoConfig.type === 'tiered_disc') {
-    const dv = promoConfig.discountValue || '15%/40%/60% OFF';
-    lines.push(`\nTIERED DISPLAY: Show 3-4 product units in a row, each with progressively larger discount badges:`);
-    lines.push(`- 1st unit: smallest discount, 2nd: medium, 3rd: largest discount (${dv})`);
-    lines.push(`- Each tier clearly labeled. Make the escalating savings visually obvious.`);
-  }
-  // V10.2 新 9 种专项 prompt
-  if (NEW_PROMO_TYPES.has(promoConfig.type)) {
-    lines.push('\nPROMOTION TYPE-SPECIFIC INSTRUCTIONS:');
-    switch (promoConfig.type) {
-      case 'percent': {
-        const txt = (mainPromoState.percent==='自定义' && mainPromoState.customText) ? mainPromoState.customText : (mainPromoState.percent||'30% OFF');
-        lines.push('- Show "'+txt+'" badge at the top of the image, in the most prominent position.');
+  // Type-specific instructions
+  switch (promoConfig.type) {
+    case 'discount': {
+      if (mainPromoState.discountMode === '立减金额') {
+        var amt = mainPromoState.amount || 0;
+        lines.push('- Show a "Save $' + amt + '" badge prominently at the top.');
+        lines.push('- Emphasize the dollar amount ' + amt + ' in large bold text.');
+      } else {
+        var pct = mainPromoState.percent || '30%';
+        var displayPct = (pct === '自定义' && mainPromoState.customPercent) ? mainPromoState.customPercent + '% OFF' : pct + ' OFF';
+        lines.push('- Show "' + displayPct + '" badge at the top of the image, in the most prominent position.');
         lines.push('- The discount percentage text must be the largest text element in the image.');
-        break;
       }
-      case 'amount': {
-        const amt = mainPromoState.amount || 0;
-        lines.push('- Show a "Save $'+amt+'" badge prominently at the top.');
-        lines.push('- Emphasize the dollar amount '+amt+' in large bold text.');
-        break;
+      break;
+    }
+    case 'buy_x_get_y': {
+      var n = mainPromoState.buyN || 0;
+      var m = mainPromoState.getM || 0;
+      var total = n + m;
+      lines.push('\nPRODUCT QUANTITY (DOUBLE-CHECK):');
+      lines.push('- Buy ' + n + ' + Get ' + m + ' FREE = MUST show EXACTLY ' + total + ' product units');
+      lines.push('- CRITICAL: Show ' + total + ' units total. Do NOT show only ' + m + ' and only ' + n + '. Count is ' + total + '.');
+      lines.push('- Layout: grid or fan arrangement, NO overlapping. Each unit distinct and fully visible.');
+      lines.push('- Label free items clearly with a "FREE" tag to distinguish from paid items.');
+      break;
+    }
+    case 'tiered_disc': {
+      if (tieredDiscountConfig.enabled && tieredDiscountConfig.tiers.length > 0) {
+        lines.push('\nTIERED DISPLAY: Show product units with progressively larger discount badges:');
+        tieredDiscountConfig.tiers.forEach(function(t) {
+          lines.push('- Buy ' + t.count + ' items: ' + t.discount);
+        });
+        lines.push('- Each tier clearly labeled. Make the escalating savings visually obvious.');
       }
-      case 'full_x_get_y': {
-        const x = mainPromoState.fullX || 0; const y = mainPromoState.getY || 0;
-        const offPct = 100 - y;
-        lines.push('- Show a "Spend $'+x+' Get '+offPct+'% OFF" tier discount badge at the top.');
-        if (mainPromoState.stackable) lines.push('- Add a small "(Stackable)" tag near the main discount.');
-        break;
-      }
-      case 'full_x_minus_y': {
-        const x = mainPromoState.fullX || 0; const y = mainPromoState.minusY || 0;
-        lines.push('- Show a "Spend $'+x+' Save $'+y+'" tier discount badge at the top.');
-        if (mainPromoState.stackable) lines.push('- Add a small "(Stackable)" tag near the main discount.');
-        break;
-      }
-      case 'full_x_piece_y_z': {
-        const x = mainPromoState.fullX || 0; const y = mainPromoState.pieceY || 0;
-        const total = x + y; let z = mainPromoState.zDiscount || '5折';
-        if (z==='自定义' && mainPromoState.customZ) z = mainPromoState.customZ;
-        lines.push('- Show a "Buy '+total+' items, '+y+'th item '+z+' off" badge at the top.');
-        lines.push('- Total units in image: '+total+' (clearly label the discounted item with "'+z+'" tag).');
-        break;
-      }
-      case 'piece_half': {
-        const py = mainPromoState.pieceY || '2';
-        let disp;
-        if (py === '自定义') {
-          const z = mainPromoState.zDiscount || '5折';
-          disp = (z==='自定义' && mainPromoState.customText) ? mainPromoState.customText : z;
-        } else {
-          const yNum = parseInt(py)||2;
-          disp = ordinalEn(yNum) + ' item 20% off (5折)';
-        }
-        const yNum2 = parseInt(py) || 2;
-        lines.push('- Show a "'+disp+'" badge at the top.');
-        lines.push('- Image must show at least '+yNum2+' product units, with that item visually marked.');
-        break;
-      }
-      case 'buy_n_get_m': {
-        const n = mainPromoState.buyN || 0; const m = mainPromoState.getM || 0; const total = n + m;
-        lines.push('- Show a "Buy '+n+' Get '+m+' Free" badge prominently at the top.');
-        lines.push('- PRODUCT QUANTITY: EXACTLY '+total+' product units in image. Do NOT show only '+n+' or only '+m+'.');
-        lines.push('- Label the free '+m+' items with "FREE" or "GIFT" tags.');
-        break;
-      }
-      case 'flash_sale': {
-        const p = mainPromoState.price || 0;
-        lines.push('- Show a "Flash Sale $'+p+'" badge with countdown/urgency styling at the top.');
-        lines.push('- Use ' + colorScheme.promptDesc.split(',')[0] + ' color for the badge.');
-        break;
-      }
+      break;
+    }
+    case 'gift': {
+      var gd = mainPromoState.giftDesc || 'Free Gift';
+      lines.push('- Show a "Free Gift" badge with description: "' + gd + '"');
+      lines.push('- Display the gift item attractively near the main product.');
+      break;
+    }
+    case 'promo_code': {
+      var code = mainPromoState.code || '';
+      var codeDesc = mainPromoState.codeDesc || '';
+      lines.push('- Show promo code "' + code + '" prominently on the poster.');
+      if (codeDesc) lines.push('- Include description: "' + codeDesc + '"');
+      lines.push('- Style the code in a dashed border or code-like box for visual distinction.');
+      break;
     }
   }
   
-  // V9.3: 折扣不重复 — 只在prompt里说一次
-  lines.push(`\nDISCOUNT DISPLAY RULES:`);
-  lines.push(`- Show the promotion EXACTLY ONCE in the image. Do NOT repeat the discount text in multiple places.`);
-  lines.push(`- One prominent badge/banner in the top section is sufficient. Do not add duplicate discount labels.`);
+  // Discount display rules
+  lines.push('\nDISCOUNT DISPLAY RULES:');
+  lines.push('- Show the promotion EXACTLY ONCE in the image. Do NOT repeat the discount text in multiple places.');
+  lines.push('- One prominent badge/banner in the top section is sufficient. Do not add duplicate discount labels.');
   
-  if (promoConfig.freeShipping || promoConfig.type === 'free_shipping') {
-    lines.push(`\nFREE SHIPPING: Include ONE "FREE SHIPPING" badge near the promotion area.`);
+  if (promoConfig.freeShipping) {
+    lines.push('\nFREE SHIPPING: Include ONE "FREE SHIPPING" badge near the promotion area.');
   } else {
-    lines.push(`\nFREE SHIPPING: This promotion does NOT include free shipping. Do NOT show any free shipping text.`);
+    lines.push('\nFREE SHIPPING: This promotion does NOT include free shipping. Do NOT show any free shipping text.');
   }
   
-  // V9.3: 布局多样性 — 不要每一张图看起来都一样
-  lines.push(`\nCOMPOSITION VARIETY:`);
-  lines.push(`- Create a visually interesting layout. Do NOT produce a flat, plain, or boring image.`);
-  lines.push(`- Use dynamic angles, creative product arrangement, lifestyle elements, or decorative accents.`);
-  lines.push(`- The image should feel premium like a professional e-commerce ad, not a template.`);
+  lines.push('\nCOMPOSITION VARIETY:');
+  lines.push('- Vary the layout, angle, and composition across multiple generations.');
   
-  // V11.1 Fix #2: 叠加促销注入
-  const overlayLines = buildOverlayPromoPromptLines();
-  if (overlayLines.length) lines.push(...overlayLines);
-  // V11.2 P0-6: 阶梯优惠注入
-  const tieredLines = buildTieredDiscountPromptLines();
-  if (tieredLines.length) lines.push(tieredLines.join('\n'));
-  lines.push('=== END PROMOTION ZONE ===\n');
   return lines;
 }
 
@@ -4892,16 +4903,16 @@ function addCategory() { const i=document.getElementById('addCatInput'); const n
 function deleteCategory(idx) { const n=tagData.category[idx].name; if(!confirm(`删除品类"${n}"?`))return; tagData.category.splice(idx,1); delete tagData.sellingPoint[n]; delete tagData.painPoint[n]; if(selectedTags.category===n){selectedTags.category='';selectedTags.sellingPoints=[];selectedTags.painPoints=[];} saveTags(); renderTagManagement(); renderAllDimensions(); updatePreview(); }
 function addSellingPoint(cat) { const i=document.getElementById('addSp_'+cat); const v=i.value.trim(); if(!v)return; const p=v.split('>'); const g=p[0].trim(); const t=p[1]?p[1].trim():g; if(!tagData.sellingPoint[cat])tagData.sellingPoint[cat]={}; if(!tagData.sellingPoint[cat][g])tagData.sellingPoint[cat][g]=[]; tagData.sellingPoint[cat][g].push(t); saveTags(); renderTagManagement(); renderSellingPointChips(); i.value=''; }
 function deleteSellingPoint(cat,group,idx) { tagData.sellingPoint[cat][group].splice(idx,1); if(!tagData.sellingPoint[cat][group].length)delete tagData.sellingPoint[cat][group]; saveTags(); renderTagManagement(); renderSellingPointChips(); }
-function addPainPoint(cat) { const i=document.getElementById('addPp_'+cat); const v=i.value.trim(); if(!v)return; const p=v.split('>'); const g=p[0].trim(); const t=p[1]?p[1].trim():g; if(!tagData.painPoint[cat])tagData.painPoint[cat]={}; if(!tagData.painPoint[cat][g])tagData.painPoint[cat][g]=[]; tagData.painPoint[cat][g].push(t); saveTags(); renderTagManagement(); renderPainPointChips(); i.value=''; }
-function deletePainPoint(cat,group,idx) { tagData.painPoint[cat][group].splice(idx,1); if(!tagData.painPoint[cat][group].length)delete tagData.painPoint[cat][group]; saveTags(); renderTagManagement(); renderPainPointChips(); }
+function addPainPoint(cat) { const i=document.getElementById('addPp_'+cat); const v=i.value.trim(); if(!v)return; const p=v.split('>'); const g=p[0].trim(); const t=p[1]?p[1].trim():g; if(!tagData.painPoint[cat])tagData.painPoint[cat]={}; if(!tagData.painPoint[cat][g])tagData.painPoint[cat][g]=[]; tagData.painPoint[cat][g].push(t); saveTags(); renderTagManagement(); i.value=''; }
+function deletePainPoint(cat,group,idx) { tagData.painPoint[cat][group].splice(idx,1); if(!tagData.painPoint[cat][group].length)delete tagData.painPoint[cat][group]; saveTags(); renderTagManagement(); }
 function addScene() { const i=document.getElementById('addSceneInput'); const v=i.value.trim(); if(!v)return; tagData.scene.push(v); saveTags(); renderTagManagement(); renderSceneChips(); i.value=''; }
 function deleteScene(idx) { tagData.scene.splice(idx,1); saveTags(); renderTagManagement(); renderSceneChips(); }
-function addAtmosphere() { const i=document.getElementById('addAtmoInput'); const v=i.value.trim(); if(!v)return; tagData.atmosphere.push(v); saveTags(); renderTagManagement(); renderAtmosphereChips(); i.value=''; }
-function deleteAtmosphere(idx) { tagData.atmosphere.splice(idx,1); saveTags(); renderTagManagement(); renderAtmosphereChips(); }
+function addAtmosphere() { const i=document.getElementById('addAtmoInput'); const v=i.value.trim(); if(!v)return; tagData.atmosphere.push(v); saveTags(); renderTagManagement(); i.value=''; }
+function deleteAtmosphere(idx) { tagData.atmosphere.splice(idx,1); saveTags(); renderTagManagement(); }
 function addBrandTone() { const i=document.getElementById('addBtInput'); const v=i.value.trim(); if(!v)return; tagData.brandTone.push(v); saveTags(); renderTagManagement(); renderBrandToneChips(); i.value=''; }
 function deleteBrandTone(idx) { tagData.brandTone.splice(idx,1); saveTags(); renderTagManagement(); renderBrandToneChips(); }
-function addAudience(dim) { const i=document.getElementById('addAud_'+dim); const v=i.value.trim(); if(!v)return; tagData.targetAudience[dim].push(v); saveTags(); renderTagManagement(); renderTargetAudienceChips(); i.value=''; }
-function deleteAudience(dim,idx) { tagData.targetAudience[dim].splice(idx,1); saveTags(); renderTagManagement(); renderTargetAudienceChips(); }
+function addAudience(dim) { const i=document.getElementById('addAud_'+dim); const v=i.value.trim(); if(!v)return; tagData.targetAudience[dim].push(v); saveTags(); renderTagManagement(); i.value=''; }
+function deleteAudience(dim,idx) { tagData.targetAudience[dim].splice(idx,1); saveTags(); renderTagManagement(); }
 function addClothingType() { const i=document.getElementById('addCtInput'); const v=i.value.trim(); if(!v)return; tagData.clothingType.push(v); saveTags(); renderTagManagement(); renderClothingTypeChips(); i.value=''; }
 function deleteClothingType(idx) { tagData.clothingType.splice(idx,1); saveTags(); renderTagManagement(); renderClothingTypeChips(); }
 function resetTags() { if(!confirm('恢复默认标签？自定义标签将丢失。'))return; tagData=JSON.parse(JSON.stringify(DEFAULT_TAGS)); saveTags(); renderTagManagement(); renderAllDimensions(); updatePreview(); setStatus('标签已恢复默认','success'); }
@@ -4923,7 +4934,6 @@ function init() {
   if (typeof onPromoChange === 'function') onPromoChange();
 
 
-  
   // V11.0: Category Template Mode initialization
   renderCategoryPage();
   if (appMode === 'categoryTemplate') {
@@ -5240,11 +5250,26 @@ function copyAllSeedingCopy() {
 }
 
 async function generateSeedingCopyV2() {
+  try {
   var type = document.getElementById('seedingType').value;
   var config = SEEDING_TYPES[type];
   if (!config) { alert('请选择类型'); return; }
   var tone = document.getElementById('seedingTone').value;
   var langSelect = document.getElementById('seedingLang').value;
+  
+  // Get copy count
+  var countVal = document.getElementById('seedingCount').value;
+  var copyCount = countVal === 'custom' ? (parseInt(document.getElementById('seedingCustomCount').value) || 1) : parseInt(countVal);
+  if (copyCount < 1) copyCount = 1;
+  if (copyCount > 10) copyCount = 10;
+  
+  // Get emoji level
+  var emojiLevel = document.getElementById('seedingEmoji').value;
+  var emojiInstruction = '';
+  if (emojiLevel === 'none') emojiInstruction = '\n- 禁止使用任何emoji或表情符号';
+  else if (emojiLevel === 'low') emojiInstruction = '\n- 全文使用1-2个emoji';
+  else if (emojiLevel === 'medium') emojiInstruction = '\n- 全文使用3-5个emoji';
+  else if (emojiLevel === 'high') emojiInstruction = '\n- 全文使用6个以上emoji，丰富活泼';
 
   // 必填校验
   for (var fi = 0; fi < config.dynamicFields.length; fi++) {
@@ -5292,12 +5317,25 @@ async function generateSeedingCopyV2() {
 
   // 构建 prompt
   var systemPrompt = config.systemPrompt(ctx);
+  // Append emoji instruction
+  if (emojiInstruction) systemPrompt += emojiInstruction;
   var userPrompt = '产品名称: ' + ctx.productName + '\n';
   if (ctx.sellingPoints.length) userPrompt += '核心卖点: ' + ctx.sellingPoints.join(', ') + '\n';
   if (ctx.painPoints.length) userPrompt += '用户痛点: ' + ctx.painPoints.join(', ') + '\n';
   if (ctx.scenes.length) userPrompt += '使用场景: ' + ctx.scenes.join(', ') + '\n';
   if (ctx.promoInfo) userPrompt += '当前促销: ' + ctx.promoInfo + '\n';
-  userPrompt += '\n请按以下格式输出：\n\n【主文案】\n（一段' + ctx.langName + '文案）\n\n【评论区文案1】\n（简短评论）\n\n【评论区文案2】\n（简短评论）\n\n【评论区文案3】\n（简短评论）';
+  // Build format hint based on copy count
+  var formatHint = '\n\n请按以下格式输出：\n';
+  if (copyCount === 1) {
+    formatHint += '\n【主文案】\n（一段' + ctx.langName + '文案）\n\n【评论区文案1】\n（简短评论）\n\n【评论区文案2】\n（简短评论）\n\n【评论区文案3】\n（简短评论）';
+  } else {
+    formatHint += '\n';
+    for (var ci = 1; ci <= copyCount; ci++) {
+      formatHint += '【主文案' + ci + '】\n（一段独立的' + ctx.langName + '文案）\n\n';
+    }
+    formatHint += '【评论区文案1】\n（简短评论）\n\n【评论区文案2】\n（简短评论）\n\n【评论区文案3】\n（简短评论）';
+  }
+  userPrompt += formatHint;
 
   // UI 状态
   var btn = document.getElementById('genCopyBtn');
@@ -5315,7 +5353,7 @@ async function generateSeedingCopyV2() {
     var result = await callDeepSeek([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt }
-    ], { temperature: 0.8, max_tokens: 800 });
+    ], { temperature: 0.8, max_tokens: Math.max(800, copyCount * 500) });
 
     // 解析结果
     var parts = result.split(/\u3010(.*?)\u3011/);
@@ -5353,6 +5391,17 @@ async function generateSeedingCopyV2() {
   } finally {
     btn.disabled = false;
     btn.textContent = '\u2728 生成种草文案';
+  }
+  } catch(fatalErr) {
+    console.error('[种草文案] 致命错误:', fatalErr);
+    var mainEl2 = document.getElementById('seedingMainCopy');
+    var resultEl2 = document.getElementById('seedingResult');
+    if (mainEl2 && resultEl2) {
+      resultEl2.style.display = 'block';
+      mainEl2.innerHTML = '<span style="color:var(--danger)">\u274c 系统错误: ' + fatalErr.message + '</span>';
+    }
+    var btn2 = document.getElementById('genCopyBtn');
+    if (btn2) { btn2.disabled = false; btn2.textContent = '\u2728 生成种草文案'; }
   }
 }
 
