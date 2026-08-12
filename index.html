@@ -4,7 +4,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FB评论种草工作台 V11.2</title>
+<title>FB评论种草工作台C V11.2</title>
 <script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <style>
@@ -412,7 +412,7 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- V11.0: Category Selection Page (Page 0) -->
 <div class="category-page" id="categoryPage">
   <div class="category-page-header">
-    <h2>🎨 FB评论种草工作台 V11.2</h2>
+    <h2>🎨 FB评论种草工作台C V11.2</h2>
     <p>选择您的商品品类，我们将为您匹配最适合的标签维度与生成策略</p>
   </div>
   
@@ -434,7 +434,7 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- Main App -->
 <div class="container" id="mainApp" style="display:block">
   <header>
-    <h1>🎨 FB评论种草工作台 V11.2</h1>
+    <h1>🎨 FB评论种草工作台C V11.2</h1>
     <div class="actions">
       <span id="userInfo"></span>
       <span id="roleInfo" class="tag" style="margin-right:4px"></span>
@@ -1601,7 +1601,7 @@ let selectedTags = {
   category: '', clothingType: '', sellingPoints: [], 
   scenes: [],  brandTone: '',
   
-  clothingTemplates: [], personType: '', industryMode: 'normal_clothing', heTemplates: [], degradeLevel: 0
+  clothingTemplates: [], personType: '', industryMode: 'normal_clothing', heTemplates: [], degradeLevel: 0};
 
 function getTotalTagCount() {
   var count = 0;
@@ -1640,7 +1640,7 @@ function onMultiPeopleModeChange() {
   updatePreview();
 }
 
-};
+
 let tagData = null;
 // V9 new state
 let selectedPersonType = '';
@@ -2217,7 +2217,7 @@ function selectCategory(name) {
   if (selectedTags.category === name) { selectedTags.category = ''; selectedTags.clothingType = ''; selectedTags.sellingPoints = []; }
   else { selectedTags.category = name; selectedTags.clothingType = ''; selectedTags.sellingPoints = []; }
   autoDetectIndustryMode();
-  renderAllDimensions(); updatePreview(); updateAnalysis();
+  renderAllDimensions(); updateTagCounter(); updatePreview(); updateAnalysis();
 }
 function selectClothingType(name) { selectedTags.clothingType = selectedTags.clothingType === name ? '' : name; autoDetectIndustryMode(); renderClothingTypeChips(); updatePreview(); updateAnalysis(); }
 function toggleSellingPoint(name) {
@@ -2232,7 +2232,7 @@ function toggleSellingPoint(name) {
   } else {
     renderSellingPointChips();
   }
-  updatePreview(); updateAnalysis();
+  updateTagCounter(); updatePreview(); updateAnalysis();
 }
 function selectScene(name) { toggleScene(name); }
 function toggleScene(name) {
@@ -2248,7 +2248,7 @@ function toggleScene(name) {
   } else {
     renderSceneChips();
   }
-  updatePreview(); updateAnalysis();
+  updateTagCounter(); updatePreview(); updateAnalysis();
 }
 function selectAtmosphere(name) { 
   selectedTags.atmosphere = selectedTags.atmosphere === name ? '' : name; 
@@ -2991,7 +2991,6 @@ function buildAutoPrompt() {
       lines.push(SAFE_PROMPT_SUFFIX);
     } else {
       // Standard clothing prompt
-      const genderText = 'female';
       const genderText = genders.includes('女性') ? TL('gender','女性') : genders.includes('男性') ? TL('gender','男性') : 'model';
       const ages = '';
       const sceneText = (selectedTags.scenes||[]).map(s=>translateTagToPrompt('scene',s)).join(' + ') || 'daily life';
@@ -4945,7 +4944,7 @@ function init() {
       selectedIndustryMode = tpl.industryMode;
       selectedTags.industryMode = tpl.industryMode;
       applyCategoryTemplateDimensions(tpl);
-      renderAllDimensions();
+      renderAllDimensions(); updateTagCounter();
     } else {
       // No category selected yet, show category page
       showCategoryPage();
@@ -4955,7 +4954,7 @@ function init() {
     hideCategoryPage();
     showMainApp();
     document.getElementById('legacyNotice').classList.add('visible');
-    renderAllDimensions();
+    renderAllDimensions(); updateTagCounter();
   }
   
   // Update mode toggle buttons
