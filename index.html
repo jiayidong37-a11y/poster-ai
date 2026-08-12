@@ -4,7 +4,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI电商品类模板化生图工作台 V11.2</title>
+<title>FB种草工作台测试 V11.2</title>
 <script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <style>
@@ -412,7 +412,7 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- V11.0: Category Selection Page (Page 0) -->
 <div class="category-page" id="categoryPage">
   <div class="category-page-header">
-    <h2>🎨 AI电商品类模板化生图工作台</h2>
+    <h2>🎨 FB种草工作台测试 V11.2</h2>
     <p>选择您的商品品类，我们将为您匹配最适合的标签维度与生成策略</p>
   </div>
   
@@ -434,7 +434,7 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- Main App -->
 <div class="container" id="mainApp" style="display:block">
   <header>
-    <h1>🎨 AI电商品类模板化生图工作台 V11.0</h1>
+    <h1>🎨 FB种草工作台测试 V11.2</h1>
     <div class="actions">
       <span id="userInfo"></span>
       <span id="roleInfo" class="tag" style="margin-right:4px"></span>
@@ -675,6 +675,23 @@ header .actions span{font-size:11px;color:var(--text2)}
           <div class="person-type-section">
             <div class="dim-label"><span class="dot" style="background:#3b82f6"></span> 8. 人物类型 <small style="color:var(--text2)">(画面中人物形象)</small></div>
             <div class="person-type-options" id="personTypeOptions"></div>
+          </div>
+        </div>
+
+        <!-- V11.3: Dim 10: 人物数量 -->
+        <div class="dim-section">
+          <div class="dim-label"><span class="dot" style="background:#8b5cf6"></span> 10. 人物数量 <small style="color:var(--text2)">(画面中人物数量)</small></div>
+          <div class="chip-group" id="dimPersonCount">
+            <div class="chip active" data-val="single" onclick="selectPersonCount('single')">单人</div>
+            <div class="chip" data-val="multiple" onclick="selectPersonCount('multiple')">多人</div>
+          </div>
+          <div id="multiPersonMode" style="display:none;margin-top:6px">
+            <div style="font-size:11px;color:var(--text2);margin-bottom:4px">多人展示模式：</div>
+            <div class="chip-group">
+              <div class="chip" data-val="collection" onclick="selectMultiMode('collection')">多模特合集</div>
+              <div class="chip" data-val="family" onclick="selectMultiMode('family')">家庭场景</div>
+              <div class="chip" data-val="comparison" onclick="selectMultiMode('comparison')">对比展示</div>
+            </div>
           </div>
         </div>
       </div>
@@ -2170,7 +2187,7 @@ function selectClothingType(name) { selectedTags.clothingType = selectedTags.clo
 function toggleSellingPoint(name) {
   const idx = selectedTags.sellingPoints.indexOf(name);
   if (idx >= 0) selectedTags.sellingPoints.splice(idx, 1);
-  else { if (selectedTags.sellingPoints.length >= 5) selectedTags.sellingPoints.shift(); selectedTags.sellingPoints.push(name); }
+  else { if (countSelectedTags() >= 10) { alert('最多选择10个标签，请取消部分标签后继续。'); return; } if (selectedTags.sellingPoints.length >= 5) selectedTags.sellingPoints.shift(); selectedTags.sellingPoints.push(name); }
   // V11.2 Fix: 在品类模板模式下，用 placeholder 重新渲染而不是从 tagData 渲染
   if (appMode === 'categoryTemplate' && selectedCategoryTemplate) {
     const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
@@ -2184,7 +2201,7 @@ function toggleSellingPoint(name) {
 function togglePainPoint(name) {
   const idx = selectedTags.painPoints.indexOf(name);
   if (idx >= 0) selectedTags.painPoints.splice(idx, 1);
-  else { if (selectedTags.painPoints.length >= 3) selectedTags.painPoints.shift(); selectedTags.painPoints.push(name); }
+  else { if (countSelectedTags() >= 10) { alert('最多选择10个标签，请取消部分标签后继续。'); return; } if (selectedTags.painPoints.length >= 3) selectedTags.painPoints.shift(); selectedTags.painPoints.push(name); }
   renderPainPointChips(); updatePreview(); updateAnalysis();
 }
 function selectScene(name) { toggleScene(name); }
@@ -2192,7 +2209,7 @@ function toggleScene(name) {
   if (!selectedTags.scenes) selectedTags.scenes = [];
   const idx = selectedTags.scenes.indexOf(name);
   if (idx >= 0) selectedTags.scenes.splice(idx, 1);
-  else { if (selectedTags.scenes.length >= 3) selectedTags.scenes.shift(); selectedTags.scenes.push(name); }
+  else { if (countSelectedTags() >= 10) { alert('最多选择10个标签，请取消部分标签后继续。'); return; } if (selectedTags.scenes.length >= 3) selectedTags.scenes.shift(); selectedTags.scenes.push(name); }
   // V11.2 Fix
   if (appMode === 'categoryTemplate' && selectedCategoryTemplate) {
     const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
@@ -2204,6 +2221,7 @@ function toggleScene(name) {
   updatePreview(); updateAnalysis();
 }
 function selectAtmosphere(name) { 
+  if (selectedTags.atmosphere !== name && countSelectedTags() >= 10) { alert('最多选择10个标签，请取消部分标签后继续。'); return; }
   selectedTags.atmosphere = selectedTags.atmosphere === name ? '' : name; 
   // V11.2 Fix
   if (appMode === 'categoryTemplate' && selectedCategoryTemplate) {
@@ -2216,6 +2234,7 @@ function selectAtmosphere(name) {
   updatePreview(); updateAnalysis();
 }
 function selectBrandTone(name) {
+  if (selectedTags.brandTone !== name && countSelectedTags() >= 10) { alert('最多选择10个标签，请取消部分标签后继续。'); return; }
   selectedTags.brandTone = selectedTags.brandTone === name ? '' : name;
   // 视觉风格直接同步到 promoConfig.colorScheme
   promoConfig.colorScheme = selectedTags.brandTone || '强销售转化';
@@ -2224,23 +2243,47 @@ function selectBrandTone(name) {
 function toggleTargetAge(name) {
   if (!selectedTags.targetAges) selectedTags.targetAges = [];
   const idx = selectedTags.targetAges.indexOf(name);
-  if (idx >= 0) selectedTags.targetAges.splice(idx, 1); else selectedTags.targetAges.push(name);
+  if (idx >= 0) selectedTags.targetAges.splice(idx, 1); else { if (countSelectedTags() >= 10) { alert('最多选择10个标签，请取消部分标签后继续。'); return; } selectedTags.targetAges.push(name); }
   renderTargetAudienceChips(); updatePreview(); updateAnalysis();
 }
 function toggleTargetGender(name) {
   if (!selectedTags.targetGenders) selectedTags.targetGenders = [];
   const idx = selectedTags.targetGenders.indexOf(name);
-  if (idx >= 0) selectedTags.targetGenders.splice(idx, 1); else selectedTags.targetGenders.push(name);
+  if (idx >= 0) selectedTags.targetGenders.splice(idx, 1); else { if (countSelectedTags() >= 10) { alert('最多选择10个标签，请取消部分标签后继续。'); return; } selectedTags.targetGenders.push(name); }
   renderTargetAudienceChips(); updatePreview(); updateAnalysis();
 }
 function toggleTargetIdentity(name) {
   if (!selectedTags.targetIdentities) selectedTags.targetIdentities = [];
   const idx = selectedTags.targetIdentities.indexOf(name);
-  if (idx >= 0) selectedTags.targetIdentities.splice(idx, 1); else selectedTags.targetIdentities.push(name);
+  if (idx >= 0) selectedTags.targetIdentities.splice(idx, 1); else { if (countSelectedTags() >= 10) { alert('最多选择10个标签，请取消部分标签后继续。'); return; } selectedTags.targetIdentities.push(name); }
   renderTargetAudienceChips(); updatePreview(); updateAnalysis();
 }
+// V11.3: Person count control
+let personCount = 'single';
+let multiPersonMode = '';
+
+function selectPersonCount(val) {
+  personCount = val;
+  document.querySelectorAll('#dimPersonCount .chip').forEach(function(c) {
+    c.classList.toggle('active', c.dataset.val === val);
+  });
+  var multiDiv = document.getElementById('multiPersonMode');
+  if (multiDiv) multiDiv.style.display = val === 'multiple' ? 'block' : 'none';
+  if (val === 'single') multiPersonMode = '';
+  updatePreview();
+}
+
+function selectMultiMode(val) {
+  multiPersonMode = multiPersonMode === val ? '' : val;
+  document.querySelectorAll('#multiPersonMode .chip').forEach(function(c) {
+    c.classList.toggle('active', c.dataset.val === multiPersonMode);
+  });
+  updatePreview();
+}
+
 // V9: Person Type
 function selectPersonType(id) {
+  if (selectedPersonType !== id && countSelectedTags() >= 10) { alert('最多选择10个标签，请取消部分标签后继续。'); return; }
   selectedPersonType = selectedPersonType === id ? '' : id;
   selectedTags.personType = selectedPersonType;
   renderPersonTypeOptions(); updatePreview(); updateAnalysis();
@@ -2321,7 +2364,8 @@ function updateSelectionSummary() {
   if (features) parts.push(`<b style="color:var(--success)">特性:</b> ${features.substring(0,20)}...`);
   const langInfo = COUNTRY_LANG[getDetectedLanguage()];
   if (langInfo) parts.push(`<b>语言:</b> ${langInfo.flag} ${langInfo.name}`);
-  document.getElementById('selectionSummary').innerHTML = parts.length ? parts.join(' &nbsp;|&nbsp; ') : '请从上方选择标签，AI将自动组合生成提示词';
+  var tagCountStr = '已选标签：' + countSelectedTags() + '/10';
+  document.getElementById('selectionSummary').innerHTML = (parts.length ? parts.join(' &nbsp;|&nbsp; ') : '请从上方选择标签，AI将自动组合生成提示词') + ' &nbsp;| &nbsp;<b style="color:' + (countSelectedTags() >= 10 ? 'var(--danger)' : 'var(--success)') + '">' + tagCountStr + '</b>';
 }
 
 // ============ LANGUAGE ============
@@ -2914,6 +2958,21 @@ function buildAutoPrompt() {
       lines.push(`Model type: ${ptEn[selectedPersonType]||pt.label}`);
     }
   }
+
+  // V11.3: Person count constraints
+  if (personCount === 'single') {
+    lines.push('People in image: exactly 1 person only.');
+  } else if (personCount === 'multiple') {
+    lines.push('People in image: 2-3 people (do NOT exceed 4 people to avoid face distortion).');
+    if (multiPersonMode === 'collection') {
+      lines.push('Layout: multiple models displayed side by side in a grid/collection format, each showing different product/angle.');
+    } else if (multiPersonMode === 'family') {
+      lines.push('Layout: family group scene, natural interaction between family members, warm lifestyle setting.');
+    } else if (multiPersonMode === 'comparison') {
+      lines.push('Layout: before/after or side-by-side comparison display, clear visual contrast between subjects.');
+    }
+  }
+  lines.push('CRITICAL: Maximum 4 people. More than 4 people causes face distortion.');
 
   // V9.1: High-exposure templates
   if (isHE && selectedTags.heTemplates && selectedTags.heTemplates.length) {
@@ -3742,7 +3801,9 @@ function saveV9Record(name, prompt, model, size, quality, count, imageUrls) {
       pairingConfig: Object.assign({}, pairingConfig),
       overlayPromos: JSON.parse(JSON.stringify(overlayPromos)),
       modelProfile: Object.assign({}, modelProfile),
-      tieredDiscountConfig: JSON.parse(JSON.stringify(tieredDiscountConfig))
+      tieredDiscountConfig: JSON.parse(JSON.stringify(tieredDiscountConfig)),
+      personCount: personCount,
+      multiPersonMode: multiPersonMode
     },
     tagWeights: Object.assign({}, tagWeights),
     country: getDetectedLanguage(),
@@ -3881,6 +3942,20 @@ function loadRecordToEditor(id) {
     const tdSection = document.getElementById('tieredDiscountSection');
     if (tdSection) tdSection.style.display = tieredDiscountConfig.enabled ? 'block' : 'none';
     renderTieredDiscountPanel();
+  }
+  // V11.3: Restore person count
+  if (rec.tags.personCount) {
+    personCount = rec.tags.personCount;
+    multiPersonMode = rec.tags.multiPersonMode || '';
+    var pcChips = document.querySelectorAll('#dimPersonCount .chip');
+    pcChips.forEach(function(c) { c.classList.toggle('active', c.dataset.val === personCount); });
+    var mpDiv = document.getElementById('multiPersonMode');
+    if (mpDiv) mpDiv.style.display = personCount === 'multiple' ? 'block' : 'none';
+    if (personCount === 'multiple' && multiPersonMode) {
+      document.querySelectorAll('#multiPersonMode .chip').forEach(function(c) {
+        c.classList.toggle('active', c.dataset.val === multiPersonMode);
+      });
+    }
   }
   // V11.2 P0-5: Restore model profile
   if (rec.tags.modelProfile) {
@@ -4592,6 +4667,9 @@ function buildPromoPromptLines() {
           lines.push('- Buy ' + t.count + ' items: ' + t.discount);
         });
         lines.push('- Each tier clearly labeled. Make the escalating savings visually obvious.');
+        // V11.3 Fix: Also include tiered discount prompt lines for completeness
+        var tdLines = buildTieredDiscountPromptLines();
+        if (tdLines.length) lines.push(tdLines.join('\n'));
       }
       break;
     }
