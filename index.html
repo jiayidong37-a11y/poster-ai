@@ -4,7 +4,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FB评论种草工作台C V11.2</title>
+<title>AI电商品类模板化生图工作台 V11.2</title>
 <script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <style>
@@ -412,7 +412,7 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- V11.0: Category Selection Page (Page 0) -->
 <div class="category-page" id="categoryPage">
   <div class="category-page-header">
-    <h2>🎨 FB评论种草工作台C V11.2</h2>
+    <h2>🎨 AI电商品类模板化生图工作台</h2>
     <p>选择您的商品品类，我们将为您匹配最适合的标签维度与生成策略</p>
   </div>
   
@@ -434,7 +434,7 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- Main App -->
 <div class="container" id="mainApp" style="display:block">
   <header>
-    <h1>🎨 FB评论种草工作台C V11.2</h1>
+    <h1>🎨 AI电商品类模板化生图工作台 V11.0</h1>
     <div class="actions">
       <span id="userInfo"></span>
       <span id="roleInfo" class="tag" style="margin-right:4px"></span>
@@ -628,10 +628,6 @@ header .actions span{font-size:11px;color:var(--text2)}
           </div>
         </div>
 
-        <div id="tagCounter" style="font-size:10px;color:#718096;text-align:right;padding:4px 8px;margin-bottom:4px">
-          已选标签: <span id="tagCountNum" style="font-weight:700">0</span>/10
-        </div>
-
         <!-- Dim 2: 核心卖点 -->
         <div class="dim-section">
           <div class="dim-label"><span class="dot" style="background:var(--orange)"></span> 2. 核心卖点 <small style="color:var(--text2)">(多选)</small></div>
@@ -639,7 +635,7 @@ header .actions span{font-size:11px;color:var(--text2)}
         </div>
 
         <!-- Dim 3: 用户痛点 -->
-        <div class="dim-section" style="display:none" id="dimPainPointSection">
+        <div class="dim-section">
           <div class="dim-label"><span class="dot" style="background:var(--danger)"></span> 3. 用户痛点 <small style="color:var(--text2)">(多选)</small></div>
           <div class="chip-group" id="dimPainPoint"></div>
         </div>
@@ -651,7 +647,7 @@ header .actions span{font-size:11px;color:var(--text2)}
         </div>
 
         <!-- Dim 5: 氛围风格 -->
-        <div class="dim-section" style="display:none" id="dimAtmosphereSection">
+        <div class="dim-section">
           <div class="dim-label"><span class="dot" style="background:var(--purple)"></span> 5. 氛围风格</div>
           <div class="chip-group" id="dimAtmosphere"></div>
         </div>
@@ -663,7 +659,7 @@ header .actions span{font-size:11px;color:var(--text2)}
         </div>
 
         <!-- Dim 7: 目标人群 -->
-        <div class="dim-section" style="display:none" id="dimTargetAudienceSection">
+        <div class="dim-section">
           <div class="dim-label"><span class="dot" style="background:var(--success)"></span> 7. 目标人群 <small style="color:var(--text2)">(多选)</small></div>
           <div class="chip-group" id="dimTargetAudience"></div>
         </div>
@@ -682,34 +678,6 @@ header .actions span{font-size:11px;color:var(--text2)}
           </div>
         </div>
       </div>
-
-        <!-- V11.5: 画面人物数量 -->
-        <div class="form-group" id="imagePeopleCountGroup" style="margin-top:6px;padding:6px 8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px">
-          <label>👥 画面人物数量</label>
-          <select id="imagePeopleCount" onchange="onImagePeopleCountChange()" style="width:100%;padding:6px 8px;background:#f5f3f0;border:1px solid var(--border);border-radius:6px;font-size:12px">
-            <option value="1">1人 - 单人聚焦展示</option>
-            <option value="2">2人 - 多人展示</option>
-            <option value="3">3人 - 多人展示</option>
-            <option value="4">4人 - 多人展示</option>
-          </select>
-        </div>
-        <div id="multiPeopleOptions" style="display:none;margin-top:4px;padding:6px 8px;background:#fefce8;border:1px solid #fef08a;border-radius:6px">
-          <label style="font-size:10px;font-weight:600;margin-bottom:4px;display:block">多人展示模式</label>
-          <div style="display:flex;flex-wrap:wrap;gap:4px">
-            <label style="font-size:10px;display:inline-flex;align-items:center;gap:2px;cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:10px">
-              <input type="checkbox" style="width:auto;margin:0" value="different_outfits" onchange="onMultiPeopleModeChange()"> 不同穿搭搭配
-            </label>
-            <label style="font-size:10px;display:inline-flex;align-items:center;gap:2px;cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:10px">
-              <input type="checkbox" style="width:auto;margin:0" value="different_bodies" onchange="onMultiPeopleModeChange()"> 不同身材展示
-            </label>
-            <label style="font-size:10px;display:inline-flex;align-items:center;gap:2px;cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:10px">
-              <input type="checkbox" style="width:auto;margin:0" value="different_colors" onchange="onMultiPeopleModeChange()"> 不同颜色展示
-            </label>
-            <label style="font-size:10px;display:inline-flex;align-items:center;gap:2px;cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:10px">
-              <input type="checkbox" style="width:auto;margin:0" value="different_ages" onchange="onMultiPeopleModeChange()"> 不同年龄段展示
-            </label>
-          </div>
-        </div>
 
       <!-- Selection Summary -->
       <div class="selection-summary" id="selectionSummary">
@@ -1598,49 +1566,11 @@ let activePasteTarget = 'product'; // 粘贴目标由鼠标悬停 zone 决定，
 let qualityScore = null;
 let genRecords = JSON.parse(localStorage.getItem('poster_ai_records') || '[]');
 let selectedTags = {
-  category: '', clothingType: '', sellingPoints: [], 
-  scenes: [],  brandTone: '',
-  
-  clothingTemplates: [], personType: '', industryMode: 'normal_clothing', heTemplates: [], degradeLevel: 0};
-
-function getTotalTagCount() {
-  var count = 0;
-  if (selectedTags.sellingPoints) count += selectedTags.sellingPoints.length;
-  if (selectedTags.scenes) count += selectedTags.scenes.length;
-  if (selectedTags.brandTone && selectedTags.brandTone.length > 0) count += 1;
-  if (selectedTags.personType && selectedTags.personType.length > 0) count += 1;
-  return count;
-}
-
-function updateTagCounter() {
-  var el = document.getElementById('tagCountNum');
-  if (el) {
-    var total = getTotalTagCount();
-    el.textContent = total;
-    el.style.color = total >= 10 ? '#e53e3e' : (total >= 7 ? '#ed8936' : '#718096');
-  }
-}
-
-
-var imagePeopleCount = 1;
-var multiPeopleModes = [];
-
-function onImagePeopleCountChange() {
-  imagePeopleCount = parseInt(document.getElementById('imagePeopleCount').value) || 1;
-  var multiDiv = document.getElementById('multiPeopleOptions');
-  if (multiDiv) multiDiv.style.display = imagePeopleCount > 1 ? 'block' : 'none';
-  updatePreview();
-}
-
-function onMultiPeopleModeChange() {
-  multiPeopleModes = [];
-  document.querySelectorAll('#multiPeopleOptions input[type=checkbox]:checked').forEach(function(cb) {
-    multiPeopleModes.push(cb.value);
-  });
-  updatePreview();
-}
-
-
+  category: '', clothingType: '', sellingPoints: [], painPoints: [],
+  scenes: [], atmosphere: '', brandTone: '',
+  targetAges: [], targetGenders: [], targetIdentities: [],
+  clothingTemplates: [], personType: '', industryMode: 'normal_clothing', heTemplates: [], degradeLevel: 0
+};
 let tagData = null;
 // V9 new state
 let selectedPersonType = '';
@@ -1729,6 +1659,7 @@ function translateTagToPrompt(dimension, tagName) {
 }
 
 
+
 // V11.2 P0-5: Model Profile (Target Person Portrait)
 const MODEL_RACE_OPTIONS = [
   { value: 'asian_female', label: '亚洲女性', prompt: 'Asian female model' },
@@ -1765,7 +1696,7 @@ const MODEL_STYLE_OPTIONS = [
   { value: 'lifestyle', label: '生活自然感', prompt: 'natural lifestyle candid authentic feel' },
   { value: 'professional', label: '专业职业感', prompt: 'professional occupation uniform work-ready appearance' }
 ];
-let modelProfile = { race: '', body: '', age: '' };
+let modelProfile = { race: '', body: '', age: '', style: '' };
 
 function selectModelRace(val) {
   modelProfile.race = modelProfile.race === val ? '' : val;
@@ -1779,6 +1710,11 @@ function selectModelBody(val) {
 }
 function selectModelAge(val) {
   modelProfile.age = modelProfile.age === val ? '' : val;
+  renderModelProfileSection();
+  updatePreview(); updateAnalysis();
+}
+function selectModelStyle(val) {
+  modelProfile.style = modelProfile.style === val ? '' : val;
   renderModelProfileSection();
   updatePreview(); updateAnalysis();
 }
@@ -1805,6 +1741,12 @@ function renderModelProfileSection() {
     html += '<div class="chip chip-success' + (modelProfile.age===o.value?' active':'') + '" onclick="selectModelAge(\'' + o.value + '\')">' + o.label + '</div>';
   });
   html += '</div></div>';
+  // Style
+  html += '<div><div style="font-size:10px;color:var(--text2);margin-bottom:3px">✨ 外貌风格</div><div class="chip-group">';
+  MODEL_STYLE_OPTIONS.forEach(o => {
+    html += '<div class="chip' + (modelProfile.style===o.value?' active':'') + '" onclick="selectModelStyle(\'' + o.value + '\')">' + o.label + '</div>';
+  });
+  html += '</div></div>';
   el.innerHTML = html;
 }
 
@@ -1820,6 +1762,10 @@ function buildModelProfilePrompt() {
   }
   if (modelProfile.age) {
     const o = MODEL_AGE_OPTIONS.find(x => x.value === modelProfile.age);
+    if (o) parts.push(o.prompt);
+  }
+  if (modelProfile.style) {
+    const o = MODEL_STYLE_OPTIONS.find(x => x.value === modelProfile.style);
     if (o) parts.push(o.prompt);
   }
   if (parts.length === 0) return '';
@@ -1934,6 +1880,7 @@ let selectedCategoryTemplate = localStorage.getItem('poster_v11_selected_categor
 let categorySelectionsCache = {}; // Cache selections per category for restoring when switching back
 
 
+
 // V11.1 Fix #3: 搭配单品状态
 let pairingConfig = { category: '', style: '' };
 const PAIRING_CATEGORIES = ['不搭配', '上衣', '裤装', '裙装', '外套', '鞋', '包', '帽子', '围巾', '腰带', '眼镜', '首饰', '全套', '自定义'];
@@ -1988,7 +1935,7 @@ function renderAllDimensions() {
     applyPlaceholderTags(tpl); // This handles sellingPoint, scene, atmosphere with placeholders
     // brandTone and targetAudience use existing data
     renderBrandToneChips();
-    
+    renderTargetAudienceChips();
     renderPersonTypeOptions();
     // Hide pain point section for non-clothing
     const ppSection = document.querySelector('#dimPainPoint')?.closest('.dim-section');
@@ -2001,9 +1948,9 @@ function renderAllDimensions() {
     if (heGroup) heGroup.style.display = tpl.dimensions.includes('heTemplate') ? '' : 'none';
   } else {
     // Full render for clothing categories or legacy mode
-    renderCategoryChips(); renderSellingPointChips(); 
-    renderSceneChips(); renderModelProfileSection(); renderBrandToneChips();
-    renderPersonTypeOptions(); updateClothingVisibility(); renderHETemplates();
+    renderCategoryChips(); renderSellingPointChips(); renderPainPointChips();
+    renderSceneChips(); renderAtmosphereChips(); renderModelProfileSection(); renderBrandToneChips();
+    renderTargetAudienceChips(); renderPersonTypeOptions(); updateClothingVisibility(); renderHETemplates();
     
     // In legacy mode, show everything
     if (appMode === 'legacy') {
@@ -2214,16 +2161,16 @@ function resetDegrade() {
 
 // ============ TAG SELECTION HANDLERS ============
 function selectCategory(name) {
-  if (selectedTags.category === name) { selectedTags.category = ''; selectedTags.clothingType = ''; selectedTags.sellingPoints = []; }
-  else { selectedTags.category = name; selectedTags.clothingType = ''; selectedTags.sellingPoints = []; }
+  if (selectedTags.category === name) { selectedTags.category = ''; selectedTags.clothingType = ''; selectedTags.sellingPoints = []; selectedTags.painPoints = []; }
+  else { selectedTags.category = name; selectedTags.clothingType = ''; selectedTags.sellingPoints = []; selectedTags.painPoints = []; }
   autoDetectIndustryMode();
-  renderAllDimensions(); updateTagCounter(); updatePreview(); updateAnalysis();
+  renderAllDimensions(); updatePreview(); updateAnalysis();
 }
 function selectClothingType(name) { selectedTags.clothingType = selectedTags.clothingType === name ? '' : name; autoDetectIndustryMode(); renderClothingTypeChips(); updatePreview(); updateAnalysis(); }
 function toggleSellingPoint(name) {
   const idx = selectedTags.sellingPoints.indexOf(name);
   if (idx >= 0) selectedTags.sellingPoints.splice(idx, 1);
-  else { if (getTotalTagCount() >= 10) { alert('\u6807\u7b7e\u603b\u6570\u5df2\u8fbe\u4e0a\u9650\uff0810\u4e2a\uff09\uff0c\u8bf7\u79fb\u9664\u90e8\u5206\u6807\u7b7e\u540e\u518d\u6dfb\u52a0'); return; } if (selectedTags.sellingPoints.length >= 5) selectedTags.sellingPoints.shift(); selectedTags.sellingPoints.push(name); }
+  else { if (selectedTags.sellingPoints.length >= 5) selectedTags.sellingPoints.shift(); selectedTags.sellingPoints.push(name); }
   // V11.2 Fix: 在品类模板模式下，用 placeholder 重新渲染而不是从 tagData 渲染
   if (appMode === 'categoryTemplate' && selectedCategoryTemplate) {
     const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
@@ -2232,14 +2179,20 @@ function toggleSellingPoint(name) {
   } else {
     renderSellingPointChips();
   }
-  updateTagCounter(); updatePreview(); updateAnalysis();
+  updatePreview(); updateAnalysis();
+}
+function togglePainPoint(name) {
+  const idx = selectedTags.painPoints.indexOf(name);
+  if (idx >= 0) selectedTags.painPoints.splice(idx, 1);
+  else { if (selectedTags.painPoints.length >= 3) selectedTags.painPoints.shift(); selectedTags.painPoints.push(name); }
+  renderPainPointChips(); updatePreview(); updateAnalysis();
 }
 function selectScene(name) { toggleScene(name); }
 function toggleScene(name) {
   if (!selectedTags.scenes) selectedTags.scenes = [];
   const idx = selectedTags.scenes.indexOf(name);
   if (idx >= 0) selectedTags.scenes.splice(idx, 1);
-  else { if (getTotalTagCount() >= 10) { alert('\u6807\u7b7e\u603b\u6570\u5df2\u8fbe\u4e0a\u9650\uff0810\u4e2a\uff09\uff0c\u8bf7\u79fb\u9664\u90e8\u5206\u6807\u7b7e\u540e\u518d\u6dfb\u52a0'); return; } if (selectedTags.scenes.length >= 3) selectedTags.scenes.shift(); selectedTags.scenes.push(name); }
+  else { if (selectedTags.scenes.length >= 3) selectedTags.scenes.shift(); selectedTags.scenes.push(name); }
   // V11.2 Fix
   if (appMode === 'categoryTemplate' && selectedCategoryTemplate) {
     const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
@@ -2248,7 +2201,7 @@ function toggleScene(name) {
   } else {
     renderSceneChips();
   }
-  updateTagCounter(); updatePreview(); updateAnalysis();
+  updatePreview(); updateAnalysis();
 }
 function selectAtmosphere(name) { 
   selectedTags.atmosphere = selectedTags.atmosphere === name ? '' : name; 
@@ -2256,15 +2209,14 @@ function selectAtmosphere(name) {
   if (appMode === 'categoryTemplate' && selectedCategoryTemplate) {
     const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
     if (tpl && tpl.placeholderTags) { applyPlaceholderTags(tpl); }
-    else { }
+    else { renderAtmosphereChips(); }
   } else {
-    
+    renderAtmosphereChips();
   }
   updatePreview(); updateAnalysis();
 }
 function selectBrandTone(name) {
   selectedTags.brandTone = selectedTags.brandTone === name ? '' : name;
-  if (selectedTags.brandTone && getTotalTagCount() > 10) { alert('\u6807\u7b7e\u603b\u6570\u5df2\u8fbe\u4e0a\u9650\uff0810\u4e2a\uff09\uff0c\u8bf7\u79fb\u9664\u90e8\u5206\u6807\u7b7e\u540e\u518d\u6dfb\u52a0'); selectedTags.brandTone = ''; renderBrandToneChips(); updateTagCounter(); return; }
   // 视觉风格直接同步到 promoConfig.colorScheme
   promoConfig.colorScheme = selectedTags.brandTone || '强销售转化';
   renderBrandToneChips(); updatePreview(); updateAnalysis();
@@ -2273,19 +2225,19 @@ function toggleTargetAge(name) {
   if (!selectedTags.targetAges) selectedTags.targetAges = [];
   const idx = selectedTags.targetAges.indexOf(name);
   if (idx >= 0) selectedTags.targetAges.splice(idx, 1); else selectedTags.targetAges.push(name);
-  updatePreview(); updateAnalysis();
+  renderTargetAudienceChips(); updatePreview(); updateAnalysis();
 }
 function toggleTargetGender(name) {
   if (!selectedTags.targetGenders) selectedTags.targetGenders = [];
   const idx = selectedTags.targetGenders.indexOf(name);
   if (idx >= 0) selectedTags.targetGenders.splice(idx, 1); else selectedTags.targetGenders.push(name);
-  updatePreview(); updateAnalysis();
+  renderTargetAudienceChips(); updatePreview(); updateAnalysis();
 }
 function toggleTargetIdentity(name) {
   if (!selectedTags.targetIdentities) selectedTags.targetIdentities = [];
   const idx = selectedTags.targetIdentities.indexOf(name);
   if (idx >= 0) selectedTags.targetIdentities.splice(idx, 1); else selectedTags.targetIdentities.push(name);
-  updatePreview(); updateAnalysis();
+  renderTargetAudienceChips(); updatePreview(); updateAnalysis();
 }
 // V9: Person Type
 function selectPersonType(id) {
@@ -2345,11 +2297,12 @@ function updateSelectionSummary() {
   const parts = [];
   if (selectedTags.category) parts.push(`<b>品类:</b> ${selectedTags.category}${selectedTags.clothingType?' / '+selectedTags.clothingType:''}`);
   if (selectedTags.sellingPoints.length) parts.push(`<b>卖点:</b> ${selectedTags.sellingPoints.join('、')}`);
-  // painPoints removed
+  if (selectedTags.painPoints.length) parts.push(`<b>痛点:</b> ${selectedTags.painPoints.join('、')}`);
   if (selectedTags.scenes && selectedTags.scenes.length) parts.push(`<b>场景:</b> ${selectedTags.scenes.join('、')}`);
-  // atmosphere removed
+  if (selectedTags.atmosphere) parts.push(`<b>氛围:</b> ${selectedTags.atmosphere}`);
   if (selectedTags.brandTone) parts.push(`<b>调性:</b> ${selectedTags.brandTone}`);
-  // target audience removed
+  const aud = [...(selectedTags.targetAges||[]), ...(selectedTags.targetGenders||[]), ...(selectedTags.targetIdentities||[])];
+  if (aud.length) parts.push(`<b>人群:</b> ${aud.join(' ')}`);
   if (selectedIndustryMode && selectedIndustryMode !== 'normal_clothing') {
     const mode = INDUSTRY_MODES[selectedIndustryMode];
     if (mode) parts.push(`<b>行业:</b> ${mode.icon} ${mode.name}`);
@@ -2385,6 +2338,7 @@ function onLanguageChange() {
   document.getElementById('langHint').textContent = '↳ 当前语言: ' + (langInfo ? langInfo.flag + ' ' + langInfo.name : 'English');
   updatePreview(); updateAnalysis();
 }
+
 
 
 // ============ V11.0: CATEGORY PAGE & DYNAMIC DIMENSION RENDERING ============
@@ -2580,12 +2534,27 @@ function applyPlaceholderTags(tpl) {
     }
   }
   
+  // Render atmosphere from placeholder
+  if (ph.atmosphere) {
+    const el = document.getElementById('dimAtmosphere');
+    if (el) {
+      el.innerHTML = ph.atmosphere.map(a => {
+        const active = selectedTags.atmosphere === a ? ' active' : '';
+        return '<div class="chip chip-purple' + active + '" onclick="selectAtmosphere(\'' + a.replace(/'/g, "\'") + '\')">' + a + '</div>';
+      }).join('');
+    }
+  }
+  
   // Brand tone - use existing if available
   if (!ph.brandTone) {
     // Use existing brandTone data
     renderBrandToneChips();
   }
   
+  // Target audience - use existing if available
+  if (!ph.targetAudience) {
+    renderTargetAudienceChips();
+  }
 }
 
 // Switch app mode between categoryTemplate and legacy
@@ -2707,7 +2676,6 @@ let _translateCache = {};
 let _lastTranslateKey = '';
 async function translateUserInputsIfNeeded() {
   const fields = [
-    { id: 'productName', key: 'productName' },
     { id: 'extraNote', key: 'extra' },
     { id: 'productFeatures', key: 'features' }
   ];
@@ -2727,7 +2695,6 @@ async function translateUserInputsIfNeeded() {
     return _translateCache;
   }
   const parts = [];
-  if (values.productName) parts.push('Product name: ' + values.productName);
   if (values.extra) parts.push('Additional notes: ' + values.extra);
   if (values.features) parts.push('Product features: ' + values.features);
   if (parts.length === 0) return values;
@@ -2774,7 +2741,6 @@ ${parts.join('\n')}`;
     if (translated) {
       const result = Object.assign({}, values);
       const translatedLines = translated.split('\n').filter(function(l) { return l.trim(); });
-      if (values.productName && translatedLines.length > 0) result.productName = translatedLines[0];
       if (values.extra && translatedLines.length > 0) result.extra = translatedLines[0];
       if (values.features && translatedLines.length > 1) result.features = translatedLines.slice(1).join(' ');
       _translateCache = result;
@@ -2833,7 +2799,7 @@ function buildAutoPrompt() {
     const promoLines2 = buildPromoPromptLines();
     if (promoLines2.length) prompt += '\n' + promoLines2.join('\n');
     if (productImages.length > 0) prompt += `\nREFERENCE PRODUCT: Use as product identity reference only. Create a fresh creative composition, do NOT copy-paste the product image.`;
-    prompt += `\nPEOPLE LIMIT: Maximum ${imagePeopleCount} people. All faces must be photorealistic and not distorted. For small images prefer zero people.`;
+    prompt += `\nPEOPLE LIMIT: Maximum 1-2 people. All faces must be photorealistic and not distorted. For small images prefer zero people.`;
     prompt += `\nLANGUAGE: All text MUST be in ${getTargetLangName()} only. NO Chinese/Japanese/Korean characters anywhere in the image.`;
     return stripCJK(cleanupResidualPunct(filterBannedWords(prompt)));
   }
@@ -2857,7 +2823,7 @@ function buildAutoPrompt() {
       if (selectedTags.sellingPoints.length) lines2.push('Key selling points: ' + selectedTags.sellingPoints.map(s=>translateTagToPrompt('sellingPoint',s)).join(', '));
       if (selectedTags.scenes && selectedTags.scenes.length) lines2.push('Usage scene: ' + selectedTags.scenes.map(s=>translateTagToPrompt('scene',s)).join(' + '));
       const styleParts2 = [];
-      // atmosphere removed
+      if (selectedTags.atmosphere) styleParts2.push(selectedTags.atmosphere.split('-')[0]);
       if (selectedTags.brandTone) styleParts2.push(selectedTags.brandTone);
       if (styleParts2.length) lines2.push('Visual style: ' + styleParts2.join(', '));
       const audience2 = buildAudienceText();
@@ -2872,7 +2838,7 @@ function buildAutoPrompt() {
       
       // People & face quality
       lines2.push('\nPEOPLE & FACE QUALITY (CRITICAL):');
-      lines2.push('- ' + (imagePeopleCount > 1 ? imagePeopleCount + ' people in the image' : 'Maximum 1 person in the image') + '.');
+      lines2.push('- Maximum 1-2 people in the image.');
       lines2.push('- ALL faces MUST be photorealistic, natural skin texture.');
       lines2.push('- NO distorted faces, NO blurry faces, NO plastic/waxy skin.');
       lines2.push('- For small images prefer ZERO people. Use product-only compositions.');
@@ -2920,7 +2886,7 @@ function buildAutoPrompt() {
   }
   if (selectedTags.scenes && selectedTags.scenes.length) lines.push(`Usage scene: ${selectedTags.scenes.map(s=>translateTagToPrompt('scene',s)).join(' + ')}`);
   const styleParts = [];
-  // atmosphere removed
+  if (selectedTags.atmosphere) styleParts.push(translateTagToPrompt('atmosphere', selectedTags.atmosphere) || selectedTags.atmosphere.split('-')[0]);
   if (selectedTags.brandTone) styleParts.push(translateTagToPrompt('brandTone', selectedTags.brandTone) || selectedTags.brandTone);
   if (styleParts.length) lines.push(`Visual style: ${styleParts.join(', ')}`);
   const audience = buildAudienceText();
@@ -2938,21 +2904,8 @@ function buildAutoPrompt() {
 
   // V9: Person type (with high-exposure override)
   if (isHE) {
-    var modelDesc = 'adult professional e-commerce model';
-    if (modelProfile.race) {
-      var raceOpt = MODEL_RACE_OPTIONS.find(function(x) { return x.value === modelProfile.race; });
-      if (raceOpt) modelDesc += ', ' + raceOpt.prompt;
-    }
-    if (modelProfile.body) {
-      var bodyOpt = MODEL_BODY_OPTIONS.find(function(x) { return x.value === modelProfile.body; });
-      if (bodyOpt) modelDesc += ', ' + bodyOpt.prompt;
-    }
-    if (modelProfile.age) {
-      var ageOpt = MODEL_AGE_OPTIONS.find(function(x) { return x.value === modelProfile.age; });
-      if (ageOpt) modelDesc += ', ' + ageOpt.prompt;
-    }
-    modelDesc += ', natural standing pose, product display posture';
-    lines.push('Model type: ' + modelDesc);
+    // High-exposure: force professional model, natural pose
+    lines.push('Model type: adult professional e-commerce model, natural standing pose, product display posture');
     lines.push('IMPORTANT: ambiguous poses, sensual poses, emphasizing body parts are NOT allowed. Product-focused commercial photography only.');
   } else if (selectedPersonType) {
     const pt = PERSON_TYPES.find(p=>p.id===selectedPersonType);
@@ -2987,18 +2940,19 @@ function buildAutoPrompt() {
       if (heScene) lines.push(`Recommended scene: ${heScene}`);
       else if (selectedTags.scenes && selectedTags.scenes.length) lines.push(`Scene: ${selectedTags.scenes.map(s=>translateTagToPrompt('scene',s)).join(' + ')}`);
       // Person pose constraint
-      lines.push('Pose: natural standing, front-facing display, slight movement only. Maximum ' + imagePeopleCount + ' person(s). No complex poses.');
+      lines.push('Pose: natural standing, front-facing display, slight movement only. 1 person maximum. No complex poses.');
       lines.push(SAFE_PROMPT_SUFFIX);
     } else {
       // Standard clothing prompt
+      const genders = (selectedTags.targetGenders && selectedTags.targetGenders.length) ? selectedTags.targetGenders : ['女性'];
       const genderText = genders.includes('女性') ? TL('gender','女性') : genders.includes('男性') ? TL('gender','男性') : 'model';
-      const ages = '';
+      const ages = (selectedTags.targetAges && selectedTags.targetAges.length) ? selectedTags.targetAges.map(a=>TL('age',a)).join(', ') : '';
       const sceneText = (selectedTags.scenes||[]).map(s=>translateTagToPrompt('scene',s)).join(' + ') || 'daily life';
       const sellText = selectedTags.sellingPoints.slice(0,2).map(s=>TL('sellingPoints',s)).join(' and ');
       const clothingEn = TL('clothingType', selectedTags.clothingType) || subject;
       lines.push(`\nScene: ${ages} ${genderText} in ${sceneText} setting wearing ${clothingEn}, showcasing ${sellText||'the fit and quality'}, realistic commercial photography style`);
     }
-  } else if (selectedTags.scenes && selectedTags.scenes.length) {
+  } else if (audience && selectedTags.scenes && selectedTags.scenes.length) {
     const sceneEn = selectedTags.scenes.map(s=>translateTagToPrompt('scene',s)).join(' + ');
     lines.push(`\nScene: ${audience} using ${subject} in ${sceneEn} setting, showing ${TL('sellingPoints',selectedTags.sellingPoints[0])||'product benefits'}`);
   }
@@ -3020,7 +2974,7 @@ function buildAutoPrompt() {
   }
   
   // V9.3: 氛围风格不延续 — 如果氛围不是强促销型，削弱促销元素
-  const isPromoAtmosphere = false;
+  const isPromoAtmosphere = selectedTags.atmosphere === '销售型-强促销感';
   
   // V11.1 Fix #3: 搭配单品信息
   const pairingLines = buildPairingPromptLines();
@@ -3041,33 +2995,16 @@ function buildAutoPrompt() {
   }
   
   // V9.3: 亲子装/儿童检查
-  const hasChildAge = false;
+  const hasChildAge = (selectedTags.targetAges||[]).some(a => a.includes('18') || a === '全年龄段');
   if (ct === '亲子装' || (ct && ct.includes('亲子'))) {
     lines.push(`\nFAMILY/CHILDREN CONSTRAINT: Only generate child models if the product actually has children\'s sizes.`);
     lines.push(`If no children\'s sizes: use adult models only, single adult or adult couple. NO children.`);
   }
   
   // V9.3 Fix #7: 人数限制和面部质量（大幅强化）
-  const genderCount = 0;
+  const genderCount = (selectedTags.targetGenders||[]).length || 0;
   const isMultiGender = genderCount >= 2;
-  const maxPeople = imagePeopleCount || 1;
-  // V11.5: Multi-person display
-  if (imagePeopleCount > 1) {
-    lines.push('PEOPLE LIMIT: Show EXACTLY ' + imagePeopleCount + ' people in the image.');
-    if (multiPeopleModes.length > 0) {
-      var modeDesc = {
-        'different_outfits': 'each person wearing different outfit combinations',
-        'different_bodies': 'each person with different body types (slim, athletic, curvy, plus-size)',
-        'different_colors': 'each person wearing different color variants of the product',
-        'different_ages': 'each person from different age groups (20s, 30s, 40s, 50s)'
-      };
-      var modeTexts = multiPeopleModes.map(function(m) { return modeDesc[m] || m; });
-      lines.push('MULTI-PERSON DISPLAY: ' + modeTexts.join('; ') + '.');
-      lines.push('Each person should be clearly distinguishable and shown in a natural arrangement.');
-    }
-  } else {
-    lines.push('PEOPLE LIMIT: 1 person only. Single subject focus.');
-  }
+  const maxPeople = isMultiGender ? 2 : 1;
   lines.push(`\nPEOPLE & FACE QUALITY (CRITICAL):`);
   lines.push(`- Maximum ${maxPeople} person(s) in the image. More people = exponentially worse face quality.`);
   if (maxPeople === 1) {
@@ -3148,14 +3085,17 @@ function buildAutoPrompt() {
 }
 
 function buildAudienceText() {
-  return '';
+  const parts = [];
+  if (selectedTags.targetAges && selectedTags.targetAges.length) parts.push(selectedTags.targetAges.map(a=>TL('age',a)).join(', '));
+  if (selectedTags.targetGenders && selectedTags.targetGenders.length) parts.push(selectedTags.targetGenders.map(g=>TL('gender',g)).join(', '));
+  if (selectedTags.targetIdentities && selectedTags.targetIdentities.length) parts.push(selectedTags.targetIdentities.map(i=>TL('identity',i)).join(', '));
+  return parts.join(', ');
 }
 
 // ============ PREVIEW ============
 function updatePreview() {
   document.getElementById('promptPreview').textContent = buildAutoPrompt();
   updateSelectionSummary();
-  updateTagCounter();
 }
 
 // ============ AI ANALYSIS PANEL ============
@@ -3169,11 +3109,11 @@ function updateAnalysis() {
     {name:'行业', filled:!!selectedIndustryMode&&selectedIndustryMode!=='normal_clothing'},
     {name:'品类', filled:!!selectedTags.category},
     {name:'卖点', filled:selectedTags.sellingPoints.length>0},
-    // pain point removed
+    {name:'痛点', filled:selectedTags.painPoints.length>0},
     {name:'场景', filled:(selectedTags.scenes||[]).length > 0},
-    // atmosphere removed
+    {name:'氛围', filled:!!selectedTags.atmosphere},
     {name:'调性', filled:!!selectedTags.brandTone},
-    // audience removed
+    {name:'人群', filled:!!(selectedTags.targetAges&&selectedTags.targetAges.length)||!!(selectedTags.targetGenders&&selectedTags.targetGenders.length)||!!(selectedTags.targetIdentities&&selectedTags.targetIdentities.length)},
     {name:'人物', filled:!!selectedPersonType}
   ];
   const filledCount = dims.filter(d=>d.filled).length;
@@ -3536,13 +3476,9 @@ async function doGenerate() {
     let translatedInputs = null;
     try { translatedInputs = await translateUserInputsIfNeeded(); } catch(e) { console.warn('Translation skipped:', e); }
     // 将翻译结果注入到对应字段（临时替换，生成完恢复）
-    const origName = document.getElementById('productName')?.value || '';
     const origExtra = document.getElementById('extraNote')?.value || '';
     const origFeatures = document.getElementById('productFeatures')?.value || '';
     if (translatedInputs) {
-      if (translatedInputs.productName && translatedInputs.productName !== origName) {
-        document.getElementById('productName').value = translatedInputs.productName;
-      }
       if (translatedInputs.extra && translatedInputs.extra !== origExtra) {
         document.getElementById('extraNote').value = translatedInputs.extra;
       }
@@ -3553,7 +3489,6 @@ async function doGenerate() {
     const prompt = buildAutoPrompt();
     // 恢复原始输入（用户看到的是中文，翻译只用于prompt）
     if (translatedInputs) {
-      document.getElementById('productName').value = origName;
       document.getElementById('extraNote').value = origExtra;
       document.getElementById('productFeatures').value = origFeatures;
     }
@@ -3779,9 +3714,14 @@ function saveV9Record(name, prompt, model, size, quality, count, imageUrls) {
       category: selectedTags.category,
       clothingType: selectedTags.clothingType,
       sellingPoints: [...selectedTags.sellingPoints],
+      painPoints: [...selectedTags.painPoints],
       scene: selectedTags.scenes ? selectedTags.scenes[0] : '',
       scenes: [...(selectedTags.scenes||[])],
+      atmosphere: selectedTags.atmosphere,
       brandTone: selectedTags.brandTone,
+      targetAges: [...(selectedTags.targetAges||[])],
+      targetGenders: [...(selectedTags.targetGenders||[])],
+      targetIdentities: [...(selectedTags.targetIdentities||[])],
       clothingTemplates: [...(selectedTags.clothingTemplates||[])],
       personType: selectedPersonType,
       industryMode: selectedIndustryMode,
@@ -3802,8 +3742,6 @@ function saveV9Record(name, prompt, model, size, quality, count, imageUrls) {
       pairingConfig: Object.assign({}, pairingConfig),
       overlayPromos: JSON.parse(JSON.stringify(overlayPromos)),
       modelProfile: Object.assign({}, modelProfile),
-      imagePeopleCount: imagePeopleCount,
-      multiPeopleModes: [...multiPeopleModes],
       tieredDiscountConfig: JSON.parse(JSON.stringify(tieredDiscountConfig))
     },
     tagWeights: Object.assign({}, tagWeights),
@@ -3883,13 +3821,13 @@ function loadRecordToEditor(id) {
   selectedTags.category = rec.tags.category || '';
   selectedTags.clothingType = rec.tags.clothingType || '';
   selectedTags.sellingPoints = rec.tags.sellingPoints ? [...rec.tags.sellingPoints] : [];
-  // painPoints removed (compat)
+  selectedTags.painPoints = rec.tags.painPoints ? [...rec.tags.painPoints] : [];
   selectedTags.scenes = rec.tags.scenes || (rec.tags.scene ? [rec.tags.scene] : []);
-  // atmosphere removed (compat)
+  selectedTags.atmosphere = rec.tags.atmosphere || '';
   selectedTags.brandTone = rec.tags.brandTone || '';
-  // target audience removed (compat)
-  // target audience removed (compat)
-  // target audience removed (compat)
+  selectedTags.targetAges = rec.tags.targetAges ? [...rec.tags.targetAges] : [];
+  selectedTags.targetGenders = rec.tags.targetGenders ? [...rec.tags.targetGenders] : [];
+  selectedTags.targetIdentities = rec.tags.targetIdentities ? [...rec.tags.targetIdentities] : [];
   selectedTags.clothingTemplates = rec.tags.clothingTemplates ? [...rec.tags.clothingTemplates] : [];
   selectedPersonType = rec.tags.personType || '';
   selectedTags.personType = selectedPersonType;
@@ -3920,6 +3858,7 @@ function loadRecordToEditor(id) {
     if (pt) { pt.value = promoConfig.type; onPromoChange(); }
 
 
+
   }
   // V9.2: 恢复产品特性
   const pf = document.getElementById('productFeatures');
@@ -3944,23 +3883,10 @@ function loadRecordToEditor(id) {
     renderTieredDiscountPanel();
   }
   // V11.2 P0-5: Restore model profile
-  // V11.5: Restore image people count
-  if (rec.tags.imagePeopleCount) {
-    imagePeopleCount = rec.tags.imagePeopleCount;
-    var ipcEl = document.getElementById('imagePeopleCount');
-    if (ipcEl) ipcEl.value = imagePeopleCount;
-  }
-  if (rec.tags.multiPeopleModes && Array.isArray(rec.tags.multiPeopleModes)) {
-    multiPeopleModes = [...rec.tags.multiPeopleModes];
-    var mpCheckboxes = document.querySelectorAll('#multiPeopleOptions input[type=checkbox]');
-    mpCheckboxes.forEach(function(cb) { cb.checked = multiPeopleModes.includes(cb.value); });
-    var mpDiv = document.getElementById('multiPeopleOptions');
-    if (mpDiv && imagePeopleCount > 1) mpDiv.style.display = 'block';
-  }
   if (rec.tags.modelProfile) {
-    modelProfile = { race: rec.tags.modelProfile.race || '', body: rec.tags.modelProfile.body || '', age: rec.tags.modelProfile.age || '' };
+    modelProfile = Object.assign({}, rec.tags.modelProfile);
   } else {
-    modelProfile = { race: '', body: '', age: '' };
+    modelProfile = { race: '', body: '', age: '', style: '' };
   }
   if (rec.tags.overlayPromos && Array.isArray(rec.tags.overlayPromos)) {
     overlayPromos = JSON.parse(JSON.stringify(rec.tags.overlayPromos));
@@ -4902,16 +4828,16 @@ function addCategory() { const i=document.getElementById('addCatInput'); const n
 function deleteCategory(idx) { const n=tagData.category[idx].name; if(!confirm(`删除品类"${n}"?`))return; tagData.category.splice(idx,1); delete tagData.sellingPoint[n]; delete tagData.painPoint[n]; if(selectedTags.category===n){selectedTags.category='';selectedTags.sellingPoints=[];selectedTags.painPoints=[];} saveTags(); renderTagManagement(); renderAllDimensions(); updatePreview(); }
 function addSellingPoint(cat) { const i=document.getElementById('addSp_'+cat); const v=i.value.trim(); if(!v)return; const p=v.split('>'); const g=p[0].trim(); const t=p[1]?p[1].trim():g; if(!tagData.sellingPoint[cat])tagData.sellingPoint[cat]={}; if(!tagData.sellingPoint[cat][g])tagData.sellingPoint[cat][g]=[]; tagData.sellingPoint[cat][g].push(t); saveTags(); renderTagManagement(); renderSellingPointChips(); i.value=''; }
 function deleteSellingPoint(cat,group,idx) { tagData.sellingPoint[cat][group].splice(idx,1); if(!tagData.sellingPoint[cat][group].length)delete tagData.sellingPoint[cat][group]; saveTags(); renderTagManagement(); renderSellingPointChips(); }
-function addPainPoint(cat) { const i=document.getElementById('addPp_'+cat); const v=i.value.trim(); if(!v)return; const p=v.split('>'); const g=p[0].trim(); const t=p[1]?p[1].trim():g; if(!tagData.painPoint[cat])tagData.painPoint[cat]={}; if(!tagData.painPoint[cat][g])tagData.painPoint[cat][g]=[]; tagData.painPoint[cat][g].push(t); saveTags(); renderTagManagement(); i.value=''; }
-function deletePainPoint(cat,group,idx) { tagData.painPoint[cat][group].splice(idx,1); if(!tagData.painPoint[cat][group].length)delete tagData.painPoint[cat][group]; saveTags(); renderTagManagement(); }
+function addPainPoint(cat) { const i=document.getElementById('addPp_'+cat); const v=i.value.trim(); if(!v)return; const p=v.split('>'); const g=p[0].trim(); const t=p[1]?p[1].trim():g; if(!tagData.painPoint[cat])tagData.painPoint[cat]={}; if(!tagData.painPoint[cat][g])tagData.painPoint[cat][g]=[]; tagData.painPoint[cat][g].push(t); saveTags(); renderTagManagement(); renderPainPointChips(); i.value=''; }
+function deletePainPoint(cat,group,idx) { tagData.painPoint[cat][group].splice(idx,1); if(!tagData.painPoint[cat][group].length)delete tagData.painPoint[cat][group]; saveTags(); renderTagManagement(); renderPainPointChips(); }
 function addScene() { const i=document.getElementById('addSceneInput'); const v=i.value.trim(); if(!v)return; tagData.scene.push(v); saveTags(); renderTagManagement(); renderSceneChips(); i.value=''; }
 function deleteScene(idx) { tagData.scene.splice(idx,1); saveTags(); renderTagManagement(); renderSceneChips(); }
-function addAtmosphere() { const i=document.getElementById('addAtmoInput'); const v=i.value.trim(); if(!v)return; tagData.atmosphere.push(v); saveTags(); renderTagManagement(); i.value=''; }
-function deleteAtmosphere(idx) { tagData.atmosphere.splice(idx,1); saveTags(); renderTagManagement(); }
+function addAtmosphere() { const i=document.getElementById('addAtmoInput'); const v=i.value.trim(); if(!v)return; tagData.atmosphere.push(v); saveTags(); renderTagManagement(); renderAtmosphereChips(); i.value=''; }
+function deleteAtmosphere(idx) { tagData.atmosphere.splice(idx,1); saveTags(); renderTagManagement(); renderAtmosphereChips(); }
 function addBrandTone() { const i=document.getElementById('addBtInput'); const v=i.value.trim(); if(!v)return; tagData.brandTone.push(v); saveTags(); renderTagManagement(); renderBrandToneChips(); i.value=''; }
 function deleteBrandTone(idx) { tagData.brandTone.splice(idx,1); saveTags(); renderTagManagement(); renderBrandToneChips(); }
-function addAudience(dim) { const i=document.getElementById('addAud_'+dim); const v=i.value.trim(); if(!v)return; tagData.targetAudience[dim].push(v); saveTags(); renderTagManagement(); i.value=''; }
-function deleteAudience(dim,idx) { tagData.targetAudience[dim].splice(idx,1); saveTags(); renderTagManagement(); }
+function addAudience(dim) { const i=document.getElementById('addAud_'+dim); const v=i.value.trim(); if(!v)return; tagData.targetAudience[dim].push(v); saveTags(); renderTagManagement(); renderTargetAudienceChips(); i.value=''; }
+function deleteAudience(dim,idx) { tagData.targetAudience[dim].splice(idx,1); saveTags(); renderTagManagement(); renderTargetAudienceChips(); }
 function addClothingType() { const i=document.getElementById('addCtInput'); const v=i.value.trim(); if(!v)return; tagData.clothingType.push(v); saveTags(); renderTagManagement(); renderClothingTypeChips(); i.value=''; }
 function deleteClothingType(idx) { tagData.clothingType.splice(idx,1); saveTags(); renderTagManagement(); renderClothingTypeChips(); }
 function resetTags() { if(!confirm('恢复默认标签？自定义标签将丢失。'))return; tagData=JSON.parse(JSON.stringify(DEFAULT_TAGS)); saveTags(); renderTagManagement(); renderAllDimensions(); updatePreview(); setStatus('标签已恢复默认','success'); }
@@ -4933,6 +4859,7 @@ function init() {
   if (typeof onPromoChange === 'function') onPromoChange();
 
 
+  
   // V11.0: Category Template Mode initialization
   renderCategoryPage();
   if (appMode === 'categoryTemplate') {
@@ -4944,7 +4871,7 @@ function init() {
       selectedIndustryMode = tpl.industryMode;
       selectedTags.industryMode = tpl.industryMode;
       applyCategoryTemplateDimensions(tpl);
-      renderAllDimensions(); updateTagCounter();
+      renderAllDimensions();
     } else {
       // No category selected yet, show category page
       showCategoryPage();
@@ -4954,7 +4881,7 @@ function init() {
     hideCategoryPage();
     showMainApp();
     document.getElementById('legacyNotice').classList.add('visible');
-    renderAllDimensions(); updateTagCounter();
+    renderAllDimensions();
   }
   
   // Update mode toggle buttons
