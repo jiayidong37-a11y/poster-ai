@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FB评论种草生图工作台 V11.0</title>
+<title>FB评论种草工作台 V11.2</title>
 <script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <style>
@@ -89,16 +89,6 @@ header .actions span{font-size:11px;color:var(--text2)}
 .result-area .images{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:8px}
 .result-area .images img{width:100%;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer}
 .result-area .images img:hover{border-color:var(--accent)}
-.result-area .images .img-cell{position:relative}
-.result-area .images .dl-btn{position:absolute;top:5px;right:5px;width:24px;height:24px;border:none;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:12px;line-height:1;cursor:pointer;opacity:.85}
-.result-area .images .dl-btn:hover{background:var(--accent);opacity:1}
-/* V11.3 fix#1: 折扣角标 HTML 叠加层 —— 不依赖 canvas/CORS，显示永远生效 */
-.promo-badge{position:absolute;left:50%;transform:translateX(-50%);top:6%;z-index:2;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;color:#fff;letter-spacing:.02em;line-height:1.1;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.28);white-space:pre-line;pointer-events:none;max-width:86%}
-.promo-badge.pb-lg{font-size:clamp(16px,7cqw,34px);padding:3.5% 7%;width:76%}
-.promo-badge.pb-md{font-size:clamp(14px,5.5cqw,28px);padding:3% 6%;width:70%}
-.promo-badge.pb-sm{font-size:clamp(11px,4cqw,20px);padding:2.5% 5%;width:64%}
-.history-table .hist-gallery{display:flex;flex-wrap:wrap;gap:3px;max-width:150px}
-.history-table .hist-gallery .thumb{width:34px;height:34px}
 .status-bar{padding:6px 10px;border-radius:6px;margin-bottom:8px;font-size:11px;display:none}
 .status-bar.info{background:rgba(99,101,241,.1);border:1px solid rgba(99,101,241,.3);color:var(--accent2);display:block}
 .status-bar.success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--success);display:block}
@@ -245,6 +235,32 @@ header .actions span{font-size:11px;color:var(--text2)}
 #promoCard select,#promoCard input[type=text],#promoCard input[type=number]{background:#fff7ed;border-color:#fed7aa}
 #promoCard select:focus,#promoCard input:focus{border-color:var(--orange)}
 #promoText{background:#fffbeb !important;border:1px solid #fde68a !important;color:#92400e !important;font-weight:600;font-size:12px !important}
+
+/* ===== V11.2-P1: AI Analysis Result ===== */
+.ai-analysis-panel{margin-top:8px;padding:10px;background:linear-gradient(135deg,#ecfeff,#f0fdfa);border:1px solid #99f6e4;border-radius:8px;font-size:11px;display:none}
+.ai-analysis-panel.visible{display:block}
+.ai-analysis-panel .ai-title{font-weight:600;color:#0d9488;margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.ai-analysis-panel .ai-row{display:flex;gap:6px;margin-bottom:4px;align-items:flex-start}
+.ai-analysis-panel .ai-label{font-weight:600;color:var(--text2);min-width:60px;font-size:10px}
+.ai-analysis-panel .ai-value{color:var(--text);font-size:11px}
+.ai-analysis-panel .ai-chips{display:flex;flex-wrap:wrap;gap:3px}
+.ai-analysis-panel .ai-chip{padding:2px 8px;border-radius:10px;font-size:9px;background:rgba(6,182,212,.12);color:#0891b2;border:1px solid rgba(6,182,212,.2)}
+.ai-analysis-panel .ai-actions{margin-top:8px;display:flex;gap:6px}
+
+/* ===== V11.2-P1: History Rating & Notes ===== */
+.rating-stars{display:inline-flex;gap:1px;cursor:pointer;font-size:13px}
+.rating-stars .star{color:#d1d5db;transition:color .15s}
+.rating-stars .star.active{color:var(--warn)}
+.rating-stars .star:hover{color:var(--warn)}
+.adopted-badge{display:inline-block;padding:1px 5px;border-radius:4px;font-size:9px;font-weight:600;cursor:pointer}
+.adopted-badge.adopted{background:rgba(34,197,94,.15);color:var(--success)}
+.adopted-badge.not-adopted{background:rgba(156,163,175,.1);color:var(--text2)}
+.history-notes{font-size:9px;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.history-notes-input{width:100%;padding:2px 4px;border:1px solid var(--border);border-radius:3px;font-size:9px;background:transparent;color:var(--text)}
+.history-notes-input:focus{border-color:var(--accent);background:white}
+.history-extra-row td{padding:2px 8px 6px;background:#faf8f5;font-size:10px;border-bottom:1px solid var(--border)}
+.history-category-template{font-size:9px;color:var(--accent2);font-weight:500}
+.history-promo-type{font-size:9px;color:var(--orange)}
 
 /* ===== V11.0 CATEGORY TEMPLATE STYLES ===== */
 .category-page{position:relative;min-height:90vh;padding:20px}
@@ -394,7 +410,7 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- V11.0: Category Selection Page (Page 0) -->
 <div class="category-page" id="categoryPage">
   <div class="category-page-header">
-    <h2>🎨 FB评论种草生图工作台</h2>
+    <h2>🎨 FB评论种草工作台</h2>
     <p>选择您的商品品类，我们将为您匹配最适合的标签维度与生成策略</p>
   </div>
   
@@ -416,7 +432,7 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- Main App -->
 <div class="container" id="mainApp" style="display:block">
   <header>
-    <h1>🎨 FB评论种草生图工作台 V11.0</h1>
+    <h1>🎨 FB评论种草工作台 V11.0</h1>
     <div class="actions">
       <span id="userInfo"></span>
       <span id="roleInfo" class="tag" style="margin-right:4px"></span>
@@ -451,6 +467,13 @@ header .actions span{font-size:11px;color:var(--text2)}
               <div class="hint">点击上传 / Ctrl+V 粘贴</div>
               <div class="multi-preview" id="productPreview"></div>
             </div>
+            <!-- V11.2-P1: AI Product Analysis Button -->
+            <div style="margin-top:6px;display:flex;gap:6px;align-items:center">
+              <button id="aiAnalyzeBtn" onclick="analyzeProductImage()" style="padding:5px 12px;border:1.5px solid var(--cyan);border-radius:6px;background:transparent;color:var(--cyan);font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px">
+                🔍 AI 分析产品
+              </button>
+              <span id="aiAnalyzeStatus" style="font-size:10px;color:var(--text2)"></span>
+            </div>
           </div>
           <div class="form-group">
             <label>参考图 <small style="color:var(--text2)">(可选多张)</small></label>
@@ -470,22 +493,45 @@ header .actions span{font-size:11px;color:var(--text2)}
           <label>产品实际特性 <small style="color:var(--danger)">(重要！覆盖通用标签，确保文案准确)</small></label>
           <textarea id="productFeatures" rows="2" placeholder="如：温水可卸除、含维E成分、刷头可360°旋转、续航72小时..." oninput="updatePreview()"></textarea>
         </div>
-        <!-- V11.1 #3: 搭配单品 -->
-        <div class="form-group">
-          <label>👗 搭配单品 <small style="color:var(--text2)">(可多选，为主商品搭配多个品类)</small></label>
-          <div class="chip-group" id="pairingChips"></div>
-          <div class="form-row" style="margin-top:5px">
-            <select id="pairingStyle" onchange="onPairingChange()">
-              <option value="matching">同色系协调</option>
-              <option value="contrast">撞色对比</option>
-              <option value="casual">休闲日常</option>
-              <option value="commute">通勤职场</option>
-              <option value="street">街头潮流</option>
-              <option value="elegant">优雅气质</option>
+        <!-- V11.2-P1: AI Analysis Result Panel -->
+        <div class="ai-analysis-panel" id="aiAnalysisPanel">
+          <div class="ai-title">🔍 AI 产品分析结果</div>
+          <div id="aiAnalysisContent"></div>
+          <div class="ai-actions">
+            <button class="btn btn-primary btn-sm" onclick="applyAiAnalysis()">✅ 应用分析结果</button>
+            <button class="btn btn-outline btn-sm" onclick="dismissAiAnalysis()">✕ 关闭</button>
+          </div>
+        </div>
+        <!-- V11.1 Fix #3: 搭配单品选择 -->
+        <div class="form-row" style="margin-top:6px;padding:8px;background:#faf5ff;border:1px solid #e9d5ff;border-radius:6px">
+          <div class="form-group" style="margin-bottom:0">
+            <label>👜 搭配品类 <small style="color:var(--text2)">(可选)</small></label>
+            <select id="pairingCategory" onchange="onPairingChange()">
+              <option value="">不搭配</option>
+              <option value="上衣">上衣</option>
+              <option value="裤装">裤装</option>
+              <option value="裙装">裙装</option>
+              <option value="外套">外套</option>
+              <option value="鞋">鞋</option>
+              <option value="包">包</option>
+              <option value="帽子">帽子</option>
+              <option value="围巾">围巾</option>
+              <option value="腰带">腰带</option>
+              <option value="眼镜">眼镜</option>
+              <option value="首饰">首饰</option>
             </select>
           </div>
-          <div id="pairingWarn" style="display:none;font-size:9px;color:#0369a1;margin-top:3px;padding:4px 6px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:4px">
-            🔒 已锁定主商品：搭配单品由 AI 生成，在售商品的颜色/版型/细节将保持不变
+          <div class="form-group" style="margin-bottom:0">
+            <label>🎨 搭配风格 <small style="color:var(--text2)">(可选)</small></label>
+            <select id="pairingStyle" onchange="onPairingChange()">
+              <option value="">不限风格</option>
+              <option value="同色系呼应">同色系呼应</option>
+              <option value="撞色对比">撞色对比</option>
+              <option value="材质混搭">材质混搭</option>
+              <option value="风格统一">风格统一</option>
+              <option value="休闲运动">休闲运动</option>
+              <option value="正式商务">正式商务</option>
+            </select>
           </div>
         </div>
       </div>
@@ -496,7 +542,7 @@ header .actions span{font-size:11px;color:var(--text2)}
         <div class="form-row-3">
           <div class="form-group">
             <label>活动类型</label>
-            <select id="promoType" onchange="onPromoChange();syncExtraPromoVisibility()">
+            <select id="promoType" onchange="onPromoChange()">
               <option value="">无促销活动</option>
               <optgroup label="── 经典 7 种 (向后兼容) ──">
                 <option value="buy_x_get_y">买X送Y</option>
@@ -539,45 +585,33 @@ header .actions span{font-size:11px;color:var(--text2)}
         </div>
         <!-- V10.2: 新 9 种折扣动态字段容器 -->
         <div class="form-group" id="mainPromoFields" style="display:none"></div>
-        <!-- V11.1 #2: 叠加促销（多选） -->
-        <div class="form-group" id="extraPromoGroup" style="display:none">
-          <label>➕ 叠加促销 <small style="color:var(--text2)">(可多选，作为副文案与主促销组合)</small></label>
-          <div class="chip-group" id="extraPromoChips"></div>
-          <div id="bulkTierBox" style="display:none;margin-top:5px;padding:6px 8px;background:#fff7ed;border:1px solid #fed7aa;border-radius:6px">
-            <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:11px">
-              <span>满</span>
-              <input type="number" id="bulkPieces" value="2" min="2" max="10" style="width:56px;padding:3px 5px" oninput="onExtraPromoInput()">
-              <span>件，享</span>
-              <input type="text" id="bulkDiscount" value="10% OFF" placeholder="如 10% OFF" style="width:100px;padding:3px 5px" oninput="onExtraPromoInput()">
-            </div>
-          </div>
-          <div style="font-size:9px;color:var(--text2);margin-top:3px">建议叠加不超过 2 条：信息越堆越多，反而互相抢注意力</div>
-        </div>
         <!-- V10.3: 促销配色方案选择器 -->
         <div class="form-group">
           <label>🎨 配色方案 <small style="color:var(--text2)">(与品牌调性联动，选品牌调性后自动匹配)</small></label>
           <div class="chip-group" id="promoColorSchemeChips"></div>
-        </div>
-        <!-- V11.2 #1: 折扣底色与大小 -->
-        <div class="form-group" style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px">
-          <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;margin:0">
-            <input type="checkbox" id="promoBadgeBg" checked onchange="onPromoChange()" style="width:auto"> 🏷️ <b>折扣带底色</b>
-          </label>
-          <span style="font-size:9px;color:var(--text2)">取消勾选则只显示彩色文字、无背景色块</span>
-        </div>
-        <div class="form-group">
-          <label>📐 折扣显示大小 <small style="color:var(--text2)">(占画面比例)</small></label>
-          <select id="promoBadgeSize" onchange="onPromoChange()">
-            <option value="small">小 · 点缀（约 15-20% 面积）</option>
-            <option value="medium" selected>中 · 标准（约 30% 面积）</option>
-            <option value="large">大 · 醒目（约 40% 面积）</option>
-          </select>
         </div>
         <div class="form-group" style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#fffbeb;border:1px solid #fde68a;border-radius:6px">
           <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;margin:0">
             <input type="checkbox" id="freeShippingToggle" onchange="onPromoChange()" style="width:auto"> 🚚 <b>此活动包含免运费</b>
           </label>
           <span style="font-size:9px;color:var(--text2)">取消勾选则图片不显示免运费</span>
+        </div>
+        <!-- V11.1 Fix #2: 叠加促销区域 -->
+        <div id="overlayPromoSection" style="display:none;margin-top:8px;padding:8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px">
+          <div style="font-size:11px;font-weight:600;color:#166534;margin-bottom:6px">🔗 叠加促销 <small style="color:var(--text2);font-weight:400">(可多选，展示在主促销下方)</small></div>
+          <div id="overlayPromoCheckboxes" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+          <div id="overlayPromoInputs" style="margin-top:6px"></div>
+        </div>
+        
+        <div class="form-group" style="margin-top:8px;border-top:1px dashed var(--border);padding-top:8px">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+            <input type="checkbox" id="tieredDiscountToggle" onchange="toggleTieredDiscount()" style="width:auto">
+            <span style="font-size:11px;font-weight:500">📊 启用阶梯优惠</span>
+            <small style="color:var(--text2)">(如: 买2件10%OFF, 买3件15%OFF)</small>
+          </label>
+          <div id="tieredDiscountPanel" style="display:none;margin-top:6px;padding:6px;background:#f5f3f0;border-radius:6px">
+            <div id="tieredDiscountTiers"></div>
+          </div>
         </div>
         <div class="form-group" id="promoPreviewGroup" style="display:none">
           <label>📋 促销信息预览</label>
@@ -624,7 +658,7 @@ header .actions span{font-size:11px;color:var(--text2)}
 
         <!-- Dim 4: 使用场景 -->
         <div class="dim-section">
-          <div class="dim-label"><span class="dot" style="background:var(--cyan)"></span> 4. 使用场景</div>
+          <div class="dim-label"><span class="dot" style="background:var(--cyan)"></span> 4. 使用场景 <small style="color:var(--text2)">(可多选)</small></div>
           <div class="chip-group" id="dimScene"></div>
         </div>
 
@@ -644,6 +678,12 @@ header .actions span{font-size:11px;color:var(--text2)}
         <div class="dim-section">
           <div class="dim-label"><span class="dot" style="background:var(--success)"></span> 7. 目标人群 <small style="color:var(--text2)">(多选)</small></div>
           <div class="chip-group" id="dimTargetAudience"></div>
+        </div>
+
+        <!-- V11.2 P0-5: 模特特征画像 -->
+        <div class="dim-section">
+          <div class="dim-label"><span class="dot" style="background:#f59e0b"></span> 9. 模特特征画像 <small style="color:var(--text2)">(可选，单选)</small></div>
+          <div id="dimModelProfile"></div>
         </div>
 
         <!-- V9: Dim 8: 人物类型 -->
@@ -782,37 +822,7 @@ header .actions span{font-size:11px;color:var(--text2)}
           </div>
         </div>
         <div class="form-group">
-          <label class="collapsible collapsed" onclick="toggleCollapse(this)"> ✍️ 种草文案 <span class="auto-badge" style="background:linear-gradient(135deg,#00a884,#1cb0f6)">DeepSeek</span></label>
-          <div class="collapse-content collapsed" id="copyArea">
-            <div style="margin-top:5px">
-              <input type="password" id="deepseekKeyInput" placeholder="输入 DeepSeek API Key (sk-...)" style="margin-bottom:4px">
-              <div style="display:flex;gap:5px;margin-bottom:4px;align-items:center;flex-wrap:wrap">
-                <button class="btn btn-outline btn-sm" onclick="saveDeepSeekKey()">保存Key</button>
-                <label style="display:flex;align-items:center;gap:4px;font-size:11px;margin:0;cursor:pointer">
-                  <input type="checkbox" id="copyStyleCute" style="width:auto"> 语气：可爱俏皮
-                </label>
-                <label style="display:flex;align-items:center;gap:4px;font-size:11px;margin:0;cursor:pointer">
-                  <input type="checkbox" id="copyAutoInclude" checked style="width:auto"> 生成海报时自动附带
-                </label>
-              </div>
-              <button class="btn btn-primary btn-sm" onclick="generateCopy()" style="width:100%;margin-bottom:4px">✨ 生成种草文案（短·带Emoji·适合评论）</button>
-              <textarea id="copyOutput" rows="4" readonly placeholder="生成的种草文案会显示在这里，可直接复制去社媒评论区..." style="width:100%;box-sizing:border-box"></textarea>
-              <div style="display:flex;gap:5px;margin-top:3px;align-items:center">
-                <button class="btn btn-outline btn-sm" onclick="copyCopyText()">📋 复制文案</button>
-                <button class="btn btn-outline btn-sm" onclick="appendCopyToPrompt()">➕ 追加到海报提示词</button>
-                <span id="copyStatus" style="font-size:10px;color:var(--text2)"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="form-group">
           <label>📝 提示词预览 <span class="auto-badge">自动组合</span></label>
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;padding:5px 8px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:6px">
-            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;margin:0">
-              <input type="checkbox" id="llmPromptToggle" onchange="toggleLlmPromptMode()" style="width:auto"> 🧠 <b>智能提示词</b>
-            </label>
-            <span style="font-size:9px;color:var(--text2)">开启后由 AI 整体生成提示词，更懂"修改姿势"等自由描述（每次多 1-3 秒）</span>
-          </div>
           <div class="prompt-preview" id="promptPreview">填写产品信息后自动显示...</div>
         </div>
       </div>
@@ -863,6 +873,28 @@ header .actions span{font-size:11px;color:var(--text2)}
     <button class="btn btn-outline" id="autoFillBtn" onclick="aiAutoFill()">🪄 AI智能填充</button>
     <button class="btn btn-primary" id="generateBtn" onclick="onGenerate()">🚀 生成图片</button>
   </div>
+  <!-- V11.2-P1: Seeding Copy with Template Selector -->
+  <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center">
+    <select id="seedingTemplateSelect" style="padding:6px 10px;border:1.5px solid var(--accent);border-radius:8px;background:white;color:var(--accent);font-size:11px;font-weight:500;cursor:pointer;min-width:180px">
+      <option value="promotion">🔥 促销活动类</option>
+      <option value="selling_point">💡 产品卖点类</option>
+      <option value="discount_code">🎁 折扣码权益型</option>
+      <option value="pain_question">❓ 互动痛点提问类</option>
+      <option value="vote_interactive">👇 投票式互动类</option>
+      <option value="social_proof">🏆 社会认同/爆款热销类</option>
+      <option value="faq">💬 FAQ问题解答类</option>
+      <option value="comparison_list">📋 对比清单类</option>
+      <option value="science_explain">🔬 科普解惑类</option>
+      <option value="scene_solution">🎯 完整场景解决方案类</option>
+      <option value="tutorial">📖 使用教程实操类</option>
+      <option value="before_after">📸 前后对比实测型</option>
+      <option value="material_craft">🔍 材质/工艺科普型</option>
+      <option value="holiday_prep">🎄 节日备货专场型</option>
+      <option value="new_launch">✨ 新品首发通知型</option>
+    </select>
+    <button id="genCopyBtn" onclick="generateSeedingCopyV2()" style="padding:8px 16px;border:1.5px solid var(--accent);border-radius:8px;background:transparent;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer">✨ 生成种草文案</button>
+  </div>
+  <div id="seedingCopyResult" style="display:none;margin-top:10px;padding:12px;background:white;border-radius:10px;border:1px solid var(--border);font-size:12px;line-height:1.8"></div>
 
   <!-- Status -->
   <div class="degrade-indicator" id="degradeIndicator"></div>
@@ -887,7 +919,7 @@ header .actions span{font-size:11px;color:var(--text2)}
     <div class="hc-scroll" id="hcScroll">
       <div class="hc-empty" id="hcEmpty">暂无生成记录，开始创作吧！</div>
       <table class="history-table" id="historyTable" style="display:none">
-        <thead><tr><th>缩略图</th><th>产品名</th><th>版本</th><th>国家</th><th>标签摘要</th><th>时间</th><th>操作</th></tr></thead>
+        <thead><tr><th>缩略图</th><th>产品名</th><th>版本</th><th>品类模板</th><th>国家</th><th>标签摘要</th><th>评分</th><th>采纳</th><th>备注</th><th>时间</th><th>操作</th></tr></thead>
         <tbody id="historyTableBody"></tbody>
       </table>
     </div>
@@ -1235,7 +1267,7 @@ const DIMENSION_DEFS = {
   clothingType: { label: '产品品类/服装类型', dimId: 'dimCategory', color: 'var(--pink)', multi: false, hasSub: true },
   sellingPoint: { label: '核心卖点', dimId: 'dimSellingPoint', color: 'var(--orange)', multi: true },
   painPoint: { label: '用户痛点', dimId: 'dimPainPoint', color: 'var(--danger)', multi: true },
-  scene: { label: '使用场景', dimId: 'dimScene', color: 'var(--cyan)', multi: false },
+  scene: { label: '使用场景', dimId: 'dimScene', color: 'var(--cyan)', multi: true },
   atmosphere: { label: '氛围风格', dimId: 'dimAtmosphere', color: 'var(--purple)', multi: false },
   brandTone: { label: '品牌调性', dimId: 'dimBrandTone', color: 'var(--accent)', multi: false },
   targetAudience: { label: '目标人群', dimId: 'dimTargetAudience', color: 'var(--success)', multi: true },
@@ -1422,6 +1454,28 @@ function filterBannedWords(text) {
   return text.replace(FB_BANNED_CN, '').replace(FB_BANNED_EN, '');
 }
 
+// V11.1 Fix #4: 清理残留标点和全角字符（在stripCJK之前执行）
+function cleanupResidualPunct(text) {
+  if (!text) return text;
+  let s = text;
+  // 全角数字字母转半角
+  s = s.replace(/[\uff10-\uff19]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
+  s = s.replace(/[\uff21-\uff3a]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
+  s = s.replace(/[\uff41-\uff5a]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
+  s = s.replace(/\uff05/g, '%');
+  s = s.replace(/\uff04/g, '$');
+  s = s.replace(/\uff0e/g, '.');
+  s = s.replace(/\uff0c/g, ',');
+  // 丢弃CJK标点
+  const cjkPunct = /[\u3000-\u3003\u3008-\u3011\u3014-\u301f\uff08\uff09\uff0c\uff0e\uff1a\uff1b\uff01\uff1f\u201c\u201d\u2018\u2019\u300a\u300b\u3008\u3009\u3010\u3011\u3014\u3015\uff3b\uff3d\u3002\uff64\u300c\u300d\u300e\u300f\u301d\u301e\u301f\uff5e]/g;
+  s = s.replace(cjkPunct, '');
+  // 清除空括号残渣
+  s = s.replace(/\(\s*\)/g, '');
+  s = s.replace(/\[\s*\]/g, '');
+  s = s.replace(/\{\s*\}/g, '');
+  return s;
+}
+
 // V9.3: 强力清除所有中日韩文字（用于最终prompt）
 function stripCJK(text) {
   if (!text) return text;
@@ -1454,7 +1508,7 @@ let qualityScore = null;
 let genRecords = JSON.parse(localStorage.getItem('poster_ai_records') || '[]');
 let selectedTags = {
   category: '', clothingType: '', sellingPoints: [], painPoints: [],
-  scene: '', atmosphere: '', brandTone: '',
+  scenes: [], atmosphere: '', brandTone: '',
   targetAges: [], targetGenders: [], targetIdentities: [],
   clothingTemplates: [], personType: '', industryMode: 'normal_clothing', heTemplates: [], degradeLevel: 0
 };
@@ -1465,12 +1519,286 @@ let selectedPersonType = '';
 let selectedIndustryMode = 'normal_clothing';
 let degradeLevel = 0;
 let degradeRetryCount = 0;
+
+// V11.2 P0-1: Tag to English Prompt mapping system
+const TAG_PROMPT_MAP = {
+  sellingPoint: {
+    '透气面料': 'lightweight breathable fabric texture with visible weave detail',
+    '修身版型': 'slim-fit silhouette emphasizing body-flattering tailoring',
+    '防水': 'waterproof coating with water-beading surface effect',
+    '耐用': 'durable heavy-duty construction reinforced stitching',
+    '舒适': 'soft comfortable ergonomic design for all-day wear',
+    '高级感': 'premium luxury quality with refined finish',
+    '大容量': 'spacious roomy interior with multiple compartments',
+    '环保材质': 'eco-friendly sustainable materials natural texture',
+    '防滑': 'non-slip grip surface with textured pattern',
+    '轻便': 'ultra-lightweight compact portable design',
+    '简约设计': 'minimalist clean design with subtle detailing',
+    '多功能': 'multi-functional versatile design with practical features',
+    '吸湿排汗': 'moisture-wicking quick-dry fabric technology',
+    '弹力': 'stretchy flexible fabric with comfortable movement',
+    '保暖': 'warm insulated thermal retention design',
+    '防晒': 'UV protection sun-blocking fabric',
+    '抗菌': 'antibacterial odor-resistant treatment',
+    '易打理': 'easy care wrinkle-free low maintenance',
+    '高颜值': 'visually stunning aesthetic eye-catching design',
+    '性价比高': 'great value for money affordable quality'
+  },
+  painPoint: {
+    '夏季闷热': 'hot summer heat relief cooling ventilation',
+    '皮肤敏感': 'sensitive skin friendly hypoallergenic gentle',
+    '出行不便': 'travel inconvenience solved portable easy-carry',
+    '难清洗': 'hard to clean stain-resistant easy wash',
+    '不透气': 'poor ventilation replaced with breathable airflow',
+    '容易坏': 'fragile replaced with long-lasting durability',
+    '款式单一': 'limited styles replaced with variety',
+    '不防滑': 'slippery replaced with secure non-slip grip',
+    '收纳困难': 'storage difficulty solved with compact organization'
+  },
+  scene: {
+    '通勤': 'daily commute urban professional setting',
+    '运动健身': 'sports fitness gym active lifestyle environment',
+    '户外': 'outdoor adventure nature setting',
+    '商务': 'business formal corporate environment',
+    '日常': 'everyday casual lifestyle setting',
+    '约会': 'date occasion romantic elegant setting',
+    '旅行': 'travel journey adventure portable',
+    '家居': 'home cozy interior comfortable setting',
+    '职场': 'workplace office professional environment',
+    '聚会': 'party social gathering festive setting',
+    '购物': 'shopping mall retail environment',
+    '校园': 'campus school youthful academic setting'
+  },
+  atmosphere: {
+    '高端型-质感奢华': 'luxury premium commercial photography rich texture',
+    '年轻潮流型-活力时尚': 'young trendy vibrant fashion-forward style',
+    '简约高级': 'minimalist premium clean aesthetic',
+    '温馨生活型-亲切自然': 'warm cozy lifestyle natural inviting atmosphere',
+    '清新自然型-纯净简约': 'fresh natural pure clean organic feel',
+    '精致优雅': 'refined elegant sophisticated delicate styling',
+    '科技感-未来前卫': 'tech-forward futuristic innovative digital aesthetic',
+    '复古怀旧': 'retro vintage nostalgic classic feel'
+  },
+  brandTone: {
+    '奢华': 'luxury high-end prestigious brand aesthetic',
+    '年轻': 'youthful dynamic energetic brand voice',
+    '专业': 'professional authoritative expert brand positioning',
+    '自然': 'natural organic authentic brand identity',
+    '科技': 'tech-forward innovative modern brand feel',
+    '温馨': 'warm caring emotional brand connection',
+    '时尚': 'fashionable trendy stylish brand image',
+    '可靠': 'reliable trustworthy dependable brand promise'
+  }
+};
+
+function translateTagToPrompt(dimension, tagName) {
+  if (!tagName) return '';
+  if (TAG_PROMPT_MAP[dimension] && TAG_PROMPT_MAP[dimension][tagName]) {
+    return TAG_PROMPT_MAP[dimension][tagName];
+  }
+  return tagName;
+}
+
+
+
+// V11.2 P0-5: Model Profile (Target Person Portrait)
+const MODEL_RACE_OPTIONS = [
+  { value: 'asian_female', label: '亚洲女性', prompt: 'Asian female model' },
+  { value: 'asian_male', label: '亚洲男性', prompt: 'Asian male model' },
+  { value: 'caucasian_female', label: '白人女性', prompt: 'Caucasian female model' },
+  { value: 'caucasian_male', label: '白人男性', prompt: 'Caucasian male model' },
+  { value: 'black_female', label: '黑人女性', prompt: 'Black female model' },
+  { value: 'black_male', label: '黑人男性', prompt: 'Black male model' },
+  { value: 'latino_female', label: '拉美裔女性', prompt: 'Latina female model' },
+  { value: 'latino_male', label: '拉美裔男性', prompt: 'Latino male model' },
+  { value: 'middle_east_female', label: '中东女性', prompt: 'Middle Eastern female model' },
+  { value: 'middle_east_male', label: '中东男性', prompt: 'Middle Eastern male model' },
+  { value: 'mixed', label: '混血特征', prompt: 'mixed-race model with diverse features' }
+];
+const MODEL_BODY_OPTIONS = [
+  { value: 'slim', label: '纤细模特', prompt: 'slim slender body type' },
+  { value: 'athletic', label: '运动健美型', prompt: 'athletic toned fitness body' },
+  { value: 'average', label: '身材匀称', prompt: 'balanced natural body proportion' },
+  { value: 'curvy', label: '丰满曲线', prompt: 'curvy full-figured model' },
+  { value: 'plus_size', label: '大码身材', prompt: 'plus-size model confident body positivity' },
+  { value: 'mature', label: '年长自然型', prompt: 'mature natural age-appropriate model' }
+];
+const MODEL_AGE_OPTIONS = [
+  { value: '18-25', label: '18-25岁', prompt: 'aged 18 to 25 young adult' },
+  { value: '25-35', label: '25-35岁', prompt: 'aged 25 to 35' },
+  { value: '35-45', label: '35-45岁', prompt: 'aged 35 to 45 middle-aged' },
+  { value: '45-55', label: '45-55岁', prompt: 'aged 45 to 55' },
+  { value: '55+', label: '55岁以上', prompt: 'senior model aged 55 and above' }
+];
+const MODEL_STYLE_OPTIONS = [
+  { value: 'commercial', label: '商业模特感', prompt: 'professional commercial model look polished' },
+  { value: 'realistic', label: '真实消费者感', prompt: 'real person authentic relatable consumer look' },
+  { value: 'fashion', label: '高级时尚感', prompt: 'high fashion editorial sophisticated look' },
+  { value: 'lifestyle', label: '生活自然感', prompt: 'natural lifestyle candid authentic feel' },
+  { value: 'professional', label: '专业职业感', prompt: 'professional occupation uniform work-ready appearance' }
+];
+let modelProfile = { race: '', body: '', age: '', style: '' };
+
+function selectModelRace(val) {
+  modelProfile.race = modelProfile.race === val ? '' : val;
+  renderModelProfileSection();
+  updatePreview(); updateAnalysis();
+}
+function selectModelBody(val) {
+  modelProfile.body = modelProfile.body === val ? '' : val;
+  renderModelProfileSection();
+  updatePreview(); updateAnalysis();
+}
+function selectModelAge(val) {
+  modelProfile.age = modelProfile.age === val ? '' : val;
+  renderModelProfileSection();
+  updatePreview(); updateAnalysis();
+}
+function selectModelStyle(val) {
+  modelProfile.style = modelProfile.style === val ? '' : val;
+  renderModelProfileSection();
+  updatePreview(); updateAnalysis();
+}
+
+function renderModelProfileSection() {
+  const el = document.getElementById('dimModelProfile');
+  if (!el) return;
+  let html = '';
+  // Race
+  html += '<div style="margin-bottom:6px"><div style="font-size:10px;color:var(--text2);margin-bottom:3px">🌍 人种/族裔</div><div class="chip-group">';
+  MODEL_RACE_OPTIONS.forEach(o => {
+    html += '<div class="chip chip-cyan' + (modelProfile.race===o.value?' active':'') + '" onclick="selectModelRace(\'' + o.value + '\')">' + o.label + '</div>';
+  });
+  html += '</div></div>';
+  // Body
+  html += '<div style="margin-bottom:6px"><div style="font-size:10px;color:var(--text2);margin-bottom:3px">👤 身材类型</div><div class="chip-group">';
+  MODEL_BODY_OPTIONS.forEach(o => {
+    html += '<div class="chip chip-purple' + (modelProfile.body===o.value?' active':'') + '" onclick="selectModelBody(\'' + o.value + '\')">' + o.label + '</div>';
+  });
+  html += '</div></div>';
+  // Age
+  html += '<div style="margin-bottom:6px"><div style="font-size:10px;color:var(--text2);margin-bottom:3px">🎂 年龄范围</div><div class="chip-group">';
+  MODEL_AGE_OPTIONS.forEach(o => {
+    html += '<div class="chip chip-success' + (modelProfile.age===o.value?' active':'') + '" onclick="selectModelAge(\'' + o.value + '\')">' + o.label + '</div>';
+  });
+  html += '</div></div>';
+  // Style
+  html += '<div><div style="font-size:10px;color:var(--text2);margin-bottom:3px">✨ 外貌风格</div><div class="chip-group">';
+  MODEL_STYLE_OPTIONS.forEach(o => {
+    html += '<div class="chip' + (modelProfile.style===o.value?' active':'') + '" onclick="selectModelStyle(\'' + o.value + '\')">' + o.label + '</div>';
+  });
+  html += '</div></div>';
+  el.innerHTML = html;
+}
+
+function buildModelProfilePrompt() {
+  const parts = [];
+  if (modelProfile.race) {
+    const o = MODEL_RACE_OPTIONS.find(x => x.value === modelProfile.race);
+    if (o) parts.push(o.prompt);
+  }
+  if (modelProfile.body) {
+    const o = MODEL_BODY_OPTIONS.find(x => x.value === modelProfile.body);
+    if (o) parts.push(o.prompt);
+  }
+  if (modelProfile.age) {
+    const o = MODEL_AGE_OPTIONS.find(x => x.value === modelProfile.age);
+    if (o) parts.push(o.prompt);
+  }
+  if (modelProfile.style) {
+    const o = MODEL_STYLE_OPTIONS.find(x => x.value === modelProfile.style);
+    if (o) parts.push(o.prompt);
+  }
+  if (parts.length === 0) return '';
+  return '\nMODEL CHARACTERISTICS:\n- ' + parts.join(', ');
+}
+
 let tagWeights = Object.assign({}, TAG_WEIGHTS);
 let v9Records = JSON.parse(localStorage.getItem('poster_v9_records') || '[]');
 let favorites = new Set(v9Records.filter(r => r.favorited).map(r => r.id));
 // V9.2: Promotion config state (Fix #1, #2, #5)
-let promoConfig = { type: '', buyCount: 3, getCount: 2, discountValue: '', giftDesc: '', freeShipping: false, colorScheme: '强销售转化', extraPromos: [], bulkPieces: 2, bulkDiscount: '10% OFF', badgeBg: true, badgeSize: 'medium' }; // V11.2 #1: badgeBg/badgeSize 折扣底色与大小；V11.1 #2: extraPromos 等为新增，旧记录读取时自动补默认值
-let pairingConfig = { list: [], style: 'matching' }; // V11.2 #3: 搭配单品支持多选
+let promoConfig = { type: '', buyCount: 3, getCount: 2, discountValue: '', giftDesc: '', freeShipping: false, colorScheme: '强销售转化' };
+// V11.1 Fix #2: 叠加促销状态
+let overlayPromos = [];
+const OVERLAY_PROMO_OPTIONS = [
+  { key: 'bulk_discount', label: '满件折扣', hasInput: true, inputLabel: '件数', inputPlaceholder: '如: 3件8折', unit: '件', defaultValue: '' },
+  { key: 'free_shipping_overlay', label: '免运费', hasInput: false },
+  { key: 'flash_sale_overlay', label: '限时抢购', hasInput: false },
+  { key: 'free_gift_overlay', label: '加赠好礼', hasInput: true, inputLabel: '赠品描述', inputPlaceholder: '如: 送精美化妆包', defaultValue: '' },
+  { key: 'new_customer_overlay', label: '新客立减', hasInput: true, inputLabel: '金额($)', inputPlaceholder: '如: 10', defaultValue: '' },
+  { key: 'clearance_overlay', label: '清仓特价', hasInput: false }
+];
+
+// V11.2 P0-6: Tiered discount configuration
+let tieredDiscountConfig = {
+  enabled: false,
+  tiers: [
+    { count: 2, discount: '10% OFF' },
+    { count: 3, discount: '15% OFF' },
+    { count: 5, discount: '20% OFF' }
+  ]
+};
+
+function toggleTieredDiscount() {
+  tieredDiscountConfig.enabled = !tieredDiscountConfig.enabled;
+  const panel = document.getElementById('tieredDiscountPanel');
+  if (panel) panel.style.display = tieredDiscountConfig.enabled ? 'block' : 'none';
+  updatePreview();
+}
+
+function updateTieredDiscount(idx, field, value) {
+  if (tieredDiscountConfig.tiers[idx]) {
+    if (field === 'count') tieredDiscountConfig.tiers[idx].count = parseInt(value) || 1;
+    else tieredDiscountConfig.tiers[idx].discount = value;
+  }
+  updatePreview();
+}
+
+function addTieredDiscountTier() {
+  if (tieredDiscountConfig.tiers.length >= 5) return;
+  const lastCount = tieredDiscountConfig.tiers.length > 0 ? tieredDiscountConfig.tiers[tieredDiscountConfig.tiers.length-1].count + 1 : 2;
+  tieredDiscountConfig.tiers.push({ count: lastCount, discount: '5% OFF' });
+  renderTieredDiscountPanel();
+  updatePreview();
+}
+
+function removeTieredDiscountTier(idx) {
+  tieredDiscountConfig.tiers.splice(idx, 1);
+  renderTieredDiscountPanel();
+  updatePreview();
+}
+
+function renderTieredDiscountPanel() {
+  const el = document.getElementById('tieredDiscountTiers');
+  if (!el) return;
+  let html = '';
+  tieredDiscountConfig.tiers.forEach((tier, idx) => {
+    html += '<div style="display:flex;gap:4px;align-items:center;margin-bottom:4px">' +
+      '<span style="font-size:10px;color:var(--text2);min-width:40px">满</span>' +
+      '<input type="number" min="1" max="99" value="' + tier.count + '" onchange="updateTieredDiscount(' + idx + ',\'count\',this.value)" style="width:50px;padding:3px 5px;font-size:11px;border:1px solid var(--border);border-radius:4px">' +
+      '<span style="font-size:10px;color:var(--text2)">件</span>' +
+      '<input type="text" value="' + tier.discount + '" onchange="updateTieredDiscount(' + idx + ',\'discount\',this.value)" style="width:80px;padding:3px 5px;font-size:11px;border:1px solid var(--border);border-radius:4px">' +
+      '<span style="font-size:10px;color:var(--text2)">优惠</span>' +
+      (tieredDiscountConfig.tiers.length > 1 ? '<button onclick="removeTieredDiscountTier(' + idx + ')" style="padding:1px 5px;font-size:10px;border:1px solid var(--danger);color:var(--danger);background:transparent;border-radius:3px;cursor:pointer">✕</button>' : '') +
+      '</div>';
+  });
+  if (tieredDiscountConfig.tiers.length < 5) {
+    html += '<button onclick="addTieredDiscountTier()" style="padding:2px 8px;font-size:10px;border:1px dashed var(--border);background:transparent;border-radius:4px;cursor:pointer;color:var(--text2)">+ 添加阶梯</button>';
+  }
+  el.innerHTML = html;
+}
+
+function buildTieredDiscountPromptLines() {
+  if (!tieredDiscountConfig.enabled || tieredDiscountConfig.tiers.length === 0) return [];
+  const lines = [];
+  lines.push('\nTIERED DISCOUNT OFFER:');
+  tieredDiscountConfig.tiers.forEach(t => {
+    lines.push('- Buy ' + t.count + ' items: ' + t.discount);
+  });
+  lines.push('Display the best deal (highest tier) prominently, with smaller text showing all tiers.');
+  return lines;
+}
+
 // V10.3: 促销配色方案 (适用于所有品类)
 const PROMO_COLOR_SCHEMES = [
   { key: '简约高级', name: '简约高级', color: '#212121', desc: '极简黑白+微金点缀', promptDesc: 'sleek black and white monochrome with subtle gold accents, ultra-premium minimalist style' },
@@ -1487,6 +1815,14 @@ let appMode = localStorage.getItem('poster_v11_app_mode') || 'categoryTemplate';
 let selectedCategoryTemplate = localStorage.getItem('poster_v11_selected_category') || '';
 let categorySelectionsCache = {}; // Cache selections per category for restoring when switching back
 
+
+
+// V11.1 Fix #3: 搭配单品状态
+let pairingConfig = { category: '', style: '' };
+const PAIRING_CATEGORIES = ['不搭配', '上衣', '裤装', '裙装', '外套', '鞋', '包', '帽子', '围巾', '腰带', '眼镜', '首饰'];
+const PAIRING_STYLES = ['不限风格', '同色系呼应', '撞色对比', '材质混搭', '风格统一', '休闲运动', '正式商务'];
+const PAIRING_CATEGORY_EN = { '上衣':'top','裤装':'pants','裙装':'skirt','外套':'jacket','鞋':'shoes','包':'bag','帽子':'hat','围巾':'scarf','腰带':'belt','眼镜':'glasses','首饰':'jewelry' };
+const PAIRING_STYLE_EN = { '同色系呼应':'tonal coordination','撞色对比':'contrast color pairing','材质混搭':'mixed texture styling','风格统一':'unified style','休闲运动':'casual sporty','正式商务':'formal business' };
 
 // ============ TAG MANAGEMENT ============
 function loadTags() {
@@ -1549,7 +1885,7 @@ function renderAllDimensions() {
   } else {
     // Full render for clothing categories or legacy mode
     renderCategoryChips(); renderSellingPointChips(); renderPainPointChips();
-    renderSceneChips(); renderAtmosphereChips(); renderBrandToneChips();
+    renderSceneChips(); renderAtmosphereChips(); renderModelProfileSection(); renderBrandToneChips();
     renderTargetAudienceChips(); renderPersonTypeOptions(); updateClothingVisibility(); renderHETemplates();
     
     // In legacy mode, show everything
@@ -1620,7 +1956,7 @@ function renderPainPointChips() {
 
 function renderSceneChips() {
   document.getElementById('dimScene').innerHTML = tagData.scene.map(s =>
-    `<div class="chip chip-cyan${selectedTags.scene===s?' active':''}" onclick="selectScene('${s}')">${s}${getWeightMark(s)}</div>`
+    `<div class="chip chip-cyan${(selectedTags.scenes||[]).includes(s)?' active':''}" onclick="toggleScene('${s}')">${s}${getWeightMark(s)}</div>`
   ).join('');
 }
 
@@ -1771,18 +2107,50 @@ function toggleSellingPoint(name) {
   const idx = selectedTags.sellingPoints.indexOf(name);
   if (idx >= 0) selectedTags.sellingPoints.splice(idx, 1);
   else { if (selectedTags.sellingPoints.length >= 5) selectedTags.sellingPoints.shift(); selectedTags.sellingPoints.push(name); }
-  if (isNonClothingTemplate()) { reRenderChipsForTemplate(); return; }
-  renderSellingPointChips(); updatePreview(); updateAnalysis();
+  // V11.2 Fix: 在品类模板模式下，用 placeholder 重新渲染而不是从 tagData 渲染
+  if (appMode === 'categoryTemplate' && selectedCategoryTemplate) {
+    const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
+    if (tpl && tpl.placeholderTags) { applyPlaceholderTags(tpl); }
+    else { renderSellingPointChips(); }
+  } else {
+    renderSellingPointChips();
+  }
+  updatePreview(); updateAnalysis();
 }
 function togglePainPoint(name) {
   const idx = selectedTags.painPoints.indexOf(name);
   if (idx >= 0) selectedTags.painPoints.splice(idx, 1);
   else { if (selectedTags.painPoints.length >= 3) selectedTags.painPoints.shift(); selectedTags.painPoints.push(name); }
-  if (isNonClothingTemplate()) { reRenderChipsForTemplate(); return; }
   renderPainPointChips(); updatePreview(); updateAnalysis();
 }
-function selectScene(name) { selectedTags.scene = selectedTags.scene === name ? '' : name; if (isNonClothingTemplate()) { reRenderChipsForTemplate(); return; } renderSceneChips(); updatePreview(); updateAnalysis(); }
-function selectAtmosphere(name) { selectedTags.atmosphere = selectedTags.atmosphere === name ? '' : name; if (isNonClothingTemplate()) { reRenderChipsForTemplate(); return; } renderAtmosphereChips(); updatePreview(); updateAnalysis(); }
+function selectScene(name) { toggleScene(name); }
+function toggleScene(name) {
+  if (!selectedTags.scenes) selectedTags.scenes = [];
+  const idx = selectedTags.scenes.indexOf(name);
+  if (idx >= 0) selectedTags.scenes.splice(idx, 1);
+  else { if (selectedTags.scenes.length >= 3) selectedTags.scenes.shift(); selectedTags.scenes.push(name); }
+  // V11.2 Fix
+  if (appMode === 'categoryTemplate' && selectedCategoryTemplate) {
+    const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
+    if (tpl && tpl.placeholderTags) { applyPlaceholderTags(tpl); }
+    else { renderSceneChips(); }
+  } else {
+    renderSceneChips();
+  }
+  updatePreview(); updateAnalysis();
+}
+function selectAtmosphere(name) { 
+  selectedTags.atmosphere = selectedTags.atmosphere === name ? '' : name; 
+  // V11.2 Fix
+  if (appMode === 'categoryTemplate' && selectedCategoryTemplate) {
+    const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
+    if (tpl && tpl.placeholderTags) { applyPlaceholderTags(tpl); }
+    else { renderAtmosphereChips(); }
+  } else {
+    renderAtmosphereChips();
+  }
+  updatePreview(); updateAnalysis();
+}
 function selectBrandTone(name) {
   selectedTags.brandTone = selectedTags.brandTone === name ? '' : name;
   // 正向联动：品牌调性 → 促销配色
@@ -1872,7 +2240,7 @@ function updateSelectionSummary() {
   if (selectedTags.category) parts.push(`<b>品类:</b> ${selectedTags.category}${selectedTags.clothingType?' / '+selectedTags.clothingType:''}`);
   if (selectedTags.sellingPoints.length) parts.push(`<b>卖点:</b> ${selectedTags.sellingPoints.join('、')}`);
   if (selectedTags.painPoints.length) parts.push(`<b>痛点:</b> ${selectedTags.painPoints.join('、')}`);
-  if (selectedTags.scene) parts.push(`<b>场景:</b> ${selectedTags.scene}`);
+  if (selectedTags.scenes && selectedTags.scenes.length) parts.push(`<b>场景:</b> ${selectedTags.scenes.join('、')}`);
   if (selectedTags.atmosphere) parts.push(`<b>氛围:</b> ${selectedTags.atmosphere}`);
   if (selectedTags.brandTone) parts.push(`<b>调性:</b> ${selectedTags.brandTone}`);
   const aud = [...(selectedTags.targetAges||[]), ...(selectedTags.targetGenders||[]), ...(selectedTags.targetIdentities||[])];
@@ -1978,7 +2346,7 @@ function selectCategoryTemplate(catName) {
     selectedTags.clothingType = '';
     selectedTags.sellingPoints = [];
     selectedTags.painPoints = [];
-    selectedTags.scene = '';
+    selectedTags.scenes = [];
     selectedTags.atmosphere = '';
     selectedTags.brandTone = '';
     selectedTags.targetAges = [];
@@ -2102,7 +2470,7 @@ function applyPlaceholderTags(tpl) {
     const el = document.getElementById('dimScene');
     if (el) {
       el.innerHTML = ph.scene.map(s => {
-        const active = selectedTags.scene === s ? ' active' : '';
+        const active = (selectedTags.scenes||[]).includes(s) ? ' active' : '';
         return '<div class="chip chip-cyan' + active + '" onclick="selectScene(\'' + s.replace(/'/g, "\'") + '\')">' + s + '</div>';
       }).join('');
     }
@@ -2131,34 +2499,11 @@ function applyPlaceholderTags(tpl) {
   }
 }
 
-// V11.3 fix#2: 判断是否处于“非服装品类模板”模式。
-// 该模式下 selectedTags.category 为空，卖点/场景等来自模板占位标签（placeholderTags），
-// 不能回退到 tagData['服装'] 的重渲染（否则点一下卖点就跳回服装选项）。
-function isNonClothingTemplate() {
-  try {
-    if (appMode !== 'categoryTemplate' || !selectedCategoryTemplate) return false;
-    const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
-    return !!(tpl && !tpl.useExistingTags);
-  } catch (e) { return false; }
-}
-
-// 非服装模板模式下，点击卖点/痛点/场景/氛围后，用模板占位标签重渲染，
-// 保持该品类的选项不变（只更新高亮态），避免回退到服装。
-function reRenderChipsForTemplate() {
-  const tpl = CATEGORY_TEMPLATES[selectedCategoryTemplate];
-  if (tpl) applyPlaceholderTags(tpl);
-  renderBrandToneChips();
-  renderTargetAudienceChips();
-  updatePreview();
-  updateAnalysis();
-}
-
 // Switch app mode between categoryTemplate and legacy
 function switchAppMode(mode) {
   appMode = mode;
   localStorage.setItem('poster_v11_app_mode', mode);
-
-
+  
   // Update toggle buttons
   document.getElementById('modeBtnCategoryTemplate').classList.toggle('active-mode', mode === 'categoryTemplate');
   document.getElementById('modeBtnLegacy').classList.toggle('active-mode', mode === 'legacy');
@@ -2225,244 +2570,146 @@ function showMainApp() {
 }
 
 
-// ============ PROMPT BUILDING ============
-
-// ============ V11.1 #2 / #3: 叠加促销 与 搭配单品 ============
-// 设计原则：不修改原有 buildAutoPrompt / buildPromoPromptLines 的任何一行，
-// 改为在其外层包一层，原逻辑整体作为 Core 保留，新能力以增量方式追加。
-
-const EXTRA_PROMO_OPTIONS = [
-  { key: 'bulk_tier',     label: '满件折扣', en: '' },
-  { key: 'free_shipping', label: '免运费',   en: 'FREE SHIPPING' },
-  { key: 'limited_time',  label: '限时抢购', en: 'LIMITED TIME ONLY' },
-  { key: 'gift',          label: '加赠好礼', en: 'FREE GIFT INCLUDED' },
-  { key: 'new_customer',  label: '新客立减', en: 'NEW CUSTOMER DEAL' },
-  { key: 'clearance',     label: '清仓特价', en: 'FINAL CLEARANCE' }
-];
-
-function renderExtraPromoChips() {
-  const box = document.getElementById('extraPromoChips');
-  if (!box) return;
-  if (!promoConfig.extraPromos) promoConfig.extraPromos = [];
-  box.innerHTML = EXTRA_PROMO_OPTIONS.map(o =>
-    '<button class="chip chip-orange' + (promoConfig.extraPromos.indexOf(o.key) >= 0 ? ' active' : '') +
-    '" onclick="toggleExtraPromo(\'' + o.key + '\')">' + o.label + '</button>'
-  ).join('');
-  const bulkBox = document.getElementById('bulkTierBox');
-  if (bulkBox) bulkBox.style.display = promoConfig.extraPromos.indexOf('bulk_tier') >= 0 ? 'block' : 'none';
-}
-
-function toggleExtraPromo(key) {
-  if (!promoConfig.extraPromos) promoConfig.extraPromos = [];
-  const i = promoConfig.extraPromos.indexOf(key);
-  if (i >= 0) promoConfig.extraPromos.splice(i, 1);
-  else promoConfig.extraPromos.push(key);
-  renderExtraPromoChips();
-  if (typeof updatePreview === 'function') updatePreview();
-}
-
-function onExtraPromoInput() {
-  const pcs = document.getElementById('bulkPieces');
-  const dis = document.getElementById('bulkDiscount');
-  if (pcs) promoConfig.bulkPieces = parseInt(pcs.value) || 2;
-  if (dis) promoConfig.bulkDiscount = dis.value || '10% OFF';
-  if (typeof updatePreview === 'function') updatePreview();
-}
-
-// 主促销存在时才显示叠加区：没有主促销就谈不上"叠加"
-function syncExtraPromoVisibility() {
-  const g = document.getElementById('extraPromoGroup');
-  if (!g) return;
-  const hasMain = !!(document.getElementById('promoType') && document.getElementById('promoType').value);
-  g.style.display = hasMain ? 'block' : 'none';
-  if (!hasMain) { promoConfig.extraPromos = []; renderExtraPromoChips(); }
-}
-
-// 叠加促销 → 副层文案。刻意压制字号层级，避免与主促销抢视觉焦点
-function buildExtraPromoLines() {
-  const list = (promoConfig && promoConfig.extraPromos) || [];
-  if (!list.length) return [];
-  const texts = [];
-  list.forEach(k => {
-    if (k === 'bulk_tier') {
-      const pcs = promoConfig.bulkPieces || 2;
-      const dis = promoConfig.bulkDiscount || '10% OFF';
-      texts.push('BUY ' + pcs + '+ GET EXTRA ' + dis);
-    } else {
-      const o = EXTRA_PROMO_OPTIONS.find(x => x.key === k);
-      if (o && o.en) texts.push(o.en);
-    }
-  });
-  if (!texts.length) return [];
-  const lines = [];
-  lines.push('\n=== SECONDARY PROMOTION (SUB-LAYER, MUST NOT OVERPOWER THE MAIN BADGE) ===');
-  lines.push('Additional stacked offers to display: ' + texts.map(t => '"' + t + '"').join(' , '));
-  lines.push('HIERARCHY: These are SECONDARY. Render them in a small ribbon/strip at the BOTTOM of the poster, or as a small corner tag.');
-  lines.push('SIZE LIMIT: Each secondary line must be at most 1/3 the font size of the main discount badge.');
-  lines.push('The main discount stays the single dominant hero element; secondary offers only support it.');
-  lines.push('Keep every number, currency symbol and percent sign EXACTLY as written above.');
-  lines.push('=== END SECONDARY PROMOTION ===\n');
-  return lines;
-}
-
-// V11.1 #4: 文字准确性约束。图像模型渲染数字/百分号本就不稳，
-// 这里用强约束把出错率压下来。注意这只能"改善"，做不到 100%——
-// 要彻底根治，唯一可靠的路子是 AI 只出留白底图、文字用 Canvas 叠加。
-const TEXT_ACCURACY_LINES = [
-  '\n=== TEXT RENDERING ACCURACY (CRITICAL) ===',
-  'Reproduce every character, digit, currency symbol and percent sign EXACTLY as specified above.',
-  'Do NOT alter, round, swap, duplicate or re-order any number. Numbers must match digit-for-digit.',
-  'Use clean, standard, fully-formed Latin letterforms. No garbled, broken, invented or illegible glyphs.',
-  'No CJK characters. No random letter strings. If unsure about a character, render the specified text verbatim.',
-  '=== END TEXT RENDERING ACCURACY ===\n'
-];
-
-// 包装层：原促销逻辑照常执行，其后追加叠加促销副层与文字准确性约束
-function buildPromoPromptLines() {
-  let lines = [];
-  try { lines = buildPromoPromptLinesCore() || []; } catch (e) { console.warn('promo core failed', e); lines = []; }
-  const extra = buildExtraPromoLines();
-  if (!extra.length) return lines.length ? lines.concat(TEXT_ACCURACY_LINES) : lines;
-  // 没有主促销却选了叠加项时，把叠加项提升为主展示，避免用户白选
-  if (!lines.length) {
-    const list = (promoConfig && promoConfig.extraPromos) || [];
-    const texts = [];
-    list.forEach(k => {
-      if (k === 'bulk_tier') texts.push('BUY ' + (promoConfig.bulkPieces || 2) + '+ GET EXTRA ' + (promoConfig.bulkDiscount || '10% OFF'));
-      else { const o = EXTRA_PROMO_OPTIONS.find(x => x.key === k); if (o && o.en) texts.push(o.en); }
-    });
-    return ['\n=== PROMOTION BADGE ===',
-            'Show these promotional offers prominently: ' + texts.map(t => '"' + t + '"').join(' , '),
-            'Keep every number and percent sign EXACTLY as written.',
-            '=== END PROMOTION ===\n'].concat(TEXT_ACCURACY_LINES);
-  }
-  return lines.concat(extra).concat(TEXT_ACCURACY_LINES);
-}
-
-// 搭配单品 → 提示词。最关键的是锁死主商品，否则模型会顺手把在售商品重新设计
-const PAIR_EN = {
-  bottoms: 'bottoms', pants: 'trousers', jeans: 'jeans', skirt: 'skirt', shorts: 'shorts',
-  top: 'top garment', outerwear: 'outerwear jacket', shoes: 'shoes', bag: 'handbag',
-  accessory: 'fashion accessories', full_look: 'a complete coordinated outfit'
-};
-const PAIR_LABEL = {
-  bottoms: '下装', pants: '裤子', jeans: '牛仔裤', skirt: '裙子', shorts: '短裤',
-  top: '上衣', outerwear: '外套', shoes: '鞋履', bag: '包袋',
-  accessory: '配饰', full_look: '整套穿搭'
-};
-const STYLE_EN = {
-  matching: 'color-coordinated, harmonious tones', contrast: 'bold contrasting colors',
-  casual: 'casual everyday styling', commute: 'smart office / commute styling',
-  street: 'street fashion styling', elegant: 'elegant and refined styling'
-};
-
-function renderPairingChips() {
-  const box = document.getElementById('pairingChips');
-  if (!box) return;
-  box.innerHTML = Object.keys(PAIR_EN).map(k =>
-    `<span class="chip${pairingConfig.list.includes(k) ? ' active' : ''}" onclick="togglePairing('${k}')">${PAIR_LABEL[k] || k}</span>`
-  ).join('');
-}
-
-function togglePairing(k) {
-  const i = pairingConfig.list.indexOf(k);
-  if (i >= 0) pairingConfig.list.splice(i, 1); else pairingConfig.list.push(k);
-  renderPairingChips();
-  onPairingChange();
-}
-
-function buildPairingPromptLines() {
-  if (!pairingConfig.list || !pairingConfig.list.length) return [];
-  const styleEn = STYLE_EN[pairingConfig.style] || STYLE_EN.matching;
-  const pairEns = pairingConfig.list.map(k => PAIR_EN[k] || 'matching item');
-  const pairLabels = pairingConfig.list.map(k => PAIR_LABEL[k] || k);
-  const lines = ['\n=== OUTFIT PAIRING (CRITICAL PRODUCT-INTEGRITY RULE) ==='];
-  if (pairEns.length === 1) {
-    lines.push('ADD a matching ' + pairEns[0] + ' (' + pairLabels[0] + ') to complete the look, styled as: ' + styleEn + '.');
-  } else {
-    lines.push('ADD these matching items to complete the look, styled as: ' + styleEn + ':');
-    pairEns.forEach((pe, idx) => lines.push('- ' + pe + ' (' + (pairLabels[idx] || pe) + ')'));
-    lines.push('Arrange all paired items together around the hero product in a coordinated ensemble.');
-  }
-  lines.push('ABSOLUTE CONSTRAINT: The original product being sold must remain EXACTLY unchanged —');
-  lines.push('identical color, identical pattern, identical cut, identical fabric texture, identical buttons and details.');
-  lines.push('Do NOT redesign, recolor, restyle, resize or modify the original product in ANY way.');
-  lines.push('The paired items are NEW added elements only; the original product is the hero and must stay pixel-faithful to the reference.');
-  lines.push('The paired items must not cover, occlude or distract from the original product.');
-  lines.push('=== END OUTFIT PAIRING ===\n');
-  return lines;
-}
-
+// V11.1 Fix #3: 搭配单品处理
 function onPairingChange() {
-  pairingConfig.style = (document.getElementById('pairingStyle') && document.getElementById('pairingStyle').value) || 'matching';
-  const warn = document.getElementById('pairingWarn');
-  if (warn) warn.style.display = (pairingConfig.list && pairingConfig.list.length) ? 'block' : 'none';
-  if (typeof updatePreview === 'function') updatePreview();
+  pairingConfig.category = document.getElementById('pairingCategory')?.value || '';
+  pairingConfig.style = document.getElementById('pairingStyle')?.value || '';
+  updatePreview();
+}
+function buildPairingPromptLines() {
+  if (!pairingConfig.category || pairingConfig.category === '不搭配') return [];
+  const lines = [];
+  const catEn = PAIRING_CATEGORY_EN[pairingConfig.category] || pairingConfig.category;
+  lines.push('\n=== PAIRING ITEM ===');
+  lines.push('Add a pairing item: ' + catEn);
+  if (pairingConfig.style && pairingConfig.style !== '不限风格') {
+    const styleEn = PAIRING_STYLE_EN[pairingConfig.style] || pairingConfig.style;
+    lines.push('Pairing style: ' + styleEn);
+  }
+  lines.push('\nPRODUCT INTEGRITY CONSTRAINT (CRITICAL):');
+  lines.push('The original product must remain completely unchanged — color, pattern, silhouette, fabric texture, button details all preserved exactly.');
+  lines.push('The pairing item is a NEW addition and must not occlude the main product.');
+  lines.push('=== END PAIRING ITEM ===');
+  return lines;
 }
 
-// V11.1 #4: 出口兜底清理。
-// 原有 stripCJK 只删汉字、不删中文标点，"限时5折，满2件9折" 会被清成 "5，2 9"，
-// 模型把这堆残渣当文字画进图里——这正是用户看到的"乱码"。
-// 这里统一收口：全角字母数字转半角保留信息，中日韩标点转空格丢弃。
-function cleanupResidualPunct(text) {
-  if (!text) return text;
-  let s = text;
-  // 全角 ASCII 区整体转半角：％→% ＄→$ ５０→50。
-  // 早期版本曾把非字母数字一律丢弃，结果 "５０％ ＯＦＦ" 被清成 "50 OFF"，折扣直接失真。
-  s = s.replace(/[\uff01-\uff5e]/g, function (ch) {
-    return String.fromCharCode(ch.charCodeAt(0) - 0xfee0);
-  });
-  // CJK 专有标点（。、「」〈〉等）无半角对应，直接转空格
-  s = s.replace(/[\u3000-\u303f]/g, ' ');
-  s = s.replace(/[\uffe0-\uffe6]/g, function (ch) {
-    const map = { '\uffe0': 'c', '\uffe1': '£', '\uffe5': '¥', '\uffe6': '₩' };
-    return map[ch] || ' ';
-  });
-  // 清掉标点消失后留下的空括号、连续分隔符等碎片
-  s = s.replace(/\(\s*\)|\[\s*\]|（\s*）/g, ' ');
-  s = s.replace(/ {2,}/g, ' ');
-  s = s.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n');
-  return s.trim();
+// V11.1 Fix #1: 翻译用户中文输入为英文图像指令
+let _translateCache = {};
+let _lastTranslateKey = '';
+async function translateUserInputsIfNeeded() {
+  const fields = [
+    { id: 'extraNote', key: 'extra' },
+    { id: 'productFeatures', key: 'features' }
+  ];
+  const values = {};
+  let needsTranslation = false;
+  const cjkCheck = /[\u4e00-\u9fff\u3400-\u4dbf]/;
+  for (const f of fields) {
+    const el = document.getElementById(f.id);
+    if (!el) continue;
+    const v = el.value.trim();
+    values[f.key] = v;
+    if (v && cjkCheck.test(v)) needsTranslation = true;
+  }
+  if (!needsTranslation) return values;
+  const cacheKey = JSON.stringify(values);
+  if (cacheKey === _lastTranslateKey && Object.keys(_translateCache).length > 0) {
+    return _translateCache;
+  }
+  const parts = [];
+  if (values.extra) parts.push('Additional notes: ' + values.extra);
+  if (values.features) parts.push('Product features: ' + values.features);
+  if (parts.length === 0) return values;
+
+  const translatePrompt = `Translate the following Chinese text into English image generation instructions. 
+Rules:
+- Convert to concise, vivid English suitable for AI image generation
+- For promotional text: numbers, percent signs (%), currency symbols ($), and specific values MUST be preserved exactly as written
+- Do NOT add any extra information
+- Return ONLY the translated text, no explanations
+
+Text to translate:
+${parts.join('\n')}`;
+
+  try {
+    const apiKey = getApiKey();
+    const proxies = getProxyUrl();
+    const resp = await fetchWithProxy('https://api.apimart.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: translatePrompt }],
+        max_tokens: 500,
+        temperature: 0.3
+      })
+    }, proxies);
+    const data = await resp.json();
+    const translated = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content.trim() : '';
+    if (translated) {
+      const result = Object.assign({}, values);
+      const translatedLines = translated.split('\n').filter(function(l) { return l.trim(); });
+      if (values.extra && translatedLines.length > 0) result.extra = translatedLines[0];
+      if (values.features && translatedLines.length > 1) result.features = translatedLines.slice(1).join(' ');
+      _translateCache = result;
+      _lastTranslateKey = cacheKey;
+      return result;
+    }
+  } catch (e) {
+    console.warn('Translation failed, using offline dictionary fallback:', e.message);
+    // V11.2 P0-3: Ensure original values are preserved even if fetch fails
+    return Object.assign({}, values);
+  }
+  // Fallback: offline dictionary
+  const offlineDict = {
+    '暖色调': 'warm color tone', '冷色调': 'cool color tone', '简约': 'minimalist',
+    '高端': 'premium', '活泼': 'vibrant', '优雅': 'elegant', '清新': 'fresh',
+    '展示细节': 'show details', '颜色偏暖': 'warm color tone', '颜色偏冷': 'cool color tone',
+    '需要展示细节': 'needs detail showcase', '免运费': 'free shipping', '限时': 'limited time',
+    '特价': 'special price', '折扣': 'discount', '赠品': 'free gift', '新客': 'new customer',
+    '温水可卸除': 'removable with warm water', '续航': 'battery life',
+    '小时': 'hours', '成分': 'ingredients', '可旋转': 'rotatable'
+  };
+  const result = Object.assign({}, values);
+  for (const cn in offlineDict) {
+    if (offlineDict.hasOwnProperty(cn)) {
+      const en = offlineDict[cn];
+      if (result.extra) result.extra = result.extra.split(cn).join(en);
+      if (result.features) result.features = result.features.split(cn).join(en);
+    }
+  }
+  _translateCache = result;
+  _lastTranslateKey = cacheKey;
+  return result;
 }
 
-// 包装层：原提示词逻辑（含全部三个 return 分支）照常执行，其后追加搭配约束。
-// 搭配约束为纯英文，位于 stripCJK / sanitizePromptText 之后，不会被清除。
+// ============ PROMPT BUILDING ============
 function buildAutoPrompt() {
-  let p = '';
-  try { p = buildAutoPromptCore() || ''; } catch (e) { console.error('buildAutoPromptCore failed', e); throw e; }
-  const pairing = buildPairingPromptLines();
-  if (pairing.length) p += '\n' + pairing.join('\n');
-  // 覆盖全部三个分支的统一出口清理（自定义模板分支不经过 sanitizePromptText，只能在这兜住）
-  p = cleanupResidualPunct(p);
-  return p;
-}
-
-function buildAutoPromptCore() {
   const name = document.getElementById('productName').value.trim();
-  const extra = getPromptField('extraNote'); // V11.1 #1: 用翻译后的英文，避免被 stripCJK 清空
+  const extra = document.getElementById('extraNote').value.trim();
   const size = document.getElementById('imageSize').value;
   const quality = document.getElementById('imageQuality').value;
   const customTemplate = localStorage.getItem('poster_ai_custom_prompts') || '';
   if (customTemplate && customTemplate.trim()) {
     let prompt = customTemplate
       .replace('{产品名称}', name || 'product')
-      .replace('{核心卖点}', selectedTags.sellingPoints.map(s=>TL('sellingPoints',s)).join(', '))
-      .replace('{用户痛点}', selectedTags.painPoints.map(p=>TL('painPoints',p)).join(', '))
-      .replace('{使用场景}', TL('scene', selectedTags.scene) || '')
-      .replace('{氛围风格}', TL('atmosphere', selectedTags.atmosphere) || '')
-      .replace('{品牌调性}', TL('brandTone', selectedTags.brandTone) || '')
+      .replace('{核心卖点}', selectedTags.sellingPoints.map(s=>translateTagToPrompt('sellingPoint',s)).join(', '))
+      .replace('{用户痛点}', selectedTags.painPoints.map(p=>translateTagToPrompt('painPoint',p)).join(', '))
+      .replace('{使用场景}', selectedTags.scenes.map(s=>translateTagToPrompt('scene',s)).join(' + ') || '')
+      .replace('{氛围风格}', translateTagToPrompt('atmosphere', selectedTags.atmosphere) || '')
+      .replace('{品牌调性}', translateTagToPrompt('brandTone', selectedTags.brandTone) || '')
       .replace('{目标人群}', buildAudienceText())
       .replace('{服装类型}', TL('clothingType', selectedTags.clothingType) || '');
     prompt += `\n\n=== LANGUAGE REQUIREMENT ===\nALL text MUST be in ${getTargetLangName()} ONLY. ABSOLUTELY NO Chinese, Japanese, Korean, or CJK characters anywhere in the image. If any non-${getTargetLangName()} text appears, it is a FAILURE.\n=== END LANGUAGE REQUIREMENT ===\nNo watermarks. No logos.`;
     // V9.2: 自定义模板也加入促销和产品特性
-    const features2 = getPromptField('productFeatures'); // V11.1 #1
+    const features2 = document.getElementById('productFeatures')?.value.trim() || '';
     if (features2) prompt += `\nPRODUCT-SPECIFIC FEATURES (must be accurate): ${features2}`;
     const promoLines2 = buildPromoPromptLines();
     if (promoLines2.length) prompt += '\n' + promoLines2.join('\n');
     if (productImages.length > 0) prompt += `\nREFERENCE PRODUCT: Use as product identity reference only. Create a fresh creative composition, do NOT copy-paste the product image.`;
     prompt += `\nPEOPLE LIMIT: Maximum 1-2 people. All faces must be photorealistic and not distorted. For small images prefer zero people.`;
     prompt += `\nLANGUAGE: All text MUST be in ${getTargetLangName()} only. NO Chinese/Japanese/Korean characters anywhere in the image.`;
-    return stripCJK(filterBannedWords(prompt));
+    return stripCJK(cleanupResidualPunct(filterBannedWords(prompt)));
   }
 
   // V11.0: Category template mode - simplified prompt for non-clothing categories
@@ -2475,20 +2722,22 @@ function buildAutoPromptCore() {
       lines2.push('Create a professional e-commerce poster for: "' + subject2 + '"');
       lines2.push('Product category: ' + selectedCategoryTemplate);
       
-      const features3 = getPromptField('productFeatures'); // V11.1 #1
+      const features3 = document.getElementById('productFeatures')?.value.trim() || '';
       if (features3) {
         lines2.push('\nPRODUCT-SPECIFIC FEATURES (MUST be accurately described):');
         lines2.push(features3);
       }
       
-      if (selectedTags.sellingPoints.length) lines2.push('Key selling points: ' + selectedTags.sellingPoints.join(', '));
-      if (selectedTags.scene) lines2.push('Usage scene: ' + selectedTags.scene);
+      if (selectedTags.sellingPoints.length) lines2.push('Key selling points: ' + selectedTags.sellingPoints.map(s=>translateTagToPrompt('sellingPoint',s)).join(', '));
+      if (selectedTags.scenes && selectedTags.scenes.length) lines2.push('Usage scene: ' + selectedTags.scenes.map(s=>translateTagToPrompt('scene',s)).join(' + '));
       const styleParts2 = [];
       if (selectedTags.atmosphere) styleParts2.push(selectedTags.atmosphere.split('-')[0]);
       if (selectedTags.brandTone) styleParts2.push(selectedTags.brandTone);
       if (styleParts2.length) lines2.push('Visual style: ' + styleParts2.join(', '));
       const audience2 = buildAudienceText();
       if (audience2) lines2.push('Target audience: ' + audience2);
+      const mpPrompt2 = buildModelProfilePrompt();
+      if (mpPrompt2) lines2.push(mpPrompt2);
       
       // Reference product
       if (productImages.length > 0) {
@@ -2512,7 +2761,7 @@ function buildAutoPromptCore() {
       if (extra) lines2.push('Additional: ' + extra);
       lines2.push('Aspect ratio: ' + size + ', Quality: ' + quality + ', professional commercial photography, photorealistic');
       
-      return stripCJK(filterBannedWords(lines2.join('\n')));
+      return stripCJK(cleanupResidualPunct(filterBannedWords(lines2.join('\n'))));
     }
   }
 
@@ -2525,13 +2774,13 @@ function buildAutoPromptCore() {
   lines.push(`Create a professional e-commerce poster for: "${subject}"`);
   if (selectedTags.category) lines.push(`Category: ${TL('category', selectedTags.category) || selectedTags.category}`);
   // V9.2 Fix #3: 产品实际特性优先于通用标签描述
-  const features = getPromptField('productFeatures'); // V11.1 #1
+  const features = document.getElementById('productFeatures')?.value.trim() || '';
   if (features) {
     lines.push(`\nPRODUCT-SPECIFIC FEATURES (MUST be accurately described on the poster, overrides generic tags):`);
     lines.push(features);
     lines.push(`IMPORTANT: The product description text on the image MUST match these features exactly. Do NOT generate generic descriptions that contradict these features.\n`);
   }
-  if (selectedTags.sellingPoints.length) lines.push(`Key selling points: ${selectedTags.sellingPoints.map(s=>TL('sellingPoints',s)).join(', ')}`);
+  if (selectedTags.sellingPoints.length) lines.push(`Key selling points: ${selectedTags.sellingPoints.map(s=>translateTagToPrompt('sellingPoint',s)).join(', ')}`);
   // V9.3 Fix #6 & #12: 参考图作为风格参考而非照搬，创造新构图
   if (productImages.length > 0) {
     lines.push(`\nREFERENCE PRODUCT (STYLE GUIDE ONLY):`);
@@ -2541,15 +2790,18 @@ function buildAutoPromptCore() {
     lines.push(`- The product in the generated image must be the SAME product but in a FRESH creative arrangement\n`);
   }
   if (selectedTags.painPoints.length) {
-    lines.push(`Addresses pain points: ${selectedTags.painPoints.map(p=>TL('painPoints',p)).join(', ')} - demonstrate how ${TL('sellingPoints',selectedTags.sellingPoints[0])||'the product'} solves these concerns`);
+    lines.push(`Addresses pain points: ${selectedTags.painPoints.map(p=>translateTagToPrompt('painPoint',p)).join(', ')} - demonstrate how ${translateTagToPrompt('sellingPoint',selectedTags.sellingPoints[0])||'the product'} solves these concerns`);
   }
-  if (selectedTags.scene) lines.push(`Usage scene: ${TL('scene', selectedTags.scene) || selectedTags.scene}`);
+  if (selectedTags.scenes && selectedTags.scenes.length) lines.push(`Usage scene: ${selectedTags.scenes.map(s=>translateTagToPrompt('scene',s)).join(' + ')}`);
   const styleParts = [];
-  if (selectedTags.atmosphere) styleParts.push(TL('atmosphere', selectedTags.atmosphere) || selectedTags.atmosphere.split('-')[0]);
-  if (selectedTags.brandTone) styleParts.push(TL('brandTone', selectedTags.brandTone) || selectedTags.brandTone);
+  if (selectedTags.atmosphere) styleParts.push(translateTagToPrompt('atmosphere', selectedTags.atmosphere) || selectedTags.atmosphere.split('-')[0]);
+  if (selectedTags.brandTone) styleParts.push(translateTagToPrompt('brandTone', selectedTags.brandTone) || selectedTags.brandTone);
   if (styleParts.length) lines.push(`Visual style: ${styleParts.join(', ')}`);
   const audience = buildAudienceText();
   if (audience) lines.push(`Target audience: ${audience}`);
+  // V11.2 P0-5: Model profile prompt injection
+  const modelProfilePrompt = buildModelProfilePrompt();
+  if (modelProfilePrompt) lines.push(modelProfilePrompt);
 
   // V9.1: Industry mode prompt
   const isHE = isHighExposureMode();
@@ -2594,7 +2846,7 @@ function buildAutoPromptCore() {
       // Use mapped scene for high-exposure
       const heScene = HE_SCENE_MAP[heCat];
       if (heScene) lines.push(`Recommended scene: ${heScene}`);
-      else if (selectedTags.scene) lines.push(`Scene: ${TL('scene', selectedTags.scene)}`);
+      else if (selectedTags.scenes && selectedTags.scenes.length) lines.push(`Scene: ${selectedTags.scenes.map(s=>translateTagToPrompt('scene',s)).join(' + ')}`);
       // Person pose constraint
       lines.push('Pose: natural standing, front-facing display, slight movement only. 1 person maximum. No complex poses.');
       lines.push(SAFE_PROMPT_SUFFIX);
@@ -2603,13 +2855,13 @@ function buildAutoPromptCore() {
       const genders = (selectedTags.targetGenders && selectedTags.targetGenders.length) ? selectedTags.targetGenders : ['女性'];
       const genderText = genders.includes('女性') ? TL('gender','女性') : genders.includes('男性') ? TL('gender','男性') : 'model';
       const ages = (selectedTags.targetAges && selectedTags.targetAges.length) ? selectedTags.targetAges.map(a=>TL('age',a)).join(', ') : '';
-      const sceneText = TL('scene', selectedTags.scene) || 'daily life';
+      const sceneText = (selectedTags.scenes||[]).map(s=>translateTagToPrompt('scene',s)).join(' + ') || 'daily life';
       const sellText = selectedTags.sellingPoints.slice(0,2).map(s=>TL('sellingPoints',s)).join(' and ');
       const clothingEn = TL('clothingType', selectedTags.clothingType) || subject;
       lines.push(`\nScene: ${ages} ${genderText} in ${sceneText} setting wearing ${clothingEn}, showcasing ${sellText||'the fit and quality'}, realistic commercial photography style`);
     }
-  } else if (audience && selectedTags.scene) {
-    const sceneEn = TL('scene', selectedTags.scene) || selectedTags.scene;
+  } else if (audience && selectedTags.scenes && selectedTags.scenes.length) {
+    const sceneEn = selectedTags.scenes.map(s=>translateTagToPrompt('scene',s)).join(' + ');
     lines.push(`\nScene: ${audience} using ${subject} in ${sceneEn} setting, showing ${TL('sellingPoints',selectedTags.sellingPoints[0])||'product benefits'}`);
   }
   
@@ -2631,6 +2883,10 @@ function buildAutoPromptCore() {
   
   // V9.3: 氛围风格不延续 — 如果氛围不是强促销型，削弱促销元素
   const isPromoAtmosphere = selectedTags.atmosphere === '销售型-强促销感';
+  
+  // V11.1 Fix #3: 搭配单品信息
+  const pairingLines = buildPairingPromptLines();
+  if (pairingLines.length) lines.push(...pairingLines);
   
   // V9.2 Fix #1, #2, #5: 促销活动信息
   const promoLines = buildPromoPromptLines();
@@ -2692,7 +2948,8 @@ function buildAutoPromptCore() {
   // 过滤违规营销词
   finalPrompt = filterBannedWords(finalPrompt);
   // 🔴 关键修复：强力清除所有CJK字符（中文日文韩文），确保图片不会出现中文
-  finalPrompt = stripCJK(finalPrompt);
+  // V11.1 Fix #4: 先清理残留标点，再清除CJK
+  finalPrompt = stripCJK(cleanupResidualPunct(finalPrompt));
   // 如果清除CJK后有残片，再清理一遍
   finalPrompt = finalPrompt.replace(/\s{2,}/g, ' ').trim();
   // V9.1: Apply sensitive word filter for high-exposure mode
@@ -2744,41 +3001,9 @@ function buildAudienceText() {
 }
 
 // ============ PREVIEW ============
-function toggleLlmPromptMode() {
-  llmPromptMode = document.getElementById('llmPromptToggle')?.checked === true;
-  localStorage.setItem('poster_llm_prompt', llmPromptMode ? '1' : '0');
-  if (llmPromptMode && !getApiKey()) setStatus('⚠️ 开启智能提示词需要 API Key（用于调用大模型）', 'warn');
-  updatePreview();
-}
-
-let _pvTimer;
-async function updatePreview() {
-  const pv = document.getElementById('promptPreview');
-  if (!pv) return;
+function updatePreview() {
+  document.getElementById('promptPreview').textContent = buildAutoPrompt();
   updateSelectionSummary();
-  const ak = getApiKey();
-  if (llmPromptMode && ak) {
-    // 智能提示词模式：防抖后整体生成
-    clearTimeout(_pvTimer);
-    _pvTimer = setTimeout(async () => {
-      const el = document.getElementById('promptPreview');
-      if (!el) return;
-      el.textContent = '🧠 正在用 AI 生成提示词…';
-      try { el.textContent = await buildAutoPromptLLM(getApiKey()); }
-      catch (e) { console.warn('LLM 预览失败，回退模板', e); el.textContent = buildAutoPrompt(); }
-    }, 500);
-    return;
-  }
-  // 模板模式：先立即渲染（中文补充可能暂未翻译），防抖后再翻译刷新，避免每次按键都打接口
-  pv.textContent = buildAutoPrompt();
-  if (ak) {
-    clearTimeout(_pvTimer);
-    _pvTimer = setTimeout(async () => {
-      try { await translateUserInputsIfNeeded(getApiKey()); } catch (_) {}
-      const el = document.getElementById('promptPreview');
-      if (el && !llmPromptMode) el.textContent = buildAutoPrompt();
-    }, 500);
-  }
 }
 
 // ============ AI ANALYSIS PANEL ============
@@ -2793,7 +3018,7 @@ function updateAnalysis() {
     {name:'品类', filled:!!selectedTags.category},
     {name:'卖点', filled:selectedTags.sellingPoints.length>0},
     {name:'痛点', filled:selectedTags.painPoints.length>0},
-    {name:'场景', filled:!!selectedTags.scene},
+    {name:'场景', filled:(selectedTags.scenes||[]).length > 0},
     {name:'氛围', filled:!!selectedTags.atmosphere},
     {name:'调性', filled:!!selectedTags.brandTone},
     {name:'人群', filled:!!(selectedTags.targetAges&&selectedTags.targetAges.length)||!!(selectedTags.targetGenders&&selectedTags.targetGenders.length)||!!(selectedTags.targetIdentities&&selectedTags.targetIdentities.length)},
@@ -2807,7 +3032,7 @@ function updateAnalysis() {
   html += '</div>';
   const suggestions = [];
   if (!selectedTags.sellingPoints.length) suggestions.push('💡 建议选择2-3个核心卖点');
-  if (!selectedTags.scene) suggestions.push('💡 选择使用场景增强代入感');
+  if (!(selectedTags.scenes||[]).length) suggestions.push('💡 选择使用场景增强代入感');
   if (!selectedTags.atmosphere) suggestions.push('💡 选择氛围风格确定视觉方向');
   if (!selectedPersonType) suggestions.push('💡 选择人物类型确定模特风格');
   if (selectedTags.category === '服装' && !selectedTags.clothingType) suggestions.push('💡 选择服装类型提升精准度');
@@ -2875,7 +3100,7 @@ function aiAutoFill() {
     const groups = Object.values(pp);
     if (groups.length > 0) selectedTags.painPoints = [groups[0][0]];
   }
-  if (!selectedTags.scene) selectedTags.scene = '日常生活';
+  if (!(selectedTags.scenes||[]).length) selectedTags.scenes = ['日常生活'];
   if (!selectedTags.atmosphere) {
     const atmoMap = {'服装':'温馨生活型-亲切自然','智能电子':'专业可信型-权威感','家居用品':'温馨生活型-亲切自然','美妆':'高端型-质感奢华','食品':'温馨生活型-亲切自然','汽车工具':'专业可信型-权威感'};
     selectedTags.atmosphere = atmoMap[selectedTags.category] || '温馨生活型-亲切自然';
@@ -2974,11 +3199,11 @@ function runQualityCheck() {
   if (document.getElementById('productName').value.trim()) infoScore += 25; else suggestions.push('❗ 请填写产品名称');
   if (selectedTags.sellingPoints.length > 0) infoScore += 20; else suggestions.push('💡 补充核心卖点可提升效果');
   if (selectedTags.category) infoScore += 15; else suggestions.push('💡 选择品类帮助AI理解');
-  if (selectedTags.scene || selectedTags.atmosphere) infoScore += 10; else suggestions.push('💡 设定场景/氛围可提升效果');
+  if ((selectedTags.scenes||[]).length || selectedTags.atmosphere) infoScore += 10; else suggestions.push('💡 设定场景/氛围可提升效果');
   if (refImages.length > 0) visualScore += 30; else suggestions.push('📷 上传参考图可稳定视觉方向');
   if (selectedTags.atmosphere) visualScore += 25; else suggestions.push('🎨 请选择氛围风格');
   if (selectedTags.brandTone) visualScore += 25; else suggestions.push('👁️ 选择品牌调性帮助确定风格');
-  if (selectedTags.scene) visualScore += 20; else suggestions.push('📐 选择使用场景控制画面');
+  if ((selectedTags.scenes||[]).length) visualScore += 20; else suggestions.push('📐 选择使用场景控制画面');
   if ((selectedTags.targetAges||[]).length || (selectedTags.targetGenders||[]).length) convertScore += 25; else suggestions.push('🎯 明确目标人群提升转化');
   if (selectedTags.category) convertScore += 25; else suggestions.push('🌍 设定品类帮助本地化');
   if (selectedTags.sellingPoints.length) convertScore += 25; else suggestions.push('📢 提炼核心卖点增强说服力');
@@ -3056,7 +3281,7 @@ function showConfirmModal() {
   const summary = [];
   if (selectedTags.category) summary.push(`品类: ${selectedTags.category}`);
   if (selectedTags.sellingPoints.length) summary.push(`卖点: ${selectedTags.sellingPoints.join('、')}`);
-  if (selectedTags.scene) summary.push(`场景: ${selectedTags.scene}`);
+  if ((selectedTags.scenes||[]).length) summary.push(`场景: ${selectedTags.scenes.join('、')}`);
   if (selectedTags.atmosphere) summary.push(`氛围: ${selectedTags.atmosphere}`);
   if (selectedTags.brandTone) summary.push(`调性: ${selectedTags.brandTone}`);
   if (selectedIndustryMode && selectedIndustryMode !== 'normal_clothing') { const mode = INDUSTRY_MODES[selectedIndustryMode]; if(mode) summary.push(`行业: ${mode.icon} ${mode.name}`); }
@@ -3102,65 +3327,144 @@ function onGenerate() {
   showConfirmModal();
 }
 
+// V11.1 Fix #6: 单张独立任务生成函数
+async function generateOneImage(prompt, apiKey, model, size, imageUrls, compositionHint) {
+  const finalPrompt = compositionHint ? prompt + '\n\nComposition hint: ' + compositionHint : prompt;
+  const body = { model, prompt: finalPrompt, size, n: 1, image_urls: imageUrls };
+  const proxies = getProxyUrl();
+  const submitResp = await fetchWithProxy('https://api.apimart.ai/v1/images/generations', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey }, body: JSON.stringify(body)
+  }, proxies);
+  const submitData = await submitResp.json();
+  if (submitData.code !== 200 || !submitData.data || !submitData.data[0]?.task_id) {
+    // V11.1: 遍历所有data项收集task_id（原版只取data[0]）
+    let taskId = null;
+    if (submitData.data && Array.isArray(submitData.data)) {
+      for (const item of submitData.data) {
+        if (item.task_id) { taskId = item.task_id; break; }
+      }
+    }
+    if (!taskId) throw new Error(`提交失败 [${submitData.code||'unknown'}]: ${submitData.message||submitData.msg||JSON.stringify(submitData)}`);
+  }
+  const taskId = submitData.data.find(d => d.task_id)?.task_id || submitData.data[0].task_id;
+  const result = await pollTask(taskId, apiKey);
+  return result;
+}
+
+// V11.1: 构图扰动列表，避免多图雷同
+const COMPOSITION_HINTS = [
+  'slightly different angle',
+  'alternative composition with dynamic layout',
+  'top-down lifestyle perspective',
+  'side angle with soft bokeh background',
+  'frontal hero shot with decorative elements',
+  'diagonal arrangement with accent props'
+];
+
 async function doGenerate() {
+  // V11.1 Hidden Bug Fix: proxies 提到 try 外面，避免 catch 块引用时 ReferenceError
+  const proxies = getProxyUrl();
   try {
   const apiKey = getApiKey();
   if (!apiKey) { try { alert('请先在"API Key / 代理设置"中配置 API Key'); } catch(_) {} ; return setStatus('请先设置 API Key', 'error'); }
   // V9.2 Fix #4: 生成前检查存储空间
   checkStorageQuota();
   const name = document.getElementById('productName').value.trim() || '未命名产品';
-  // V11.1 #1：必须先翻译再组装提示词。
-  // 否则中文补充说明会在 buildAutoPrompt 末尾被 stripCJK 清空，等于从未输入过。
-  await translateUserInputsIfNeeded(apiKey);
-  // V11.2 #2: 智能提示词模式开启时，整体交给大模型生成英文提示词（硬约束后缀仍追加）
-  let prompt = (llmPromptMode && apiKey) ? await buildAutoPromptLLM(apiKey) : buildAutoPrompt();
-  // V11.4: 种草文案"自动附带"开启且已生成文案时，作为小字幕元素并入海报
-  if (typeof maybeAutoIncludeCopy === 'function') { try { prompt = maybeAutoIncludeCopy(prompt); } catch(_) {} }
   const model = document.getElementById('aiModel').value;
   const size = document.getElementById('imageSize').value;
   const quality = document.getElementById('imageQuality').value;
   const count = parseInt(document.getElementById('imageCount').value);
   const btn = document.getElementById('generateBtn');
   btn.disabled = true; btn.textContent = '⏳ 生成中...';
-  setStatus('正在提交任务...', 'info');
+  setStatus('正在准备...', 'info');
   let resultImages = [];
-  // V11.1 修复：proxies 原本声明在 try 块内，但下方 catch 的降级重试也引用了它，
-  // 那条路径必然抛 ReferenceError。提升到 try 外层作用域。
-  const proxies = getProxyUrl();
   try {
-    const imageUrls = [...productImages, ...refImages];
-    // ===== V11.1 #6 核心修复：真正生成 N 张 =====
-    // 原版做法：发 1 个请求带 n=count，然后只取 submitData.data[0].task_id。
-    // 无论网关是"一次返回多个 task"还是"上游模型压根不支持 n>1"，
-    // 结果都是只拿回 1 张图。这里改为并发发起 count 个独立任务，
-    // 不再依赖上游对 n 参数的实现，并把每个任务返回的图全部收集。
-    _genProgress = { total: count, done: 0, elapsed: {} };
-    setStatus(count > 1 ? `正在并发提交 ${count} 个生成任务...` : '正在提交任务...', 'info');
-    const outcomes = await Promise.allSettled(
-      Array.from({ length: count }, (_, i) =>
-        generateOneImage({ model, prompt, size, imageUrls, apiKey, proxies, index: i, total: count })
-      )
-    );
-    let allImages = [];
-    const failMsgs = [];
-    outcomes.forEach(o => {
-      if (o.status === 'fulfilled' && o.value && o.value.length) allImages = allImages.concat(o.value);
-      else failMsgs.push((o.reason && o.reason.message) || '未知错误');
-    });
-    if (allImages.length === 0) throw new Error(failMsgs[0] || '全部任务均失败');
-    const result = { images: allImages };
-    displayResults(result);
-    // 部分成功也要如实告知，不能假装全好了
-    if (failMsgs.length > 0) {
-      setStatus(`⚠️ 已生成 ${allImages.length} 张，另有 ${failMsgs.length} 个任务失败：${failMsgs[0]}`, 'warn');
-    } else {
-      setStatus(`✅ 生成完成！共 ${allImages.length} 张`, 'success');
+    // V11.1 Fix #1: 翻译用户中文输入
+    let translatedInputs = null;
+    try { translatedInputs = await translateUserInputsIfNeeded(); } catch(e) { console.warn('Translation skipped:', e); }
+    // 将翻译结果注入到对应字段（临时替换，生成完恢复）
+    const origExtra = document.getElementById('extraNote')?.value || '';
+    const origFeatures = document.getElementById('productFeatures')?.value || '';
+    if (translatedInputs) {
+      if (translatedInputs.extra && translatedInputs.extra !== origExtra) {
+        document.getElementById('extraNote').value = translatedInputs.extra;
+      }
+      if (translatedInputs.features && translatedInputs.features !== origFeatures) {
+        document.getElementById('productFeatures').value = translatedInputs.features;
+      }
     }
-    addRecord(name, true);
-    // V9: Save full record
-    resultImages = allImages.map(img => img.url);
-    saveV9Record(name, prompt, model, size, quality, count, resultImages);
-    qualityScore = null;
+    const prompt = buildAutoPrompt();
+    // 恢复原始输入（用户看到的是中文，翻译只用于prompt）
+    if (translatedInputs) {
+      document.getElementById('extraNote').value = origExtra;
+      document.getElementById('productFeatures').value = origFeatures;
+    }
+    const imageUrls = [...productImages, ...refImages];
+
+    // V11.1 Fix #6: 多图并发
+    if (count > 1) {
+      setStatus(`正在并发提交 ${count} 个任务...`, 'info');
+      const tasks = [];
+      for (let i = 0; i < count; i++) {
+        const hint = COMPOSITION_HINTS[i % COMPOSITION_HINTS.length];
+        tasks.push(
+          generateOneImage(prompt, apiKey, model, size, imageUrls, hint)
+            .then(result => {
+              const completed = tasks.filter(t => t._settled).length;
+              setStatus(`${completed + 1}/${count} 张已完成`, 'info');
+              return result;
+            })
+            .catch(err => { throw err; })
+        );
+      }
+      const results = await Promise.allSettled(tasks);
+      const allImages = [];
+      let successCount = 0, failCount = 0;
+      results.forEach(r => {
+        if (r.status === 'fulfilled' && r.value && r.value.images) {
+          allImages.push(...r.value.images);
+          successCount++;
+        } else {
+          failCount++;
+        }
+      });
+      if (allImages.length === 0) throw new Error('所有任务均失败');
+      displayResults({ images: allImages });
+      if (failCount > 0) {
+        setStatus(`✅ ${successCount}/${count} 张生成完成，${failCount} 张失败`, 'warn');
+      } else {
+        setStatus(`✅ ${successCount}/${count} 张全部完成！`, 'success');
+      }
+      addRecord(name, true);
+      resultImages = allImages.map(img => img.url);
+      saveV9Record(name, prompt, model, size, quality, count, resultImages);
+      qualityScore = null;
+    } else {
+      // 单张走原有逻辑
+      const body = { model, prompt, size, n: 1, image_urls: imageUrls };
+      const submitResp = await fetchWithProxy('https://api.apimart.ai/v1/images/generations', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey }, body: JSON.stringify(body)
+      }, proxies);
+      const submitData = await submitResp.json();
+      // V11.1: 遍历所有data项收集task_id
+      let taskId = null;
+      if (submitData.code === 200 && submitData.data && Array.isArray(submitData.data)) {
+        for (const item of submitData.data) {
+          if (item.task_id) { taskId = item.task_id; break; }
+        }
+      }
+      if (!taskId) {
+        throw new Error(`提交失败 [${submitData.code||'unknown'}]: ${submitData.message||submitData.msg||JSON.stringify(submitData)}`);
+      }
+      setStatus(`任务已提交 (${taskId.slice(0,8)}...)，等待生成...`, 'info');
+      const result = await pollTask(taskId, apiKey);
+      displayResults(result);
+      setStatus('✅ 生成完成！', 'success');
+      addRecord(name, true);
+      if (result && result.images) resultImages = result.images.map(img => img.url);
+      saveV9Record(name, prompt, model, size, quality, count, resultImages);
+      qualityScore = null;
+    }
   } catch (err) {
     console.error("doGenerate failed:", err);
     addRecord(name, false);
@@ -3176,10 +3480,15 @@ async function doGenerate() {
           method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey }, body: JSON.stringify(body2)
         }, proxies);
         const submitData2 = await submitResp2.json();
-        if (submitData2.code !== 200 || !submitData2.data || !submitData2.data[0]?.task_id) {
+        let taskId2 = null;
+        if (submitData2.data && Array.isArray(submitData2.data)) {
+          for (const item of submitData2.data) {
+            if (item.task_id) { taskId2 = item.task_id; break; }
+          }
+        }
+        if (!taskId2) {
           throw new Error(`降级提交失败: ${submitData2.message||submitData2.msg||'unknown'}`);
         }
-        const taskId2 = submitData2.data[0].task_id;
         setStatus(`降级重试中... (${getDegradeStage().name})`, 'info');
         const result2 = await pollTask(taskId2, apiKey);
         displayResults(result2);
@@ -3207,302 +3516,22 @@ async function doGenerate() {
   }
 }
 
-// ============ V11.1 #1: 中文指令翻译层 ============
-// 背景：extraNote / productFeatures / 自定义促销文案里的中文，
-// 会在 buildAutoPrompt 末尾被 stripCJK() 与 sanitizePromptText() 整段清除，
-// 导致用户写的补充说明根本没送达模型——表现出来就是"AI 听不懂指令"。
-// 这里在组装提示词之前，先把中文转成英文图像指令。
-let _translatedInputs = { extraNote: '', productFeatures: '', promoCustom: '', _src: null };
-
-// V11.2 #2: LLM 智能提示词模式（可选开关）。默认关=走原模板，零改动；
-// 开启后把"结构化参数 + 中文自由描述"整体交给大模型生成英文提示词，硬约束后缀仍追加。
-let llmPromptMode = localStorage.getItem('poster_llm_prompt') === '1';
-
-function hasCJK(s) {
-  return /[\u4e00-\u9fff\u3400-\u4dbf\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af]/.test(s || '');
-}
-
-// 供 buildAutoPrompt 读取：优先用翻译结果，没有则退回原文
-function getPromptField(id) {
-  const el = document.getElementById(id);
-  const raw = (el && el.value.trim()) || '';
-  if (!raw) return '';
-  // 防御：本函数会被 updatePreview 在页面早期调用，
-  // 那时 let _translatedInputs 可能仍处于暂时性死区，直接访问会抛 ReferenceError
-  let t = '';
-  try {
-    t = (typeof _translatedInputs !== 'undefined' && _translatedInputs) ? (_translatedInputs[id] || '') : '';
-  } catch (_) { t = ''; }
-  return t || raw;
-}
-
-// 离线兜底词典：翻译接口不可用时至少保住高频语义，不至于整段丢失
-// V11.3 fix#3: 扩充常见生图/电商短语，降低"补充说明被静默清空"的概率。
-const CN_FALLBACK_DICT = {
-  '暖调':'warm tone','冷调':'cool tone','高级感':'premium feel','细节':'detail shot','特写':'close-up',
-  '全身':'full body','半身':'half body','纯白背景':'pure white background','纯色背景':'solid color background',
-  '室内':'indoor','户外':'outdoor','阳光':'sunlight','逆光':'backlight','柔光':'soft light',
-  '模特':'model','正面':'front view','侧面':'side view','背面':'back view','俯拍':'top-down view',
-  '简约':'minimalist','清新':'fresh','复古':'vintage','ins风':'instagram style','日系':'japanese style',
-  '欧美':'western style','韩系':'korean style','街拍':'street style','棚拍':'studio shot',
-  '多角度':'multiple angles','展示细节':'show product details','放大':'zoom in','留白':'negative space',
-  // ---- V11.3 扩充 ----
-  '产品':'product','商品':'product','背景':'background','场景':'scene','构图':'composition','角度':'angle',
-  '主体':'subject','居中':'centered','虚化':'blurred background','景深':'depth of field','浅景深':'shallow depth of field',
-  '主图':'main product shot','细节图':'detail shots','卖点':'key selling points','效果':'effect','质感':'texture',
-  '颜色':'color','色彩':'color palette','色调':'color tone','饱和度':'saturation','亮度':'brightness','对比度':'contrast',
-  '自然光':'natural light','侧光':'side lighting','顶光':'top lighting','暖光':'warm lighting','冷光':'cool lighting',
-  '真实':'realistic','自然':'natural','干净':'clean','简洁':'minimal','大气':'grand','高级':'premium','精致':'refined',
-  '有质感':'textured','立体':'three-dimensional','立体感':'three-dimensional feel','明亮':'bright','通透':'clear and bright',
-  '聚焦':'focus on','突出':'highlight','强调':'emphasize','清晰':'sharp and clear','高清':'high resolution','超清':'ultra high definition',
-  '家居':'home','办公':'office','咖啡厅':'cafe','街道':'street','商店':'store','旅游':'travel','度假':'vacation','沙滩':'beach',
-  '日常':'everyday','生活':'lifestyle','氛围感':'atmosphere','ins风格':'instagram aesthetic','摆拍':'staged photo',
-  '模特手拿':'model holding','产品展示':'product showcase','包装':'packaging','礼盒':'gift box','赠品':'free gift',
-  '漂浮':'floating','平铺':'flat lay','悬挂':'hanging','动态':'dynamic','静物':'still life','俯视':'bird\'s eye view',
-  '更换背景':'replace background','无背景':'no background','透明背景':'transparent background','去水印':'no watermark',
-  '发光':'glowing','光晕':'halo','梦幻':'dreamy','柔和':'soft','温润':'warm and soft','现代感':'modern feel','科技感':'tech feel',
-  '渐变色':'gradient','大理石':'marble','木纹':'wood texture','磨砂':'frosted','哑光':'matte','亮面':'glossy',
-  '适合海报':'suitable for poster','电商主图':'e-commerce main image','广告图':'advertisement image','营销':'marketing'
-};
-
-function fallbackTranslate(text) {
-  if (!text) return '';
-  let out = text;
-  for (const cn in CN_FALLBACK_DICT) {
-    out = out.split(cn).join(' ' + CN_FALLBACK_DICT[cn] + ' ');
-  }
-  // 清掉未覆盖的中文，并一并处理中文标点，避免残留孤立符号被画进图里
-  out = out.replace(/[\u4e00-\u9fff\u3400-\u4dbf\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af]/g, ' ');
-  out = cleanupResidualPunct(out);
-  return out.replace(/\s{2,}/g, ' ').trim();
-}
-
-// V11.3 fix#3: 语言代码 → 英文名，用于翻译层输出目标市场语言
-const LANG_CODE_TO_NAME = {
-  'en-GB':'English (UK)', 'en-US':'English (US)', 'en':'English',
-  'nl':'Dutch (Nederlands)', 'fr':'French (Français)', 'de':'German (Deutsch)',
-  'es':'Spanish (Español)', 'it':'Italian (Italiano)', 'pt':'Portuguese (Português)',
-  'pl':'Polish (Polski)', 'sv':'Swedish (Svenska)', 'da':'Danish (Dansk)',
-  'no':'Norwegian (Norsk)', 'fi':'Finnish (Suomi)', 'el':'Greek (Ελληνικά)',
-  'cs':'Czech (Čeština)', 'ro':'Romanian (Română)', 'hu':'Hungarian (Magyar)',
-  'bg':'Bulgarian (Български)', 'hr':'Croatian (Hrvatski)', 'sk':'Slovak (Slovenčina)',
-  'uk':'Ukrainian (Українська)', 'ru':'Russian (Русский)',
-  'tr':'Turkish (Türkçe)', 'ar':'Arabic (العربية)', 'he':'Hebrew (עברית)',
-  'ja':'Japanese (日本語)', 'ko':'Korean (한국어)', 'th':'Thai (ไทย)',
-  'vi':'Vietnamese (Tiếng Việt)', 'id':'Indonesian (Bahasa Indonesia)'
-};
-
-async function translateUserInputsIfNeeded(apiKey) {
-  const extra = (document.getElementById('extraNote') && document.getElementById('extraNote').value.trim()) || '';
-  const feat = (document.getElementById('productFeatures') && document.getElementById('productFeatures').value.trim()) || '';
-  const promoCustom = (typeof mainPromoState !== 'undefined' && mainPromoState && mainPromoState.customText) || '';
-  const srcKey = extra + '||' + feat + '||' + promoCustom;
-
-  if (!extra && !feat && !promoCustom) {
-    _translatedInputs = { extraNote: '', productFeatures: '', promoCustom: '', _src: srcKey };
-    return;
-  }
-  if (_translatedInputs._src === srcKey) return; // 内容没变，复用上次结果，不重复付费
-  // 纯英文输入无需翻译，直接透传，省一次调用
-  if (!hasCJK(srcKey)) {
-    _translatedInputs = { extraNote: extra, productFeatures: feat, promoCustom, _src: srcKey };
-    return;
-  }
-
-  setStatus('正在理解你的补充说明...', 'info');
-  try {
-    const proxies = getProxyUrl();
-    // V11.3 fix#3: 按所选市场语言(genLanguage)输出，不再写死 English。
-    // 这样补充说明里的"可印刷文案"(如促销语)能落到对应语言，图片上的文字才匹配目标市场。
-    const targetLang = (typeof getDetectedLanguage === 'function') ? getDetectedLanguage() : 'en-GB';
-    const langName = LANG_CODE_TO_NAME[targetLang] || 'English';
-    // 全部字段（补充说明 extra_note、产品特性 product_features、促销文案 promo_custom_text）
-    // 都翻译成目标市场语言 —— 用户要求"使用对应的语言"，让图上文字与目标市场一致。
-    // 若目标市场本身是英语，则等价于之前的纯英文输出，行为不回退。
-    const sysPrompt = 'You are an e-commerce image prompt engineer. Translate the Chinese user input into the target market language: ' + langName
-      + ' (the language this poster/image will be shown in). Output ALL of the following in ' + langName + ' ONLY: '
-      + '(1) "extra_note": how the picture should look, in visual/photographic terms; '
-      + '(2) "product_features": real product attributes, translated faithfully, do NOT invent facts; '
-      + '(3) "promo_custom_text": SHORT punchy marketing copy that will be printed on the poster, keep all numbers and percentages EXACTLY as given. '
-      + 'If the target language is English just output English. '
-      + 'Reply with ONLY a JSON object with keys: extra_note, product_features, promo_custom_text, all in ' + langName + '. No markdown, no explanation.';
-    const userPayload = JSON.stringify({ extra_note: extra, product_features: feat, promo_custom_text: promoCustom });
-    const resp = await fetchWithProxy('https://api.apimart.ai/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [{ role: 'system', content: sysPrompt }, { role: 'user', content: userPayload }],
-        temperature: 0.2
-      })
-    }, proxies);
-    const data = await resp.json();
-    let content = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-    if (!content) throw new Error('翻译无返回');
-    content = content.replace(/```json/gi, '').replace(/```/g, '').trim();
-    const parsed = JSON.parse(content);
-    _translatedInputs = {
-      extraNote: (parsed.extra_note || '').trim(),
-      productFeatures: (parsed.product_features || '').trim(),
-      promoCustom: (parsed.promo_custom_text || '').trim(),
-      _src: srcKey
-    };
-  } catch (e) {
-    console.warn('翻译层失败，改用离线词典兜底:', e);
-    _translatedInputs = {
-      extraNote: fallbackTranslate(extra),
-      productFeatures: fallbackTranslate(feat),
-      promoCustom: fallbackTranslate(promoCustom),
-      _src: srcKey
-    };
-  }
-}
-
-// ============ V11.2 #2: LLM 智能提示词模式 ============
-// 开启后，把"所有结构化参数 + 中文自由描述"整体交给大模型生成一段通顺的英文提示词，
-// 最后仍追加硬约束后缀（禁中文 / 人脸质量 / 锁定主商品 / 折扣准确），保证控图能力不丢失。
-function collectPromptInputs() {
-  const gv = id => (document.getElementById(id) && document.getElementById(id).value.trim()) || '';
-  const mp = (typeof mainPromoState !== 'undefined' && mainPromoState) ? mainPromoState : {};
-  const pcSafe = (typeof promoConfig !== 'undefined' && promoConfig) ? promoConfig : {};
-  return {
-    productName: gv('productName'),
-    category: (typeof selectedTags !== 'undefined' && selectedTags) ? (selectedTags.category || '') : '',
-    clothingType: (typeof selectedTags !== 'undefined' && selectedTags) ? (selectedTags.clothingType || '') : '',
-    sellingPoints: (typeof selectedTags !== 'undefined' && selectedTags && selectedTags.sellingPoints) ? selectedTags.sellingPoints.slice() : [],
-    painPoints: (typeof selectedTags !== 'undefined' && selectedTags && selectedTags.painPoints) ? selectedTags.painPoints.slice() : [],
-    scene: (typeof selectedTags !== 'undefined' && selectedTags) ? (selectedTags.scene || '') : '',
-    atmosphere: (typeof selectedTags !== 'undefined' && selectedTags) ? (selectedTags.atmosphere || '') : '',
-    brandTone: (typeof selectedTags !== 'undefined' && selectedTags) ? (selectedTags.brandTone || '') : '',
-    audience: {
-      ages: (typeof selectedTags !== 'undefined' && selectedTags && selectedTags.targetAges) ? selectedTags.targetAges.slice() : [],
-      genders: (typeof selectedTags !== 'undefined' && selectedTags && selectedTags.targetGenders) ? selectedTags.targetGenders.slice() : [],
-      identities: (typeof selectedTags !== 'undefined' && selectedTags && selectedTags.targetIdentities) ? selectedTags.targetIdentities.slice() : []
-    },
-    personType: (typeof selectedPersonType !== 'undefined') ? selectedPersonType || '' : '',
-    industryMode: (typeof selectedIndustryMode !== 'undefined') ? selectedIndustryMode || 'normal_clothing' : 'normal_clothing',
-    imageSize: gv('imageSize'),
-    quality: gv('imageQuality'),
-    targetLang: (typeof getTargetLangName === 'function') ? getTargetLangName() : 'English',
-    promo: {
-      type: pcSafe.type || '',
-      main: {
-        percent: mp.percent || '', customText: mp.customText || '',
-        amount: mp.amount || 0, fullX: mp.fullX || 0, getY: mp.getY || 0, minusY: mp.minusY || 0,
-        pieceY: mp.pieceY || '', zDiscount: mp.zDiscount || '', customZ: mp.customZ || '',
-        buyN: mp.buyN || 0, getM: mp.getM || 0, price: mp.price || 0, stackable: !!mp.stackable
-      },
-      extraPromos: (pcSafe.extraPromos || []).slice(),
-      bulkPieces: pcSafe.bulkPieces || 2, bulkDiscount: pcSafe.bulkDiscount || '10% OFF',
-      freeShipping: !!pcSafe.freeShipping,
-      badgeBg: pcSafe.badgeBg !== false, badgeSize: pcSafe.badgeSize || 'medium',
-      colorScheme: pcSafe.colorScheme || '强销售转化'
-    },
-    extraNote: gv('extraNote'),
-    productFeatures: gv('productFeatures'),
-    pairing: (typeof pairingConfig !== 'undefined' && pairingConfig.list) ? pairingConfig.list.slice() : [],
-    pairingStyle: (typeof pairingConfig !== 'undefined' && pairingConfig.style) ? pairingConfig.style || 'matching' : 'matching'
-  };
-}
-
-async function buildAutoPromptLLM(apiKey) {
-  const cfg = collectPromptInputs();
-  const sys = 'You are a senior e-commerce image-generation prompt engineer. You are given a JSON of product configuration. Some text fields (extraNote, productFeatures) are in Chinese — translate their MEANING into English visual/photographic terms, but keep ALL numbers, percentages, currency and discount values EXACTLY as given. Output ONE coherent, detailed ENGLISH image-generation prompt (no markdown, no code fences, no explanations). Rules: (1) The product must be the clear hero of the image; (2) If a promotion is present, render it prominently and ACCURATELY (every digit/percent exact); (3) If pairing items are present, ADD them but keep the ORIGINAL product EXACTLY unchanged (same color, pattern, cut, fabric); (4) Output ONLY English — ABSOLUTELY NO Chinese/Japanese/Korean characters; (5) Describe concrete visual/photographic details: lighting, composition, background, model pose, material texture.';
-  const user = JSON.stringify(cfg);
-  const proxies = getProxyUrl();
-  const resp = await fetchWithProxy('https://api.apimart.ai/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-    body: JSON.stringify({ model: 'gpt-4o-mini', temperature: 0.4, messages: [ { role: 'system', content: sys }, { role: 'user', content: user } ] })
-  }, proxies);
-  const data = await resp.json();
-  let text = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-  if (!text) throw new Error('LLM 无返回');
-  text = text.replace(/```json/gi, '').replace(/```/g, '').trim();
-  text = stripCJK(filterBannedWords(text));
-  // 追加硬约束后缀，保证控图能力不被 LLM 自由发挥破坏
-  text += '\n\n=== HARD CONSTRAINTS (MUST HOLD) ===';
-  text += '\n- ALL text in the image MUST be in ' + cfg.targetLang + ' ONLY. NO Chinese/Japanese/Korean characters anywhere.';
-  text += '\n- ALL faces MUST be photorealistic, natural skin texture, no distortion, no plastic/waxy skin.';
-  text += '\n- For small/thumbnail images prefer ZERO people. No watermarks. No logos.';
-  if (cfg.pairing && cfg.pairing.length) {
-    text += '\n- The original product being sold MUST remain EXACTLY unchanged (color, pattern, cut, fabric, details). Paired items are added elements only.';
-  }
-  if (cfg.promo && cfg.promo.type) {
-    text += '\n- Reproduce every discount number, currency and percent sign EXACTLY as specified. No garbled or invented glyphs.';
-  }
-  return cleanupResidualPunct(text);
-}
-
-// ============ V11.1 #6: 单任务生成单元（供并发调用） ============
-let _genProgress = { total: 0, done: 0, elapsed: {} };
-
-function renderGenProgress() {
-  const p = _genProgress;
-  if (!p || !p.total) return;
-  const vals = Object.values(p.elapsed);
-  const maxEl = vals.length ? Math.max.apply(null, vals) : 0;
-  const mins = Math.floor(maxEl / 60), secs = maxEl % 60;
-  const tail = p.total > 1 ? ` (${p.done}/${p.total} 张已完成)` : '';
-  setStatus(`生成中...${tail} 已等待 ${mins}分${secs}秒`, 'info');
-}
-
-async function generateOneImage(opts) {
-  const { model, prompt, size, imageUrls, apiKey, proxies, index, total } = opts;
-  // 多张并发时若用完全相同的提示词，出来的图会高度雷同，这里加构图扰动
-  const finalPrompt = (total > 1 && index > 0)
-    ? prompt + '\n\n=== VARIATION ' + (index + 1) + ' of ' + total + ' ===' +
-      '\n- Use a distinctly different camera angle, composition and background arrangement from the other variations.' +
-      '\n- Keep the product itself EXACTLY identical across all variations: same color, same shape, same details.'
-    : prompt;
-  const body = { model, prompt: finalPrompt, size, n: 1, image_urls: imageUrls };
-  const submitResp = await fetchWithProxy('https://api.apimart.ai/v1/images/generations', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-    body: JSON.stringify(body)
-  }, proxies);
-  const submitData = await submitResp.json();
-  if (submitData.code !== 200 || !submitData.data || !submitData.data.length) {
-    throw new Error(`提交失败 [${submitData.code || 'unknown'}]: ${submitData.message || submitData.msg || JSON.stringify(submitData)}`);
-  }
-  // 若网关一次返回多个 task，全部收下（原版此处只取 data[0]，其余被静默丢弃）
-  const taskIds = submitData.data.map(d => d && d.task_id).filter(Boolean);
-  if (!taskIds.length) throw new Error('提交成功但未返回 task_id');
-  const settled = await Promise.allSettled(
-    taskIds.map(tid => pollTask(tid, apiKey, 120, (el) => {
-      _genProgress.elapsed[index] = el;
-      renderGenProgress();
-    }))
-  );
-  let imgs = [];
-  settled.forEach(r => {
-    if (r.status === 'fulfilled' && r.value && r.value.images) imgs = imgs.concat(r.value.images);
-  });
-  if (!imgs.length) {
-    const bad = settled.find(r => r.status === 'rejected');
-    throw new Error((bad && bad.reason && bad.reason.message) || '任务完成但未返回图片');
-  }
-  _genProgress.done++;
-  renderGenProgress();
-  return imgs;
-}
-
 function getProxyUrl() {
-  // V11.1 #5：直连提到第一位。浏览器对跨域的拒绝是毫秒级同步返回的，
-  // 探测直连几乎零成本；若 APIMart 本身支持 CORS，整条免费代理链都可跳过。
-  const allProxies = ['','https://corsproxy.io/?','https://api.allorigins.win/raw?url=','https://corsproxy.org/?','https://thingproxy.freeboard.io/fetch/'];
+  // V11.1 Fix #5: 直连提到首位，公共代理在后
+  const allProxies = ['', 'https://corsproxy.io/?', 'https://api.allorigins.win/raw?url=', 'https://corsproxy.org/?', 'https://thingproxy.freeboard.io/fetch/'];
   const userPref = document.getElementById('proxySelect')?.value || 'auto';
-  if (userPref === 'auto') {
-    // V11.1 #5：记住上次跑通的通道并优先复用，避免每次请求都从头试错。
-    try {
-      const lastGood = localStorage.getItem('poster_last_good_proxy');
-      if (lastGood !== null && allProxies.includes(lastGood)) {
-        return [lastGood].concat(allProxies.filter(p => p !== lastGood));
-      }
-    } catch(_) {}
-    return allProxies;
+  if (userPref !== 'auto') return [userPref];
+  // V11.1: 记忆上次成功的通道，优先复用
+  const lastOk = localStorage.getItem('poster_last_proxy_idx');
+  if (lastOk !== null) {
+    const idx = parseInt(lastOk);
+    if (idx >= 0 && idx < allProxies.length) {
+      const preferred = allProxies[idx];
+      const rest = allProxies.filter((_, i) => i !== idx);
+      return [preferred, ...rest];
+    }
   }
-  return [userPref];
+  return allProxies;
 }
 
 async function fetchWithProxy(url, options, proxies) {
@@ -3511,32 +3540,32 @@ async function fetchWithProxy(url, options, proxies) {
     try {
       const proxy = proxies[i];
       const proxyUrl = proxy ? (proxy + encodeURIComponent(url)) : url;
-      // V11.1 #5：直连用短超时快速探测，公共代理才给足 15 秒。
-      // 原版所有通道一律等满 15 秒，前几个代理挂掉就要白白耗掉 45 秒。
+      // V11.1 Fix #5: 直连短超时8s，代理15s
       const timeout = proxy ? 15000 : 8000;
       const resp = await fetch(proxyUrl, { ...options, signal: AbortSignal.timeout(timeout) });
       if (resp.ok) {
-        try { localStorage.setItem('poster_last_good_proxy', proxy); } catch(_) {}
+        // V11.1: 记忆成功通道
+        localStorage.setItem('poster_last_proxy_idx', String(i));
         return resp;
       }
       lastErr = `HTTP ${resp.status}`;
     } catch (e) { lastErr = e.message; continue; }
   }
-  // 通道全灭时清掉记忆，防止被锁死在一个已失效的通道上
-  try { localStorage.removeItem('poster_last_good_proxy'); } catch(_) {}
-  throw new Error(`所有通道均失败 (${lastErr})，请检查网络或API Key`);
+  throw new Error(`所有代理均失败 (${lastErr})，请检查网络或API Key`);
 }
 
-async function pollTask(taskId, apiKey, maxAttempts = 120, onTick = null) {
+async function pollTask(taskId, apiKey, maxAttempts = 120) {
   const proxies = getProxyUrl();
-  const started = Date.now();
-  const MAX_WAIT_MS = 6 * 60 * 1000;
-  let round = 0;
-  while (Date.now() - started < MAX_WAIT_MS) {
-    // V11.1 #5：首轮立即查询。原版一上来就 sleep(3000)，
-    // 哪怕图早就好了也要先干等 3 秒。之后改为递进间隔，前密后疏。
-    if (round > 0) await sleep(round < 5 ? 2000 : (round < 15 ? 3000 : 5000));
-    round++;
+  const startTime = Date.now();
+  for (let i = 0; i < maxAttempts; i++) {
+    // V11.1 Fix #5: 首轮立即查询，之后递进间隔
+    if (i > 0) {
+      let interval;
+      if (i <= 10) interval = 2000;       // 前10次: 2秒
+      else if (i <= 20) interval = 3000;  // 10-20次: 3秒
+      else interval = 5000;               // 之后: 5秒
+      await sleep(interval);
+    }
     try {
       const resp = await fetchWithProxy(`https://api.apimart.ai/v1/tasks/${taskId}`, {
         method: 'GET', headers: { 'Authorization': 'Bearer ' + apiKey }
@@ -3546,13 +3575,15 @@ async function pollTask(taskId, apiKey, maxAttempts = 120, onTick = null) {
         const status = data.data.status;
         if (status === 'completed') return data.data.result;
         if (status === 'failed') throw new Error(`任务失败: ${data.data.error || '未知错误'}`);
-        const el = Math.floor((Date.now() - started) / 1000);
-        if (typeof onTick === 'function') onTick(el);
-        else setStatus(`生成中... 已等待${Math.floor(el/60)}分${el%60}秒`, 'info');
+        // V11.1: 真实用时显示
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const mins = Math.floor(elapsed / 60);
+        const secs = elapsed % 60;
+        setStatus(`生成中... 已等待${mins}分${secs}秒 (第${i+1}次查询)`, 'info');
       }
     } catch (e) { if (e.message.includes('任务失败')) throw e; }
   }
-  throw new Error('超时：任务未在6分钟内完成。图片可能仍在生成中，请稍后刷新页面查看历史记录。');
+  throw new Error('超时：任务未在预期时间内完成。图片可能仍在生成中，请稍后刷新页面查看历史记录。');
 }
 
 function displayResults(result) {
@@ -3560,295 +3591,17 @@ function displayResults(result) {
   const container = document.getElementById('resultImages');
   area.style.display = 'block';
   if (result && result.images && result.images.length > 0) {
-    const base = (document.getElementById('productName').value.trim() || 'poster').replace(/['"\\]/g, '');
-    // V11.3 fix#1: 折扣角标 —— HTML 叠加层显示（永远生效，不依赖 canvas/CORS），
-    // 下载时尽力用 canvas 合成为带角标图片，CORS 失败则退回原图。
-    // 仅当"促销已设置 + 有角标内容"时才叠加；否则完全保持原样。
-    const promoText = buildPromoDisplayString();
-    const doOverlay = !!(promoText && promoConfig && promoConfig.type);
-    container.innerHTML = result.images.map((img, i) => {
-      const cellId = 'imgCell_' + Date.now() + '_' + i;
-      const badgeHtml = doOverlay ? buildPromoBadgeHtml(promoText) : '';
-      return `<div class="img-cell" id="${cellId}"><img src="${img.url}" crossorigin="anonymous" onclick="viewImage('${img.url}')" title="点击查看大图">${badgeHtml}<button class="dl-btn" title="下载原图" onclick="downloadImage('${img.url}','${base}_${i+1}.png')">⬇</button></div>`;
-    }).join('');
-    // 下载时尽力把角标烘焙进图片（canvas）；跨域/失败则保持原图下载，不报错
-    if (doOverlay) {
-      const cells = container.querySelectorAll('.img-cell');
-      result.images.forEach((img, i) => {
-        const cell = cells[i]; if (!cell) return;
-        const im = cell.querySelector('img');
-        if (!im) return;
-        const done = () => {
-          renderPromoOverlay(img.url, promoText, function(data) {
-            if (!data || !data.canvas || !data.dataUrl) return;
-            const dl = cell.querySelector('.dl-btn');
-            if (dl) dl.setAttribute('onclick', `downloadImage('${data.dataUrl}','${base}_${i+1}.png')`);
-            // V11.3 fix#1: 用图片真实背景主色重绘屏幕上的角标 → 真正融入该图背景
-            if (data.sampledColor) {
-              const badge = cell.querySelector('.promo-badge');
-              if (badge) recolorBadgeFromSample(badge, data.sampledColor);
-            }
-          });
-        };
-        if (im.complete && im.naturalWidth > 0) done();
-        else { im.onload = done; im.onerror = function(){}; }
-      });
-    }
+    container.innerHTML = result.images.map(img =>
+      `<img src="${img.url}" onclick="viewImage('${img.url}')" title="点击查看大图">`
+    ).join('');
   } else {
     container.innerHTML = '<p style="color:var(--text2)">未获取到图片结果</p>';
   }
 }
 
-// V11.3 fix#1: 生成角标 HTML（CSS 叠加层，颜色/尺寸/位置全部可控，始终可显示）
-function buildPromoBadgeHtml(text) {
-  let sz = 'pb-md';
-  try {
-    const s = (promoConfig && promoConfig.badgeSize) || 'medium';
-    sz = s === 'small' ? 'pb-sm' : s === 'large' ? 'pb-lg' : 'pb-md';
-  } catch (e) {}
-  let schemeKey = '强销售转化';
-  try { schemeKey = (promoConfig && promoConfig.colorScheme) || schemeKey; } catch (e) {}
-  const scheme = (typeof PROMO_COLOR_SCHEMES !== 'undefined' ? PROMO_COLOR_SCHEMES.find(s => s.key === schemeKey) : null) || (PROMO_COLOR_SCHEMES && PROMO_COLOR_SCHEMES[0]) || { color:'#e53935' };
-  // 无底色模式：文字直出，仅加阴影，不用色块
-  const noBg = !(promoConfig && promoConfig.badgeBg !== false);
-  if (noBg) {
-    return `<div class="promo-badge ${sz}" style="background:transparent;color:${scheme.color};text-shadow:0 2px 8px rgba(0,0,0,.4)">${text}</div>`;
-  }
-  const base = hexToRgb(scheme.color || '#e53935');
-  return `<div class="promo-badge ${sz}" style="background:linear-gradient(135deg,rgba(${Math.min(255,base.r+20)},${Math.min(255,base.g+20)},${Math.min(255,base.b+20)},0.85),rgba(${Math.max(0,base.r-20)},${Math.max(0,base.g-20)},${Math.max(0,base.b-20)},0.85));border:1px solid rgba(255,255,255,.35)">${text}</div>`;
-}
-
-// V11.3 fix#1: 用采样的图片背景主色重绘屏幕上的角标 → 让角标真正融入该图的背景色系
-function recolorBadgeFromSample(badge, colorStr) {
-  try {
-    const c = hexToRgb(colorStr);
-    const noBg = !(promoConfig && promoConfig.badgeBg !== false);
-    if (noBg) {
-      badge.style.background = 'transparent';
-      badge.style.color = `rgb(${c.r},${c.g},${c.b})`;
-    } else {
-      badge.style.background = `linear-gradient(135deg,rgba(${Math.min(255,c.r+22)},${Math.min(255,c.g+22)},${Math.min(255,c.b+22)},0.86),rgba(${Math.max(0,c.r-18)},${Math.max(0,c.g-18)},${Math.max(0,c.b-18)},0.86))`;
-    }
-  } catch (e) {}
-}
-
 function viewImage(url) {
   document.getElementById('imgViewerSrc').src = url;
   document.getElementById('imgViewer').classList.remove('hidden');
-}
-
-// ============ V11.3 #1: Canvas 叠加折扣角标 ============
-// 思路：AI 只生成干净产品场景图，折扣角标用代码精确绘制 —— 字体、颜色、圆角、透明度、
-// 阴影、位置全部可控，保证清晰且“融入背景”。
-// V11.3 fix: 生成图来自跨域图床，直接 drawImage 会把 canvas 污染，toDataURL 抛 SecurityError，
-// 叠加因此静默回退成“AI 画的丑角标”。这里改为先用代理链把图片字节拉下来转成 dataURL，
-// dataURL 与页面同源、永不污染 canvas → 角标一定生效。全部失败才回退原始 <img>，绝不报错。
-function renderPromoOverlay(url, promoText, onDone) {
-  let fired = false;
-  const finish = (data) => { if (!fired) { fired = true; if (onDone) onDone(data); } };
-  const renderFromDataUrl = (dataUrl) => {
-    const img = new Image();
-    img.onload = function() {
-      try {
-        const cv = document.createElement('canvas');
-        cv.width = img.naturalWidth || img.width;
-        cv.height = img.naturalHeight || img.height;
-        const ctx = cv.getContext('2d');
-        if (!ctx) { finish(null); return; }
-        ctx.drawImage(img, 0, 0, cv.width, cv.height);
-        const sampledColor = drawPromoBadge(ctx, cv.width, cv.height, promoText);
-        const out = cv.toDataURL('image/png'); // dataURL 同源，不会抛 SecurityError
-        finish({ canvas: cv, dataUrl: out, sampledColor: sampledColor });
-      } catch (e) { finish(null); }
-    };
-    img.onerror = function() { finish(null); };
-    img.src = dataUrl;
-  };
-  // 1) 若能直接跨域读取（图床本身开了CORS），最快路径：用 crossOrigin 直接画
-  try {
-    const probe = new Image();
-    probe.crossOrigin = 'anonymous';
-    probe.onload = function() {
-      // 直接 drawImage 到 canvas 并尝试导出，能成功说明同源可读 → 用这个图
-      try {
-        const cv = document.createElement('canvas');
-        cv.width = probe.naturalWidth; cv.height = probe.naturalHeight;
-        const ctx = cv.getContext('2d');
-        ctx.drawImage(probe, 0, 0, cv.width, cv.height);
-        const sampledColor = drawPromoBadge(ctx, cv.width, cv.height, promoText);
-        const out = cv.toDataURL('image/png');
-        if (!fired) { fired = true; onDone({ canvas: cv, dataUrl: out, sampledColor: sampledColor }); }
-      } catch (e) { fetchBytesViaProxy(); } // 被污染 → 走代理拉取
-    };
-    probe.onerror = function() { fetchBytesViaProxy(); };
-    probe.src = url;
-  } catch (e) { fetchBytesViaProxy(); }
-
-  // 2) 代理拉取图片字节 → dataURL（同源，永不污染）。这也顺带解决跨域下载受限问题。
-  async function fetchBytesViaProxy() {
-    try {
-      const proxies = (typeof getProxyUrl === 'function') ? getProxyUrl() : [''];
-      let resp = null, lastErr;
-      for (let i = 0; i < proxies.length; i++) {
-        try {
-          const p = proxies[i];
-          const target = p ? (p + encodeURIComponent(url)) : url;
-          const r = await fetch(target, { signal: AbortSignal.timeout(p ? 15000 : 8000) });
-          if (r.ok) { resp = r; break; }
-          lastErr = 'HTTP ' + r.status;
-        } catch (e) { lastErr = e.message; }
-      }
-      if (!resp) { finish(null); return; }
-      const buf = await resp.arrayBuffer();
-      // 尽量保留原格式，缩小体积；JPEG通常比PNG小，且无透明通道需求
-      const isJpeg = /jpe?g$/i.test(url.split('?')[0]) || (resp.headers.get('content-type') || '').includes('jpeg');
-      const mime = isJpeg ? 'image/jpeg' : 'image/png';
-      const base64 = arrayBufferToBase64(buf);
-      const dataUrl = 'data:' + mime + ';base64,' + base64;
-      renderFromDataUrl(dataUrl);
-    } catch (e) { finish(null); }
-  }
-}
-
-function arrayBufferToBase64(buffer) {
-  let binary = '';
-  const bytes = new Uint8Array(buffer);
-  const chunk = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunk) {
-    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
-  }
-  return btoa(binary);
-}
-
-// 从画布合成图打开大图查看（避免直接看跨域 base64 的问题，直接看 dataURL 即可）
-function openViewerFromCanvas(data) {
-  if (data && data.dataUrl) { viewImage(data.dataUrl); }
-}
-
-// 核心：在画布上绘制“与画面同色系、柔和、精致”的折扣角标。
-// V11.3 fix#1: 返回最终使用的基底色（采样色或配色兜底色），供 HTML 叠加层同步重绘。
-function drawPromoBadge(ctx, W, H, text) {
-  // 0) 从画面取主色调：采样顶部 1/3 区域的平均颜色，作为角标基底色 → 天然融入背景
-  const avg = sampleTopColor(ctx, W, H);
-  // 1) 配色方案兜底（仍可用）
-  let schemeKey = '强销售转化';
-  try { schemeKey = (promoConfig && promoConfig.colorScheme) || schemeKey; } catch (e) {}
-  const scheme = PROMO_COLOR_SCHEMES.find(s => s.key === schemeKey) || PROMO_COLOR_SCHEMES[0];
-  const baseColor = avg || scheme.color || '#e53935';
-  const baseRGB = hexToRgb(baseColor);
-
-  // 2) 尺寸：占用画面高度的比例
-  let szRatio = 0.30; // medium 默认 30%
-  try {
-    const sz = (promoConfig && promoConfig.badgeSize) || 'medium';
-    szRatio = sz === 'small' ? 0.16 : sz === 'large' ? 0.40 : 0.30;
-  } catch (e) {}
-  const badgeH = Math.max(40, Math.round(H * szRatio));
-  const badgeW = Math.max(120, Math.round(W * 0.72));
-  const x = (W - badgeW) / 2;
-  const y = Math.max(8, Math.round(H * 0.06));
-
-  // 3) 圆角 + 柔和阴影 + 半透明同色系填充（75% 透明度，模拟设计感包装标签）
-  ctx.save();
-  // 柔影
-  ctx.shadowColor = 'rgba(0,0,0,0.30)';
-  ctx.shadowBlur = Math.max(10, Math.round(badgeH * 0.16));
-  ctx.shadowOffsetY = Math.max(4, Math.round(badgeH * 0.08));
-  roundRectPath(ctx, x, y, badgeW, badgeH, Math.round(badgeH * 0.18));
-  ctx.fillStyle = `rgba(${baseRGB.r},${baseRGB.g},${baseRGB.b},0.78)`;
-  ctx.fill();
-  // 细微渐变：从场景色稍亮→稍暗，更自然
-  const grad = ctx.createLinearGradient(x, y, x, y + badgeH);
-  grad.addColorStop(0, `rgba(${Math.min(255,baseRGB.r+24)},${Math.min(255,baseRGB.g+24)},${Math.min(255,baseRGB.b+24)},0.85)`);
-  grad.addColorStop(1, `rgba(${Math.max(0,baseRGB.r-16)},${Math.max(0,baseRGB.g-16)},${Math.max(0,baseRGB.b-16)},0.85)`);
-  roundRectPath(ctx, x, y, badgeW, badgeH, Math.round(badgeH * 0.18));
-  ctx.fillStyle = grad;
-  ctx.fill();
-  // 细描边（同色系，低对比）
-  ctx.lineWidth = Math.max(1.5, badgeH * 0.02);
-  ctx.strokeStyle = `rgba(${Math.min(255,baseRGB.r+40)},${Math.min(255,baseRGB.g+40)},${Math.min(255,baseRGB.b+40)},0.55)`;
-  roundRectPath(ctx, x, y, badgeW, badgeH, Math.round(badgeH * 0.18));
-  ctx.stroke();
-
-  // 4) 文字：白色粗体（若场景色太浅则用深色文字保证可读）
-  ctx.shadowColor = 'rgba(0,0,0,0.35)';
-  ctx.shadowBlur = Math.max(4, Math.round(badgeH * 0.06));
-  ctx.shadowOffsetY = Math.max(2, Math.round(badgeH * 0.04));
-  const lum = 0.299*baseRGB.r + 0.587*baseRGB.g + 0.114*baseRGB.b;
-  const textColor = lum > 180 ? '#212121' : '#ffffff';
-  const fontSize = Math.round(badgeH * 0.42);
-  ctx.fillStyle = textColor;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  // 自适应字号：过长则缩小换行
-  const lines = wrapText(text, badgeW * 0.86, fontSize, 'bold ' + fontSize + 'px Arial, sans-serif', ctx);
-  const lineH = fontSize * 1.12;
-  let ty = y + (badgeH - lines.length * lineH) / 2 + lineH * 0.35;
-  for (const ln of lines) {
-    ctx.font = 'bold ' + fontSize + 'px Arial, sans-serif';
-    ctx.fillText(ln, x + badgeW / 2, ty);
-    ty += lineH;
-  }
-  ctx.restore();
-  return baseColor; // 返回基底色，供 HTML 叠加层同步重绘以融入背景
-}
-
-function roundRectPath(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
-}
-function hexToRgb(hex) {
-  hex = String(hex || '').replace('#','');
-  if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-  const n = parseInt(hex, 16);
-  if (isNaN(n)) return { r: 229, g: 57, b: 53 };
-  return { r: (n>>16)&255, g: (n>>8)&255, b: n&255 };
-}
-// 采样画面上部区域的平均主色（融入背景的关键）
-function sampleTopColor(ctx, W, H) {
-  try {
-    const sx = Math.round(W*0.25), sy = Math.round(H*0.02);
-    const sw = Math.round(W*0.5), sh = Math.max(1, Math.round(H*0.18));
-    const d = ctx.getImageData(sx, sy, sw, sh).data;
-    let r=0,g=0,b=0,n=0;
-    for (let i=0;i<d.length;i+=40) { r+=d[i]; g+=d[i+1]; b+=d[i+2]; n++; }
-    if (!n) return null;
-    r=Math.round(r/n); g=Math.round(g/n); b=Math.round(b/n);
-    return `rgb(${r},${g},${b})`;
-  } catch (e) { return null; } // 跨域取不到像素 → 用配色兜底
-}
-// 按可用宽度折行（支持中英文）
-function wrapText(text, maxW, fontSize, baseFont, ctx) {
-  text = String(text || '');
-  ctx.font = baseFont;
-  const chars = text.split('');
-  const lines = [];
-  let line = '';
-  for (const ch of chars) {
-    if (ctx.measureText(line + ch).width > maxW && line) { lines.push(line); line = ch; }
-    else line += ch;
-  }
-  if (line) lines.push(line);
-  return lines.length ? lines : [text];
-}
-// ============ END V11.3 #1 ============
-
-// V11.2 #4: 单图下载。跨域图床可能忽略 download 属性，此时退化为新标签页打开让用户右键保存
-function downloadImage(url, name) {
-  const a = document.createElement('a');
-  a.href = url; a.download = name || 'image'; a.target = '_blank'; a.rel = 'noopener';
-  document.body.appendChild(a); a.click(); a.remove();
-}
-
-function downloadRecordImages(recId) {
-  const rec = v9Records.find(r => r.id === recId);
-  if (!rec || !rec.imageUrls || !rec.imageUrls.length) return;
-  rec.imageUrls.forEach((u, j) => downloadImage(u, `${rec.productName}_${rec.version}_${j+1}.png`));
 }
 
 // ============ V9: SAVE RECORD ============
@@ -3869,7 +3622,8 @@ function saveV9Record(name, prompt, model, size, quality, count, imageUrls) {
       clothingType: selectedTags.clothingType,
       sellingPoints: [...selectedTags.sellingPoints],
       painPoints: [...selectedTags.painPoints],
-      scene: selectedTags.scene,
+      scene: selectedTags.scenes ? selectedTags.scenes[0] : '',
+      scenes: [...(selectedTags.scenes||[])],
       atmosphere: selectedTags.atmosphere,
       brandTone: selectedTags.brandTone,
       targetAges: [...(selectedTags.targetAges||[])],
@@ -3890,7 +3644,12 @@ function saveV9Record(name, prompt, model, size, quality, count, imageUrls) {
       }
       return pc;
     })(),
-      productFeatures: document.getElementById('productFeatures')?.value || ''
+      productFeatures: document.getElementById('productFeatures')?.value || '',
+      // V11.1: 保存搭配和叠加促销
+      pairingConfig: Object.assign({}, pairingConfig),
+      overlayPromos: JSON.parse(JSON.stringify(overlayPromos)),
+      modelProfile: Object.assign({}, modelProfile),
+      tieredDiscountConfig: JSON.parse(JSON.stringify(tieredDiscountConfig))
     },
     tagWeights: Object.assign({}, tagWeights),
     country: getDetectedLanguage(),
@@ -3902,7 +3661,17 @@ function saveV9Record(name, prompt, model, size, quality, count, imageUrls) {
     count: count,
     imageUrls: imageUrls || [],
     favorited: false,
-    rating: 0
+    rating: 0,
+    // V11.2-P1: 新增历史记录字段
+    adopted: false,
+    notes: '',
+    categoryTemplate: selectedCategoryTemplate || '',
+    promoType: promoConfig.type || '',
+    modelProfileRecord: {
+      model: model,
+      size: size,
+      quality: quality
+    }
   };
   v9Records.push(record);
   // V9.2 Fix #4: 降低记录上限避免localStorage溢出
@@ -3960,7 +3729,7 @@ function loadRecordToEditor(id) {
   selectedTags.clothingType = rec.tags.clothingType || '';
   selectedTags.sellingPoints = rec.tags.sellingPoints ? [...rec.tags.sellingPoints] : [];
   selectedTags.painPoints = rec.tags.painPoints ? [...rec.tags.painPoints] : [];
-  selectedTags.scene = rec.tags.scene || '';
+  selectedTags.scenes = rec.tags.scenes || (rec.tags.scene ? [rec.tags.scene] : []);
   selectedTags.atmosphere = rec.tags.atmosphere || '';
   selectedTags.brandTone = rec.tags.brandTone || '';
   selectedTags.targetAges = rec.tags.targetAges ? [...rec.tags.targetAges] : [];
@@ -3988,6 +3757,43 @@ function loadRecordToEditor(id) {
   // V9.2: 恢复产品特性
   const pf = document.getElementById('productFeatures');
   if (pf && rec.tags.productFeatures) pf.value = rec.tags.productFeatures;
+  // V11.1: 恢复搭配单品和叠加促销
+  if (rec.tags.pairingConfig) {
+    pairingConfig = Object.assign({}, rec.tags.pairingConfig);
+    const pc = document.getElementById('pairingCategory');
+    const ps = document.getElementById('pairingStyle');
+    if (pc) pc.value = pairingConfig.category || '';
+    if (ps) ps.value = pairingConfig.style || '';
+  }
+  // V11.2 P0-6: Restore tiered discount config
+  if (rec.tags.tieredDiscountConfig) {
+    tieredDiscountConfig = JSON.parse(JSON.stringify(rec.tags.tieredDiscountConfig));
+    const tdToggle = document.getElementById('tieredDiscountToggle');
+    if (tdToggle) tdToggle.checked = tieredDiscountConfig.enabled;
+    const tdPanel = document.getElementById('tieredDiscountPanel');
+    if (tdPanel) tdPanel.style.display = tieredDiscountConfig.enabled ? 'block' : 'none';
+    renderTieredDiscountPanel();
+  }
+  // V11.2 P0-5: Restore model profile
+  if (rec.tags.modelProfile) {
+    modelProfile = Object.assign({}, rec.tags.modelProfile);
+  } else {
+    modelProfile = { race: '', body: '', age: '', style: '' };
+  }
+  if (rec.tags.overlayPromos && Array.isArray(rec.tags.overlayPromos)) {
+    overlayPromos = JSON.parse(JSON.stringify(rec.tags.overlayPromos));
+    renderOverlayPromoCheckboxes(); renderTieredDiscountPanel();
+    updateOverlayPromoVisibility();
+  }
+  // V11.2-P1: 恢复品类模板
+  if (rec.categoryTemplate) {
+    selectedCategoryTemplate = rec.categoryTemplate;
+    localStorage.setItem('poster_v11_selected_category', selectedCategoryTemplate);
+  }
+  // V11.2-P1: 恢复促销类型
+  if (rec.promoType) {
+    promoConfig.type = rec.promoType;
+  }
   if (rec.country) document.getElementById('genLanguage').value = rec.country;
   renderAllDimensions(); updatePreview(); updateAnalysis();
   onLanguageChange();
@@ -4009,33 +3815,87 @@ function renderHistoryCenter() {
   empty.style.display = 'none'; table.style.display = 'table';
   const sorted = [...v9Records].reverse();
   tbody.innerHTML = sorted.map(rec => {
-    const gallery = (rec.imageUrls && rec.imageUrls.length)
-      ? `<div class="hist-gallery">${rec.imageUrls.map((u,k)=>`<img class="thumb" src="${u}" onclick="viewImage('${u}')" title="图${k+1}">`).join('')}</div>`
-      : (rec.productImages && rec.productImages.length ? '<span style="color:var(--text2);font-size:9px">参考图</span>' : '<span style="color:var(--text2)">—</span>');
+    const thumb = rec.imageUrls && rec.imageUrls.length ? rec.imageUrls[0] : (rec.productImages && rec.productImages.length ? rec.productImages[0] : '');
     const langInfo = COUNTRY_LANG[rec.country] || {};
     const tagSummary = [
       rec.tags.category, ...(rec.tags.sellingPoints||[]).slice(0,2), rec.tags.scene, rec.tags.atmosphere
     ].filter(Boolean).join(' · ');
     const date = rec.createdAt ? new Date(rec.createdAt).toLocaleString('zh-CN', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
-    return `<tr>
-      <td>${gallery}</td>
-      <td style="font-weight:500">${rec.productName}</td>
-      <td><span class="version-badge">${rec.version}</span></td>
-      <td>${langInfo.flag||''} ${langInfo.name||rec.country||''}</td>
-      <td><span class="tag-summary">${tagSummary}</span></td>
-      <td style="font-size:9px;color:var(--text2)">${date}</td>
-      <td><div class="actions-cell">
-        <span class="fav-star${rec.favorited?' active':''}" onclick="toggleFavorite(${rec.id})">${rec.favorited?'★':'☆'}</span>
-        ${rec.imageUrls&&rec.imageUrls.length?`<button class="btn btn-outline btn-sm" onclick="downloadRecordImages(${rec.id})">⬇️ ${rec.imageUrls.length}张</button>`:''}
-        <button class="btn btn-primary btn-sm" onclick="loadRecordToEditor(${rec.id})">📝 编辑</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteV9Record(${rec.id})">🗑️</button>
-      </div></td>
-    </tr>`;
+
+    // V11.2-P1: Category template display
+    const catTplDisplay = rec.categoryTemplate || rec.tags.category || '';
+    const promoTypeDisplay = rec.promoType || (rec.tags.promoConfig ? rec.tags.promoConfig.type || '' : '');
+
+    // V11.2-P1: Rating stars
+    var rating = rec.rating || 0;
+    var starsHtml = '<div class="rating-stars" data-record-id="' + rec.id + '">';
+    for (var s = 1; s <= 5; s++) {
+      starsHtml += '<span class="star' + (s <= rating ? ' active' : '') + '" onclick="setRecordRating(' + rec.id + ',' + s + ')">★</span>';
+    }
+    starsHtml += '</div>';
+
+    // V11.2-P1: Adopted badge
+    var adoptedHtml = '<span class="adopted-badge ' + (rec.adopted ? 'adopted' : 'not-adopted') + '" onclick="toggleAdopted(' + rec.id + ')" title="点击切换采纳状态">' +
+      (rec.adopted ? '✓ 已采纳' : '✗ 未采纳') + '</span>';
+
+    // V11.2-P1: Notes
+    var notesHtml = '<div class="history-notes" title="' + (rec.notes || '') + '">' +
+      '<input class="history-notes-input" type="text" placeholder="添加备注..." value="' + (rec.notes || '').replace(/"/g, '&quot;') + '" ' +
+      'onblur="updateRecordNotes(' + rec.id + ', this.value)" ' +
+      'onkeydown="if(event.key===\'Enter\'){this.blur()}" /></div>';
+
+    return '<tr>' +
+      '<td>' + (thumb ? '<img class="thumb" src="' + thumb + '" onclick="viewImage(\'' + thumb + '\')">' : '<span style="color:var(--text2)">—</span>') + '</td>' +
+      '<td style="font-weight:500">' + rec.productName + '</td>' +
+      '<td><span class="version-badge">' + rec.version + '</span></td>' +
+      '<td><span class="history-category-template">' + catTplDisplay + '</span>' +
+        (promoTypeDisplay ? '<br><span class="history-promo-type">🎁 ' + promoTypeDisplay + '</span>' : '') + '</td>' +
+      '<td>' + (langInfo.flag||'') + ' ' + (langInfo.name||rec.country||'') + '</td>' +
+      '<td><span class="tag-summary">' + tagSummary + '</span></td>' +
+      '<td>' + starsHtml + '</td>' +
+      '<td>' + adoptedHtml + '</td>' +
+      '<td>' + notesHtml + '</td>' +
+      '<td style="font-size:9px;color:var(--text2)">' + date + '</td>' +
+      '<td><div class="actions-cell">' +
+        '<span class="fav-star' + (rec.favorited?' active':'') + '" onclick="toggleFavorite(' + rec.id + ')">' + (rec.favorited?'★':'☆') + '</span>' +
+        (rec.imageUrls&&rec.imageUrls.length?'<button class="btn btn-outline btn-sm" onclick="viewImage(\''+rec.imageUrls[0]+'\')">🖼️</button>':'') +
+        '<button class="btn btn-primary btn-sm" onclick="loadRecordToEditor(' + rec.id + ')">📝 编辑</button>' +
+        '<button class="btn btn-danger btn-sm" onclick="deleteV9Record(' + rec.id + ')">🗑️</button>' +
+      '</div></td>' +
+    '</tr>';
   }).join('');
 }
 
+
+// ============ V11.2-P1: History Rating, Adopted, Notes ============
+function setRecordRating(id, rating) {
+  var rec = v9Records.find(function(r) { return r.id === id; });
+  if (!rec) return;
+  if (rec.rating === rating) {
+    rec.rating = 0;
+  } else {
+    rec.rating = rating;
+  }
+  localStorage.setItem('poster_v9_records', JSON.stringify(v9Records));
+  renderHistoryCenter();
+}
+
+function toggleAdopted(id) {
+  var rec = v9Records.find(function(r) { return r.id === id; });
+  if (!rec) return;
+  rec.adopted = !rec.adopted;
+  localStorage.setItem('poster_v9_records', JSON.stringify(v9Records));
+  renderHistoryCenter();
+}
+
+function updateRecordNotes(id, notes) {
+  var rec = v9Records.find(function(r) { return r.id === id; });
+  if (!rec) return;
+  rec.notes = notes.trim();
+  localStorage.setItem('poster_v9_records', JSON.stringify(v9Records));
+}
+
 // ============ V9: BATCH EXPORT ============
-// V11.2 #4: 先尽力打 zip；跨域图床(CORS)拉取失败的，退化为逐张新标签页打开让用户右键保存
 async function exportBatchImages() {
   if (v9Records.length === 0) return alert('暂无记录可导出');
   const recordsWithImages = v9Records.filter(r => r.imageUrls && r.imageUrls.length);
@@ -4044,39 +3904,24 @@ async function exportBatchImages() {
   try {
     const zip = new JSZip();
     const imgFolder = zip.folder('poster_v9_images');
-    let ok = 0, fail = 0; const failed = [];
-    for (const rec of recordsWithImages) {
+    for (let i = 0; i < recordsWithImages.length; i++) {
+      const rec = recordsWithImages[i];
       for (let j = 0; j < rec.imageUrls.length; j++) {
-        const url = rec.imageUrls[j];
-        const safeName = (rec.productName || 'poster').replace(/['"\\/]/g, '');
-        const name = `${safeName}_${rec.version}_${j+1}.png`;
         try {
-          const resp = await fetch(url, { mode: 'cors' });
-          if (!resp.ok) throw new Error('HTTP ' + resp.status);
+          const resp = await fetch(rec.imageUrls[j]);
           const blob = await resp.blob();
           const ext = blob.type.includes('png') ? 'png' : 'jpg';
-          imgFolder.file(name.replace(/\.png$/, '.' + ext), blob);
-          ok++;
-        } catch (e) {
-          fail++; failed.push(url);
-          console.warn('跳过(跨域)图片:', url);
-        }
+          imgFolder.file(`${rec.productName}_${rec.version}_${j+1}.${ext}`, blob);
+        } catch(e) { console.warn('Skip image:', e); }
       }
     }
-    if (ok > 0) {
-      const content = await zip.generateAsync({ type: 'blob' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(content);
-      a.download = `poster_v9_images_${new Date().toISOString().slice(0,10)}.zip`;
-      a.click();
-    }
-    if (fail > 0) {
-      setStatus(`⚠️ 已打包 ${ok} 张，${fail} 张因图床跨域限制无法下载，已在新标签页打开，请右键保存`, 'warn');
-      failed.forEach(u => window.open(u, '_blank'));
-    } else {
-      setStatus(`✅ 图片打包完成（${ok} 张）`, 'success');
-    }
-  } catch (err) {
+    const content = await zip.generateAsync({type: 'blob'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(content);
+    a.download = `poster_v9_images_${new Date().toISOString().slice(0,10)}.zip`;
+    a.click();
+    setStatus('✅ 图片打包完成', 'success');
+  } catch(err) {
     setStatus('❌ 打包失败: ' + err.message, 'error');
   }
 }
@@ -4281,100 +4126,6 @@ function getApiKey() {
   return acc?.apiKey || document.getElementById('apiKeyInput').value.trim();
 }
 
-// ============ V11.4: DeepSeek 种草文案生成 ============
-// 独立使用 DeepSeek key（与 APIMart 生图 key 分开），生成"短、带Emoji、适合社媒评论区"的种草文案。
-let _lastCopyText = '';
-function getDeepSeekKey() {
-  return localStorage.getItem('poster_ds_key') || (document.getElementById('deepseekKeyInput') && document.getElementById('deepseekKeyInput').value.trim()) || '';
-}
-function saveDeepSeekKey() {
-  const key = document.getElementById('deepseekKeyInput') && document.getElementById('deepseekKeyInput').value.trim();
-  if (key) { localStorage.setItem('poster_ds_key', key); setCopyStatus('DeepSeek Key 已保存'); }
-  else { setCopyStatus('请输入 DeepSeek Key'); }
-}
-function setCopyStatus(msg) {
-  const el = document.getElementById('copyStatus'); if (el) el.textContent = msg;
-}
-function getCopyPromptContext() {
-  const name = (document.getElementById('productName') && document.getElementById('productName').value.trim()) || '这个产品';
-  const cat = selectedTags.category || selectedCategoryTemplate || '';
-  const feats = (document.getElementById('productFeatures') && document.getElementById('productFeatures').value.trim()) || '';
-  const sell = (selectedTags.sellingPoints || []).join('、');
-  const lang = (typeof getDetectedLanguage === 'function') ? getDetectedLanguage() : 'en-GB';
-  return { name, cat, feats, sell, lang };
-}
-function buildCopySystemPrompt(lang) {
-  const langName = LANG_CODE_TO_NAME[lang] || 'English';
-  const cute = document.getElementById('copyStyleCute') && document.getElementById('copyStyleCute').checked;
-  const tone = cute ? 'cute, playful, friendly, with emojis' : 'enthusiastic, friendly, with a few emojis';
-  return 'You are a social-media copywriter for e-commerce. Write ONE short "种草" (recommendation) comment in ' + langName + ' to be posted under a product ad or in the comments section. Rules: '
-    + '(1) VERY SHORT — 1-2 short sentences, under 40 words; (2) include 2-4 relevant emojis; '
-    + '(3) casual, relatable, persuasive tone (' + tone + '); (4) mention the product\'s key selling points naturally, do NOT overhype or lie; '
-    + '(5) end with a gentle call-to-action like asking a question or inviting interaction. '
-    + 'Output ONLY the copy text in ' + langName + '. No quotation marks, no explanation, no hashtags unless a common one like #ad.';
-}
-async function generateCopy() {
-  const key = getDeepSeekKey();
-  if (!key) { setCopyStatus('请先填写并保存 DeepSeek Key'); return; }
-  const { name, cat, feats, sell, lang } = getCopyPromptContext();
-  const userMsg = 'Product: "' + name + (cat ? '" (category: ' + cat + ')' : '"')
-    + (sell ? '\nSelling points: ' + sell : '')
-    + (feats ? '\nProduct features: ' + feats : '')
-    + '\nWrite a short ' + LANG_CODE_TO_NAME[lang] + ' social-media recommendation comment.';
-  setCopyStatus('DeepSeek 生成中...');
-  try {
-    const proxies = (typeof getProxyUrl === 'function') ? getProxyUrl() : [''];
-    let resp = null;
-    for (let i = 0; i < proxies.length; i++) {
-      try {
-        const p = proxies[i];
-        const target = p ? (p + encodeURIComponent('https://api.deepseek.com/chat/completions')) : 'https://api.deepseek.com/chat/completions';
-        const r = await fetch(target, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-          body: JSON.stringify({
-            model: 'deepseek-chat',
-            messages: [{ role: 'system', content: buildCopySystemPrompt(lang) }, { role: 'user', content: userMsg }],
-            temperature: 0.8,
-            max_tokens: 120
-          }),
-          signal: AbortSignal.timeout(20000)
-        });
-        if (r.ok) { resp = r; break; }
-      } catch (e) {}
-    }
-    if (!resp) throw new Error('DeepSeek 请求失败');
-    const data = await resp.json();
-    const content = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-    if (!content) throw new Error('无返回');
-    const out = content.trim().replace(/^["']|["']$/g, '');
-    _lastCopyText = out;
-    const el = document.getElementById('copyOutput'); if (el) el.value = out;
-    setCopyStatus('✅ 已生成');
-  } catch (e) {
-    setCopyStatus('生成失败: ' + e.message);
-  }
-}
-function copyCopyText() {
-  const el = document.getElementById('copyOutput');
-  if (!el || !el.value) { setCopyStatus('暂无文案'); return; }
-  el.select(); el.setSelectionRange(0, 99999);
-  try { document.execCommand('copy'); setCopyStatus('✅ 已复制'); }
-  catch (e) { navigator.clipboard && navigator.clipboard.writeText(el.value).then(()=>setCopyStatus('✅ 已复制')); }
-}
-function appendCopyToPrompt() {
-  if (!_lastCopyText) { setCopyStatus('请先生成文案'); return; }
-  const extra = document.getElementById('extraNote');
-  if (extra) { extra.value = (extra.value ? extra.value + ' ' : '') + _lastCopyText; extra.dispatchEvent(new Event('input')); }
-  setCopyStatus('✅ 已追加到补充说明');
-}
-// 生成海报流程里"自动附带"勾选时：若已有文案，追加到提示词
-function maybeAutoIncludeCopy(prompt) {
-  const auto = document.getElementById('copyAutoInclude') && document.getElementById('copyAutoInclude').checked;
-  if (auto && _lastCopyText) return prompt + '\nInclude this short social copy as a small caption element: "' + _lastCopyText + '"';
-  return prompt;
-}
-
 // ============ V10.3: PROMO COLOR SCHEME ============
 function renderPromoColorSchemes() {
   const container = document.getElementById('promoColorSchemeChips');
@@ -4414,8 +4165,6 @@ function onPromoChange() {
   try {
   promoConfig.type = document.getElementById('promoType').value;
   promoConfig.freeShipping = document.getElementById('freeShippingToggle')?.checked || false;
-  promoConfig.badgeBg = document.getElementById('promoBadgeBg')?.checked !== false; // 默认勾选
-  promoConfig.badgeSize = document.getElementById('promoBadgeSize')?.value || 'medium';
   promoConfig.colorScheme = promoConfig.colorScheme || '强销售转化';
   promoConfig.isLegacy = LEGACY_PROMO_TYPES.has(promoConfig.type);
   if (promoConfig.isLegacy) {
@@ -4491,6 +4240,8 @@ function onPromoChange() {
   } else {
     previewGroup.style.display = 'none';
   }
+  updateOverlayPromoVisibility();
+  renderOverlayPromoCheckboxes();
   updatePreview();
   } catch(e) { console.error("onPromoChange failed:", e); alert("促销配置失败: " + e.message); }
 }
@@ -4660,7 +4411,88 @@ function buildPromoDisplayString() {
   return '';
 }
 
-function buildPromoPromptLinesCore() {
+// V11.1 Fix #2: 叠加促销渲染和处理
+function renderOverlayPromoCheckboxes() {
+  const container = document.getElementById('overlayPromoCheckboxes');
+  if (!container) return;
+  container.innerHTML = OVERLAY_PROMO_OPTIONS.map(opt => {
+    const checked = overlayPromos.some(p => p.key === opt.key);
+    return '<label style="display:inline-flex;align-items:center;gap:3px;font-size:10px;cursor:pointer;padding:3px 7px;border-radius:12px;border:1px solid ' + (checked ? '#22c55e' : 'var(--border)') + ';background:' + (checked ? '#dcfce7' : 'transparent') + '">'
+      + '<input type="checkbox" style="width:auto;margin:0" ' + (checked ? 'checked' : '') + ' onchange="toggleOverlayPromo(\'' + opt.key + '\', this.checked)"> '
+      + opt.label + '</label>';
+  }).join('');
+  renderOverlayPromoInputs();
+}
+function toggleOverlayPromo(key, checked) {
+  if (checked) {
+    const opt = OVERLAY_PROMO_OPTIONS.find(o => o.key === key);
+    const item = { key: key, value: opt && opt.defaultValue !== undefined ? opt.defaultValue : '' };
+    if (!overlayPromos.some(p => p.key === key)) overlayPromos.push(item);
+  } else {
+    overlayPromos = overlayPromos.filter(p => p.key !== key);
+  }
+  renderOverlayPromoCheckboxes();
+  updateOverlayPromoVisibility();
+  updatePreview();
+}
+function renderOverlayPromoInputs() {
+  const container = document.getElementById('overlayPromoInputs');
+  if (!container) return;
+  let html = '';
+  overlayPromos.forEach(p => {
+    const opt = OVERLAY_PROMO_OPTIONS.find(o => o.key === p.key);
+    if (!opt || !opt.hasInput) return;
+    html += '<div style="display:flex;align-items:center;gap:4px;margin-bottom:4px">'
+      + '<span style="font-size:10px;color:var(--text2);min-width:60px">' + opt.label + ':</span>'
+      + '<input type="text" style="flex:1;padding:3px 6px;font-size:10px;background:#fff;border:1px solid #bbf7d0;border-radius:4px" '
+      + 'placeholder="' + (opt.inputPlaceholder || '') + '" value="' + (p.value || '') + '" '
+      + 'oninput="updateOverlayPromoValue(\'' + p.key + '\', this.value)">'
+      + '</div>';
+  });
+  container.innerHTML = html;
+}
+function updateOverlayPromoValue(key, value) {
+  const item = overlayPromos.find(p => p.key === key);
+  if (item) item.value = value;
+  updatePreview();
+}
+function updateOverlayPromoVisibility() {
+  const section = document.getElementById('overlayPromoSection');
+  if (!section) return;
+  // 有主促销或已选叠加项时显示
+  const hasMainPromo = !!promoConfig.type;
+  const hasOverlay = overlayPromos.length > 0;
+  const hasTiered = tieredDiscountConfig.enabled;
+  section.style.display = (hasMainPromo || hasOverlay || hasTiered) ? 'block' : 'none';
+}
+function buildOverlayPromoPromptLines() {
+  if (overlayPromos.length === 0) return [];
+  const lines = [];
+  lines.push('\n=== OVERLAY PROMOTIONS (smaller text, bottom bar or corner badge) ===');
+  lines.push('These are secondary promotions displayed at 1/3 the font size of the main promotion badge:');
+  overlayPromos.forEach(p => {
+    const opt = OVERLAY_PROMO_OPTIONS.find(o => o.key === p.key);
+    if (!opt) return;
+    let text = '';
+    switch (p.key) {
+      case 'bulk_discount': text = p.value ? 'Bulk Discount: ' + p.value : 'Bulk Discount available'; break;
+      case 'free_shipping_overlay': text = 'FREE SHIPPING'; break;
+      case 'flash_sale_overlay': text = 'FLASH SALE'; break;
+      case 'free_gift_overlay': text = p.value ? 'Free Gift: ' + p.value : 'Free Gift included'; break;
+      case 'new_customer_overlay': text = p.value ? 'New Customer: Save $' + p.value : 'New Customer Discount'; break;
+      case 'clearance_overlay': text = 'CLEARANCE SALE'; break;
+    }
+    lines.push('- Show "' + text + '" in a small badge at the bottom bar or corner');
+  });
+  lines.push('Size these at approximately 1/3 of the main promotion text size. Place at bottom or corner, not overlapping the main badge.');
+  lines.push('=== END OVERLAY PROMOTIONS ===');
+  // V11.2 P0-6: tiered discount in overlay
+  const tieredLines2 = buildTieredDiscountPromptLines();
+  if (tieredLines2.length) lines.push(tieredLines2.join('\n'));
+  return lines;
+}
+
+function buildPromoPromptLines() {
   if (!promoConfig.type) return [];
   const lang = getDetectedLanguage();
   const isEn = lang.startsWith('en');
@@ -4669,38 +4501,26 @@ function buildPromoPromptLinesCore() {
   if (!promoStr) return [];
   // P0-2 修复: custom 只显示 customText 单段
   if (promoConfig.type === 'custom') {
-    // V11.1 #4: 优先取翻译层产出的英文文案。
-    // 原本中文自定义文案会在下游被 stripCJK 整段清除，图上只剩断字残片——
-    // 用户看到的"乱码"正是这么来的，并非模型渲染能力问题。
-    let txt = '';
-    try {
-      txt = (typeof _translatedInputs !== 'undefined' && _translatedInputs && _translatedInputs.promoCustom) || '';
-    } catch (_) { txt = ''; }
-    txt = txt || mainPromoState.text || promoStr;
+    const txt = mainPromoState.text || promoStr;
     lines.push('\n=== CUSTOM PROMOTION BADGE ===');
     lines.push('Show this EXACT text as a single prominent badge: "'+txt+'"');
     lines.push('Treat the custom text exactly as written; do not paraphrase or translate.');
     lines.push('=== END CUSTOM PROMOTION ===\n');
     return lines;
   }
-  // 🔴 CRITICAL: 折扣必须显眼 — 占据顶部1/3区域，至少30%面积
-  lines.push('\n=== PROMOTION BADGE (CRITICAL - MOST PROMINENT ELEMENT ON THE POSTER) ===');
+  // V11.2: 折扣展示根据配色方案自适应
+  lines.push('\n=== PROMOTION ELEMENT ===');
   lines.push('Promotion: "'+promoStr+'"');
   const colorScheme = PROMO_COLOR_SCHEMES.find(s => s.key === (promoConfig.colorScheme || '强销售转化')) || PROMO_COLOR_SCHEMES[0];
-  // V11.3 #1: 折扣角标“融入背景、不显脏” —— 去掉生硬色块/硬文字，改为与画面同色系、柔和半透明、有质感的设计元素（仅改样式描述，不碰其它逻辑）
-  const _bg = promoConfig.badgeBg !== false;
-  const _sz = promoConfig.badgeSize || 'medium';
-  const _szPct = _sz === 'small' ? '15-20%' : _sz === 'large' ? '38-42%' : '30-35%';
-  const _szWord = _sz === 'small' ? 'moderate' : _sz === 'large' ? 'huge' : 'large';
-  const _szMin = _sz === 'small' ? '1/8' : _sz === 'large' ? '1/3' : '1/4';
-  const _bgDesc = _bg
-    ? ('a refined rounded badge with a SOFT semi-transparent fill (about 75% opacity) TINTED FROM THE SCENE\'S DOMINANT COLOR, with a subtle gradient and a gentle soft shadow, so it sits naturally on the image like designed packaging — elegant and cohesive, NOT a harsh flat color block')
-    : ('elegant lettering in a tone that HARMONIZES WITH THE SCENE\'S COLOR PALETTE, with a soft halo/shadow so it reads clearly yet feels part of the composition — no harsh floating text');
-  lines.push('SIZE: The promotion badge/banner MUST occupy at least ' + _szPct + ' of the ENTIRE image height, centered in the top 1/3 area');
-  lines.push('STYLE: ' + _szWord + ' bold but tasteful text, ' + _bgDesc);
-  lines.push('BLENDING: The badge must look like professional commercial product photography — pick colors that BELONG TO THE SAME PALETTE as the background/scene, with soft edges and natural lighting. Avoid clip-art, hard flat rectangles, stark black/white blocks, or clashing colors that pop out unnaturally from the scene.');
-  lines.push('LAYOUT: The viewer\'s eye should see the DISCOUNT FIRST, then the product. Discount is the hero element, but it should FEEL DESIGNED, not pasted on.');
-  lines.push('REQUIREMENT: Use ' + _szWord + ' font size (minimum ' + _szMin + ' of image width for the discount text). Make it clear and eye-catching WITHOUT looking cheap or out of place.');
+  // V11.2 P0-2: AI auto-adaptive discount visual (no fixed color binding)
+  lines.push('STYLE: The promotion badge/text should automatically harmonize with the poster\'s overall color palette and mood.');
+  lines.push('INTEGRATION: Do NOT use a contrasting color block unless it naturally fits. Prefer subtle typography, semi-transparent overlays, or tonal matching.');
+  lines.push('The discount should feel designed INTO the poster, not pasted ON top of it.');
+  if (colorScheme && colorScheme.promptDesc) {
+    lines.push('PREFERENCE HINT: ' + colorScheme.promptDesc + ' (use as soft guidance only, not mandatory)');
+  }
+  // V11.1 Fix #4: 文字准确性约束
+  lines.push('\nTEXT ACCURACY (CRITICAL): Text on poster must reproduce characters exactly as specified — no missing, no altered digits, no broken glyphs.');
   
   if (promoConfig.type === 'buy_x_get_y') {
     const total = promoConfig.buyCount + promoConfig.getCount;
@@ -4806,6 +4626,12 @@ function buildPromoPromptLinesCore() {
   lines.push(`- Use dynamic angles, creative product arrangement, lifestyle elements, or decorative accents.`);
   lines.push(`- The image should feel premium like a professional e-commerce ad, not a template.`);
   
+  // V11.1 Fix #2: 叠加促销注入
+  const overlayLines = buildOverlayPromoPromptLines();
+  if (overlayLines.length) lines.push(...overlayLines);
+  // V11.2 P0-6: 阶梯优惠注入
+  const tieredLines = buildTieredDiscountPromptLines();
+  if (tieredLines.length) lines.push(tieredLines.join('\n'));
   lines.push('=== END PROMOTION ZONE ===\n');
   return lines;
 }
@@ -4815,7 +4641,7 @@ function countSelectedTags() {
   let c = 0;
   c += selectedTags.sellingPoints.length;
   c += selectedTags.painPoints.length;
-  c += selectedTags.scene ? 1 : 0;
+  c += (selectedTags.scenes||[]).length;
   c += selectedTags.atmosphere ? 1 : 0;
   c += selectedTags.brandTone ? 1 : 0;
   c += (selectedTags.targetAges||[]).length;
@@ -5041,16 +4867,6 @@ function init() {
   if (typeof onPromoChange === 'function') onPromoChange();
   // V10.3: 渲染促销配色方案选择器
   renderPromoColorSchemes();
-  // V11.1 #2: 渲染叠加促销选项，并按有无主促销决定展示与否
-  if (typeof renderExtraPromoChips === 'function') renderExtraPromoChips();
-  if (typeof syncExtraPromoVisibility === 'function') syncExtraPromoVisibility();
-  // V11.2 #3: 渲染搭配单品多选 chips
-  if (typeof renderPairingChips === 'function') renderPairingChips();
-  // V11.2 #1: 折扣底色/大小默认值
-  const _bb = document.getElementById('promoBadgeBg'); if (_bb) _bb.checked = promoConfig.badgeBg !== false;
-  const _bs = document.getElementById('promoBadgeSize'); if (_bs) _bs.value = promoConfig.badgeSize || 'medium';
-  // V11.2 #2: 智能提示词开关状态
-  const _lt = document.getElementById('llmPromptToggle'); if (_lt) _lt.checked = llmPromptMode === true;
   
   // V11.0: Category Template Mode initialization
   renderCategoryPage();
@@ -5084,6 +4900,510 @@ function init() {
 }
 
 init();
+
+// ============ V11.2: \u79cd\u8349\u6587\u6848\u751f\u6210 ============
+async function generateSeedingCopy() {
+  var btn = document.getElementById('genCopyBtn');
+  var resultDiv = document.getElementById('seedingCopyResult');
+  var apiKey = getApiKey();
+  if (!apiKey) { alert('\u8bf7\u5148\u914d\u7f6e API Key'); return; }
+  
+  btn.disabled = true; btn.textContent = '\u23f3 \u751f\u6210\u4e2d...';
+  resultDiv.style.display = 'none';
+  
+  var productName = document.getElementById('productName').value.trim() || '\u4ea7\u54c1';
+  var features = document.getElementById('productFeatures').value.trim() || '';
+  var category = selectedTags.category || '';
+  var sellingPoints = selectedTags.sellingPoints.join('\u3001');
+  var scene = (selectedTags.scenes||[]).join('+') || '';
+  var brandTone = selectedTags.brandTone || '';
+  var promo = promoConfig.type ? buildPromoDisplayString() : '';
+  
+  var copyPrompt = 'You are a Chinese social media copywriter. Based on the following product info, generate:\n\n' +
+    '1. ONE seeding copy (\u79cd\u8349\u6587\u6848): 50-80 Chinese characters, suitable for product detail page or Xiaohongshu post. Engaging, highlights key benefits, with a lifestyle feel.\n\n' +
+    '2. THREE social media comment copies (\u8bc4\u8bba\u533a\u79cd\u8349\u6587\u6848): Each 20-30 Chinese characters. Casual, conversational tone. MUST include relevant emojis. These are for posting in comment sections to drive interest.\n\n' +
+    'Product name: ' + productName + '\n' +
+    'Category: ' + category + '\n' +
+    'Features: ' + features + '\n' +
+    'Selling points: ' + sellingPoints + '\n' +
+    'Scene: ' + scene + '\n' +
+    'Brand tone: ' + brandTone + '\n' +
+    (promo ? 'Promotion: ' + promo + '\n' : '') +
+    '\nOutput format (strictly follow):\n' +
+    '\u3010\u79cd\u8349\u6587\u6848\u3011\n(content here)\n\n' +
+    '\u3010\u8bc4\u8bba\u533a\u6587\u6848\u0031\u3011\n(content here)\n\n' +
+    '\u3010\u8bc4\u8bba\u533a\u6587\u6848\u0032\u3011\n(content here)\n\n' +
+    '\u3010\u8bc4\u8bba\u533a\u6587\u6848\u0033\u3011\n(content here)';
+
+  try {
+    var proxies = getProxyUrl();
+    var resp = await fetchWithProxy('https://api.apimart.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: copyPrompt }],
+        max_tokens: 800,
+        temperature: 0.8
+      })
+    }, proxies);
+    var data = await resp.json();
+    var text = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content.trim() : '';
+    if (!text) throw new Error('Empty response');
+    
+    var html = '<div style="font-weight:600;color:var(--accent);margin-bottom:8px">\u2728 \u79cd\u8349\u6587\u6848\u5df2\u751f\u6210</div>';
+    var lines = text.split('\n').filter(function(l) { return l.trim(); });
+    for (var li = 0; li < lines.length; li++) {
+      var trimmed = lines[li].trim();
+      if (trimmed.indexOf('\u3010') === 0) {
+        html += '<div style="font-weight:600;color:var(--accent);margin-top:8px;font-size:11px">' + trimmed + '</div>';
+      } else if (trimmed) {
+        html += '<div style="padding:4px 0;border-bottom:1px dashed var(--border)">' + trimmed + '</div>';
+      }
+    }
+    html += '<div style="margin-top:10px;display:flex;gap:6px">';
+    html += '<button onclick="copySeedingCopy()" style="padding:4px 12px;border:1px solid var(--accent);border-radius:6px;background:var(--accent);color:white;font-size:11px;cursor:pointer">\ud83d\udccb \u590d\u5236\u5168\u90e8</button>';
+    html += '</div>';
+    
+    resultDiv.innerHTML = html;
+    resultDiv.style.display = 'block';
+    resultDiv.dataset.rawText = text;
+  } catch (e) {
+    resultDiv.innerHTML = '<div style="color:var(--danger)">\u751f\u6210\u5931\u8d25: ' + e.message + '</div>';
+    resultDiv.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = '\u2728 \u751f\u6210\u79cd\u8349\u6587\u6848';
+  }
+}
+
+function copySeedingCopy() {
+  var text = document.getElementById('seedingCopyResult').dataset.rawText || '';
+  navigator.clipboard.writeText(text).then(function() {
+    setStatus('\u2705 \u6587\u6848\u5df2\u590d\u5236\u5230\u526a\u8d34\u677f', 'success');
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    setStatus('\u2705 \u6587\u6848\u5df2\u590d\u5236', 'success');
+  });
+}
+
+
+// ============ V11.2-P1: 16种种草文案模板 ============
+var SEEDING_TEMPLATES = {
+  promotion: {
+    name: '促销活动类', icon: '🔥', style: '热情、紧迫感、强促销', emoji: '大量使用 🔥💰⚡🎉', cta: true,
+    systemPrompt: 'You are an e-commerce promotion copywriter. Create URGENT, high-energy promotional copy that drives immediate purchases. Use exclamation marks, urgency words, and strong CTAs.'
+  },
+  selling_point: {
+    name: '产品卖点类', icon: '💡', style: '真实体验、专业、可信', emoji: '适度使用 ✅💡👍', cta: true,
+    systemPrompt: 'You are a product review copywriter. Write from a first-person perspective as a real user sharing genuine experience. Focus on specific problems solved and tangible benefits.'
+  },
+  discount_code: {
+    name: '折扣码权益型', icon: '🎁', style: '直接、利益驱动', emoji: '使用 🎁💸🏷️', cta: true,
+    systemPrompt: 'You are a coupon/deal promotion copywriter. Create copy that highlights exclusive discount benefits. Include a placeholder for discount code [CODE] and amount [AMOUNT]. Make it feel exclusive and time-limited.'
+  },
+  pain_question: {
+    name: '互动痛点提问类', icon: '❓', style: '亲和、共情、引发讨论', emoji: '使用 😩💡✨ 引发共鸣', cta: false,
+    systemPrompt: 'You are a social engagement copywriter. Start with a relatable pain point question to hook readers, then reveal the product as the solution. Encourage comments and sharing of similar experiences.'
+  },
+  vote_interactive: {
+    name: '投票式互动类', icon: '👇', style: '活泼、互动性强', emoji: '使用 👇🅰️🅱️🗳️', cta: false,
+    systemPrompt: 'You are a social media engagement specialist. Create a "this or that" voting style post. Present two options (A vs B, color choices, style options) and actively invite comments/votes. Keep it fun and lighthearted.'
+  },
+  social_proof: {
+    name: '社会认同/爆款热销类', icon: '🏆', style: '权威、数据化、信任感', emoji: '使用 🏆📊⭐🔥', cta: true,
+    systemPrompt: 'You are a social proof copywriter. Use specific numbers, sales data, review counts, and celebrity/influencer endorsements to build trust. Create FOMO through popularity metrics.'
+  },
+  faq: {
+    name: 'FAQ问题解答类', icon: '💬', style: '专业、清晰、有帮助', emoji: '使用 ❓💡✅', cta: false,
+    systemPrompt: 'You are a helpful FAQ content writer. Structure copy as common questions and clear answers. Address typical customer concerns about the product. Be informative and reassuring.'
+  },
+  comparison_list: {
+    name: '对比清单类', icon: '📋', style: '专业、结构化、教育性', emoji: '使用 📋✅❌📊', cta: false,
+    systemPrompt: 'You are a buying guide content creator. Create a structured comparison/listicle format. Compare options, list key criteria for selection, highlight what makes the product stand out against alternatives.'
+  },
+  science_explain: {
+    name: '科普解惑类', icon: '🔬', style: '专业、有趣、易懂', emoji: '使用 🔬💡🧪', cta: false,
+    systemPrompt: 'You are a science/tech explainer copywriter. Break down how/why a product works in simple, engaging terms. Make complex information accessible. Use analogies and everyday language.'
+  },
+  scene_solution: {
+    name: '完整场景解决方案类', icon: '🎯', style: '场景化、代入感强', emoji: '使用 🎯🏠💼✨', cta: true,
+    systemPrompt: 'You are a lifestyle solution copywriter. Paint vivid scenarios where the product solves multiple problems. Show the complete journey from problem to solution. Help readers imagine themselves using the product.'
+  },
+  tutorial: {
+    name: '使用教程实操类', icon: '📖', style: '步骤化、易懂、鼓励性', emoji: '使用 📖1️⃣2️⃣3️⃣✅', cta: false,
+    systemPrompt: 'You are a how-to tutorial copywriter. Create a step-by-step guide format. Number each step clearly. Include tips and tricks. Make beginners feel confident. Use encouraging language.'
+  },
+  before_after: {
+    name: '前后对比实测型', icon: '📸', style: '真实、震撼、说服力', emoji: '使用 📸❌→✅⚡', cta: true,
+    systemPrompt: 'You are a before-and-after review copywriter. Dramatically contrast the "before" state (problem) with the "after" state (solution). Use specific, measurable changes. Feel authentic and trustworthy.'
+  },
+  material_craft: {
+    name: '材质/工艺科普型', icon: '🔍', style: '专业、精致、有深度', emoji: '使用 🔍✨🧵💎', cta: false,
+    systemPrompt: 'You are a materials and craftsmanship expert copywriter. Explain material quality, manufacturing processes, and craftsmanship details. Help consumers understand WHY certain materials are superior. Use sensory descriptions.'
+  },
+  holiday_prep: {
+    name: '节日备货专场型', icon: '🎄', style: 'festive、温馨、备货紧迫感', emoji: '使用 🎄🎁🎅🎊', cta: true,
+    systemPrompt: 'You are a holiday shopping guide copywriter. Create seasonal/holiday-themed content with countdown urgency. Mention specific holidays [HOLIDAY]. Focus on gift-giving, family gatherings, and seasonal needs.'
+  },
+  new_launch: {
+    name: '新品首发通知型', icon: '✨', style: '兴奋、独家、首发', emoji: '使用 ✨🆕🌟🎉', cta: true,
+    systemPrompt: 'You are a new product launch copywriter. Create excitement around a product debut. Emphasize "first", "exclusive", "limited edition". Include launch pricing or early-bird benefits. Build anticipation.'
+  }
+};
+
+function generateSeedingCopyV2() {
+  var btn = document.getElementById('genCopyBtn');
+  var resultDiv = document.getElementById('seedingCopyResult');
+  var apiKey = getApiKey();
+  if (!apiKey) { alert('请先配置 API Key'); return; }
+
+  var templateKey = document.getElementById('seedingTemplateSelect').value;
+  var template = SEEDING_TEMPLATES[templateKey];
+  if (!template) { alert('请选择模板类型'); return; }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ 生成中...';
+  resultDiv.style.display = 'none';
+
+  var productName = document.getElementById('productName').value.trim() || '产品';
+  var features = document.getElementById('productFeatures').value.trim() || '';
+  var category = selectedTags.category || '';
+  var clothingType = selectedTags.clothingType || '';
+  var sellingPoints = selectedTags.sellingPoints.join('、');
+  var painPoints = selectedTags.painPoints.join('、');
+  var scene = selectedTags.scene || '';
+  var brandTone = selectedTags.brandTone || '';
+  var promo = promoConfig.type ? buildPromoDisplayString() : '';
+
+  // Detect target language
+  var langVal = document.getElementById('genLanguage').value;
+  var langInfo = COUNTRY_LANG[langVal] || {};
+  var targetLang = langInfo.name || 'English';
+  var langCode = langVal || 'US';
+
+  // Build language instruction
+  var langInstruction = '';
+  if (langCode === 'CN') {
+    langInstruction = 'Write ALL copy in Chinese (简体中文). Main copy: 50-80 characters. Comments: 20-30 characters each.';
+  } else if (langCode === 'JP') {
+    langInstruction = 'Write ALL copy in Japanese (日本語). Main copy: 50-80 characters. Comments: 20-30 characters each.';
+  } else if (langCode === 'KR') {
+    langInstruction = 'Write ALL copy in Korean (한국어). Main copy: 50-80 characters. Comments: 20-30 characters each.';
+  } else if (langCode === 'FR') {
+    langInstruction = 'Write ALL copy in French. Main copy: 40-70 words. Comments: 15-25 words each.';
+  } else if (langCode === 'ES') {
+    langInstruction = 'Write ALL copy in Spanish. Main copy: 40-70 words. Comments: 15-25 words each.';
+  } else if (langCode === 'DE') {
+    langInstruction = 'Write ALL copy in German. Main copy: 40-70 words. Comments: 15-25 words each.';
+  } else if (langCode === 'SA') {
+    langInstruction = 'Write ALL copy in Arabic. Main copy: 40-70 words. Comments: 15-25 words each.';
+  } else if (langCode === 'BR') {
+    langInstruction = 'Write ALL copy in Portuguese (Brazilian). Main copy: 40-70 words. Comments: 15-25 words each.';
+  } else if (langCode === 'MY') {
+    langInstruction = 'Write ALL copy in Malay. Main copy: 40-70 words. Comments: 15-25 words each.';
+  } else if (langCode === 'TH') {
+    langInstruction = 'Write ALL copy in Thai. Main copy: 50-80 characters. Comments: 20-30 characters each.';
+  } else if (langCode === 'ID') {
+    langInstruction = 'Write ALL copy in Indonesian. Main copy: 40-70 words. Comments: 15-25 words each.';
+  } else {
+    langInstruction = 'Write ALL copy in English. Main copy: 40-70 words. Comments: 15-25 words each.';
+  }
+
+  // Build template-specific prompt
+  var copyPrompt = template.systemPrompt + '\n\n' +
+    'Template type: ' + template.icon + ' ' + template.name + '\n' +
+    'Writing style: ' + template.style + '\n' +
+    'Emoji usage: ' + template.emoji + '\n' +
+    (template.cta ? 'Include a clear Call-to-Action (CTA) at the end.\n' : 'Do NOT include a hard CTA; keep it conversational.\n') +
+    '\n' + langInstruction + '\n\n' +
+    'Product name: ' + productName + '\n' +
+    (clothingType ? 'Product type: ' + clothingType + '\n' : '') +
+    'Category: ' + category + '\n' +
+    (features ? 'Product features: ' + features + '\n' : '') +
+    (sellingPoints ? 'Selling points: ' + sellingPoints + '\n' : '') +
+    (painPoints ? 'User pain points: ' + painPoints + '\n' : '') +
+    (scene ? 'Scene/occasion: ' + scene + '\n' : '') +
+    (brandTone ? 'Brand tone: ' + brandTone + '\n' : '') +
+    (promo ? 'Current promotion: ' + promo + '\n' : '') +
+    '\nOutput format (strictly follow this structure):\n' +
+    '【种草文案】\n(main copy here)\n\n' +
+    '【评论区文案1】\n(comment 1 here)\n\n' +
+    '【评论区文案2】\n(comment 2 here)\n\n' +
+    '【评论区文案3】\n(comment 3 here)';
+
+  var proxies = getProxyUrl();
+  fetchWithProxy('https://api.apimart.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: copyPrompt }],
+      max_tokens: 800,
+      temperature: 0.85
+    })
+  }, proxies).then(function(resp) {
+    return resp.json();
+  }).then(function(data) {
+    var text = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content.trim() : '';
+    if (!text) throw new Error('Empty response');
+
+    var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
+    html += '<span style="font-weight:600;color:var(--accent)">' + template.icon + ' ' + template.name + ' 文案已生成</span>';
+    html += '<span style="font-size:10px;color:var(--text2)">模板: ' + template.name + '</span>';
+    html += '</div>';
+
+    var lines = text.split('\n').filter(function(l) { return l.trim(); });
+    for (var li = 0; li < lines.length; li++) {
+      var trimmed = lines[li].trim();
+      if (trimmed.indexOf('【') === 0) {
+        html += '<div style="font-weight:600;color:var(--accent);margin-top:8px;font-size:11px">' + trimmed + '</div>';
+      } else if (trimmed) {
+        html += '<div style="padding:4px 0;border-bottom:1px dashed var(--border)">' + trimmed + '</div>';
+      }
+    }
+
+    html += '<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">';
+    html += '<button onclick="copySeedingCopy()" style="padding:4px 12px;border:1px solid var(--accent);border-radius:6px;background:var(--accent);color:white;font-size:11px;cursor:pointer">📋 复制全部</button>';
+    html += '<button onclick="copySeedingCopySection(0)" style="padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:white;color:var(--text);font-size:10px;cursor:pointer">复制主文案</button>';
+    html += '<button onclick="copySeedingCopySection(1)" style="padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:white;color:var(--text);font-size:10px;cursor:pointer">复制评论1</button>';
+    html += '<button onclick="copySeedingCopySection(2)" style="padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:white;color:var(--text);font-size:10px;cursor:pointer">复制评论2</button>';
+    html += '<button onclick="copySeedingCopySection(3)" style="padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:white;color:var(--text);font-size:10px;cursor:pointer">复制评论3</button>';
+    html += '</div>';
+
+    resultDiv.innerHTML = html;
+    resultDiv.style.display = 'block';
+    resultDiv.dataset.rawText = text;
+    resultDiv.dataset.templateKey = templateKey;
+
+    // Parse sections for individual copy
+    var sections = text.split(/【[^】]+】/).filter(function(s) { return s.trim(); });
+    resultDiv.dataset.sections = JSON.stringify(sections);
+  }).catch(function(e) {
+    resultDiv.innerHTML = '<div style="color:var(--danger)">生成失败: ' + e.message + '</div>';
+    resultDiv.style.display = 'block';
+  }).finally(function() {
+    btn.disabled = false;
+    btn.textContent = '✨ 生成种草文案';
+  });
+}
+
+function copySeedingCopySection(idx) {
+  var resultDiv = document.getElementById('seedingCopyResult');
+  var sections = [];
+  try { sections = JSON.parse(resultDiv.dataset.sections || '[]'); } catch(e) {}
+  if (sections[idx]) {
+    navigator.clipboard.writeText(sections[idx].trim()).then(function() {
+      setStatus('✅ 已复制到剪贴板', 'success');
+    }).catch(function() {
+      var ta = document.createElement('textarea');
+      ta.value = sections[idx].trim();
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      setStatus('✅ 已复制', 'success');
+    });
+  }
+}
+
+// ============ V11.2-P1: AI Product Image Analysis ============
+var aiAnalysisResult = null;
+
+async function analyzeProductImage() {
+  var btn = document.getElementById('aiAnalyzeBtn');
+  var statusEl = document.getElementById('aiAnalyzeStatus');
+  var apiKey = getApiKey();
+
+  if (!apiKey) { alert('请先配置 API Key'); return; }
+  if (productImages.length === 0) { alert('请先上传产品图片'); return; }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ 分析中...';
+  statusEl.textContent = '正在识别产品信息...';
+
+  var analysisPrompt = 'Analyze this product image carefully and return a JSON object with the following structure. Be specific and accurate:\n\n' +
+    '{\n' +
+    '  "category": "detected product category (e.g., 服装, 美妆, 家居用品, 智能电子, 食品)",\n' +
+    '  "subCategory": "specific product type (e.g., 连衣裙, 口红, 台灯)",\n' +
+    '  "mainColors": ["primary color", "secondary color"],\n' +
+    '  "style": "detected style (e.g., 简约, 复古, 运动, 商务, 甜美)",\n' +
+    '  "recommendedScenes": ["scene1", "scene2", "scene3"],\n' +
+    '  "recommendedAudience": "target audience description with age range and identity",\n' +
+    '  "sellingPoints": ["point1", "point2", "point3"],\n' +
+    '  "painPoints": ["pain1", "pain2"],\n' +
+    '  "suggestedPromo": "suggested promotion type (e.g., 限时折扣, 买二送一, 新品首发)",\n' +
+    '  "atmosphere": "suggested atmosphere/mood (e.g., 高端型-质感奢华, 温馨生活型-亲切自然)",\n' +
+    '  "brandTone": "suggested brand tone"\n' +
+    '}\n\n' +
+    'IMPORTANT: Return ONLY valid JSON, no markdown, no explanation. Use Chinese for all values.';
+
+  try {
+    var proxies = getProxyUrl();
+    var resp = await fetchWithProxy('https://api.apimart.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'text', text: analysisPrompt },
+            { type: 'image_url', image_url: { url: productImages[0] } }
+          ]
+        }],
+        max_tokens: 600,
+        temperature: 0.3
+      })
+    }, proxies);
+
+    var data = await resp.json();
+    var rawText = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content.trim() : '';
+
+    // Extract JSON from response (handle markdown code blocks)
+    var jsonStr = rawText;
+    var jsonMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (jsonMatch) {
+      jsonStr = jsonMatch[1].trim();
+    }
+
+    var result = JSON.parse(jsonStr);
+    aiAnalysisResult = result;
+
+    renderAiAnalysisPanel(result);
+    statusEl.textContent = '✅ 分析完成';
+    statusEl.style.color = 'var(--success)';
+
+  } catch (e) {
+    statusEl.textContent = '❌ 分析失败: ' + e.message;
+    statusEl.style.color = 'var(--danger)';
+    console.error('AI analysis error:', e);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🔍 AI 分析产品';
+  }
+}
+
+function renderAiAnalysisPanel(result) {
+  var panel = document.getElementById('aiAnalysisPanel');
+  var content = document.getElementById('aiAnalysisContent');
+
+  var html = '';
+
+  html += '<div class="ai-row"><span class="ai-label">品类：</span><span class="ai-value">' +
+    (result.category || '') + ' / ' + (result.subCategory || '') + '</span></div>';
+
+  if (result.mainColors && result.mainColors.length) {
+    html += '<div class="ai-row"><span class="ai-label">主色调：</span><div class="ai-chips">';
+    result.mainColors.forEach(function(c) {
+      html += '<span class="ai-chip">' + c + '</span>';
+    });
+    html += '</div></div>';
+  }
+
+  if (result.style) {
+    html += '<div class="ai-row"><span class="ai-label">风格：</span><span class="ai-value">' + result.style + '</span></div>';
+  }
+
+  if (result.sellingPoints && result.sellingPoints.length) {
+    html += '<div class="ai-row"><span class="ai-label">卖点：</span><div class="ai-chips">';
+    result.sellingPoints.forEach(function(p) {
+      html += '<span class="ai-chip">' + p + '</span>';
+    });
+    html += '</div></div>';
+  }
+
+  if (result.painPoints && result.painPoints.length) {
+    html += '<div class="ai-row"><span class="ai-label">痛点：</span><div class="ai-chips">';
+    result.painPoints.forEach(function(p) {
+      html += '<span class="ai-chip">' + p + '</span>';
+    });
+    html += '</div></div>';
+  }
+
+  if (result.recommendedScenes && result.recommendedScenes.length) {
+    html += '<div class="ai-row"><span class="ai-label">推荐场景：</span><div class="ai-chips">';
+    result.recommendedScenes.forEach(function(s) {
+      html += '<span class="ai-chip">' + s + '</span>';
+    });
+    html += '</div></div>';
+  }
+
+  if (result.recommendedAudience) {
+    html += '<div class="ai-row"><span class="ai-label">目标人群：</span><span class="ai-value">' + result.recommendedAudience + '</span></div>';
+  }
+
+  if (result.atmosphere) {
+    html += '<div class="ai-row"><span class="ai-label">氛围：</span><span class="ai-value">' + result.atmosphere + '</span></div>';
+  }
+
+  if (result.suggestedPromo) {
+    html += '<div class="ai-row"><span class="ai-label">建议促销：</span><span class="ai-value">' + result.suggestedPromo + '</span></div>';
+  }
+
+  content.innerHTML = html;
+  panel.classList.add('visible');
+}
+
+function applyAiAnalysis() {
+  if (!aiAnalysisResult) { alert('没有可应用的分析结果'); return; }
+  var r = aiAnalysisResult;
+
+  if (r.category) {
+    selectCategory(r.category);
+  }
+
+  if (r.subCategory && selectedTags.category === '服装') {
+    selectClothingType(r.subCategory);
+  }
+
+  if (r.sellingPoints && r.sellingPoints.length) {
+    selectedTags.sellingPoints = [];
+    r.sellingPoints.slice(0, 5).forEach(function(p) {
+      if (selectedTags.sellingPoints.length < 5) {
+        selectedTags.sellingPoints.push(p);
+      }
+    });
+  }
+
+  if (r.painPoints && r.painPoints.length) {
+    selectedTags.painPoints = [];
+    r.painPoints.slice(0, 3).forEach(function(p) {
+      if (selectedTags.painPoints.length < 3) {
+        selectedTags.painPoints.push(p);
+      }
+    });
+  }
+
+  if (r.recommendedScenes && r.recommendedScenes.length) {
+    selectedTags.scene = r.recommendedScenes[0];
+  }
+
+  if (r.atmosphere) {
+    selectedTags.atmosphere = r.atmosphere;
+  }
+
+  if (r.brandTone) {
+    selectedTags.brandTone = r.brandTone;
+  }
+
+  autoDetectIndustryMode();
+
+  renderAllDimensions();
+  updateSelectionSummary();
+  updatePreview();
+
+  dismissAiAnalysis();
+  setStatus('✅ AI 分析结果已应用到标签', 'success');
+}
+
+function dismissAiAnalysis() {
+  var panel = document.getElementById('aiAnalysisPanel');
+  panel.classList.remove('visible');
+}
+
 </script>
 </body>
-</html>\
+</html>
