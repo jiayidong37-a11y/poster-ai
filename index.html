@@ -782,6 +782,30 @@ header .actions span{font-size:11px;color:var(--text2)}
           </div>
         </div>
         <div class="form-group">
+          <label class="collapsible collapsed" onclick="toggleCollapse(this)"> ✍️ 种草文案 <span class="auto-badge" style="background:linear-gradient(135deg,#00a884,#1cb0f6)">DeepSeek</span></label>
+          <div class="collapse-content collapsed" id="copyArea">
+            <div style="margin-top:5px">
+              <input type="password" id="deepseekKeyInput" placeholder="输入 DeepSeek API Key (sk-...)" style="margin-bottom:4px">
+              <div style="display:flex;gap:5px;margin-bottom:4px;align-items:center;flex-wrap:wrap">
+                <button class="btn btn-outline btn-sm" onclick="saveDeepSeekKey()">保存Key</button>
+                <label style="display:flex;align-items:center;gap:4px;font-size:11px;margin:0;cursor:pointer">
+                  <input type="checkbox" id="copyStyleCute" style="width:auto"> 语气：可爱俏皮
+                </label>
+                <label style="display:flex;align-items:center;gap:4px;font-size:11px;margin:0;cursor:pointer">
+                  <input type="checkbox" id="copyAutoInclude" checked style="width:auto"> 生成海报时自动附带
+                </label>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="generateCopy()" style="width:100%;margin-bottom:4px">✨ 生成种草文案（短·带Emoji·适合评论）</button>
+              <textarea id="copyOutput" rows="4" readonly placeholder="生成的种草文案会显示在这里，可直接复制去社媒评论区..." style="width:100%;box-sizing:border-box"></textarea>
+              <div style="display:flex;gap:5px;margin-top:3px;align-items:center">
+                <button class="btn btn-outline btn-sm" onclick="copyCopyText()">📋 复制文案</button>
+                <button class="btn btn-outline btn-sm" onclick="appendCopyToPrompt()">➕ 追加到海报提示词</button>
+                <span id="copyStatus" style="font-size:10px;color:var(--text2)"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
           <label>📝 提示词预览 <span class="auto-badge">自动组合</span></label>
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;padding:5px 8px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:6px">
             <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;margin:0">
@@ -3089,7 +3113,9 @@ async function doGenerate() {
   // 否则中文补充说明会在 buildAutoPrompt 末尾被 stripCJK 清空，等于从未输入过。
   await translateUserInputsIfNeeded(apiKey);
   // V11.2 #2: 智能提示词模式开启时，整体交给大模型生成英文提示词（硬约束后缀仍追加）
-  const prompt = (llmPromptMode && apiKey) ? await buildAutoPromptLLM(apiKey) : buildAutoPrompt();
+  let prompt = (llmPromptMode && apiKey) ? await buildAutoPromptLLM(apiKey) : buildAutoPrompt();
+  // V11.4: 种草文案"自动附带"开启且已生成文案时，作为小字幕元素并入海报
+  if (typeof maybeAutoIncludeCopy === 'function') { try { prompt = maybeAutoIncludeCopy(prompt); } catch(_) {} }
   const model = document.getElementById('aiModel').value;
   const size = document.getElementById('imageSize').value;
   const quality = document.getElementById('imageQuality').value;
@@ -4255,6 +4281,100 @@ function getApiKey() {
   return acc?.apiKey || document.getElementById('apiKeyInput').value.trim();
 }
 
+// ============ V11.4: DeepSeek 种草文案生成 ============
+// 独立使用 DeepSeek key（与 APIMart 生图 key 分开），生成"短、带Emoji、适合社媒评论区"的种草文案。
+let _lastCopyText = '';
+function getDeepSeekKey() {
+  return localStorage.getItem('poster_ds_key') || (document.getElementById('deepseekKeyInput') && document.getElementById('deepseekKeyInput').value.trim()) || '';
+}
+function saveDeepSeekKey() {
+  const key = document.getElementById('deepseekKeyInput') && document.getElementById('deepseekKeyInput').value.trim();
+  if (key) { localStorage.setItem('poster_ds_key', key); setCopyStatus('DeepSeek Key 已保存'); }
+  else { setCopyStatus('请输入 DeepSeek Key'); }
+}
+function setCopyStatus(msg) {
+  const el = document.getElementById('copyStatus'); if (el) el.textContent = msg;
+}
+function getCopyPromptContext() {
+  const name = (document.getElementById('productName') && document.getElementById('productName').value.trim()) || '这个产品';
+  const cat = selectedTags.category || selectedCategoryTemplate || '';
+  const feats = (document.getElementById('productFeatures') && document.getElementById('productFeatures').value.trim()) || '';
+  const sell = (selectedTags.sellingPoints || []).join('、');
+  const lang = (typeof getDetectedLanguage === 'function') ? getDetectedLanguage() : 'en-GB';
+  return { name, cat, feats, sell, lang };
+}
+function buildCopySystemPrompt(lang) {
+  const langName = LANG_CODE_TO_NAME[lang] || 'English';
+  const cute = document.getElementById('copyStyleCute') && document.getElementById('copyStyleCute').checked;
+  const tone = cute ? 'cute, playful, friendly, with emojis' : 'enthusiastic, friendly, with a few emojis';
+  return 'You are a social-media copywriter for e-commerce. Write ONE short "种草" (recommendation) comment in ' + langName + ' to be posted under a product ad or in the comments section. Rules: '
+    + '(1) VERY SHORT — 1-2 short sentences, under 40 words; (2) include 2-4 relevant emojis; '
+    + '(3) casual, relatable, persuasive tone (' + tone + '); (4) mention the product\'s key selling points naturally, do NOT overhype or lie; '
+    + '(5) end with a gentle call-to-action like asking a question or inviting interaction. '
+    + 'Output ONLY the copy text in ' + langName + '. No quotation marks, no explanation, no hashtags unless a common one like #ad.';
+}
+async function generateCopy() {
+  const key = getDeepSeekKey();
+  if (!key) { setCopyStatus('请先填写并保存 DeepSeek Key'); return; }
+  const { name, cat, feats, sell, lang } = getCopyPromptContext();
+  const userMsg = 'Product: "' + name + (cat ? '" (category: ' + cat + ')' : '"')
+    + (sell ? '\nSelling points: ' + sell : '')
+    + (feats ? '\nProduct features: ' + feats : '')
+    + '\nWrite a short ' + LANG_CODE_TO_NAME[lang] + ' social-media recommendation comment.';
+  setCopyStatus('DeepSeek 生成中...');
+  try {
+    const proxies = (typeof getProxyUrl === 'function') ? getProxyUrl() : [''];
+    let resp = null;
+    for (let i = 0; i < proxies.length; i++) {
+      try {
+        const p = proxies[i];
+        const target = p ? (p + encodeURIComponent('https://api.deepseek.com/chat/completions')) : 'https://api.deepseek.com/chat/completions';
+        const r = await fetch(target, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+          body: JSON.stringify({
+            model: 'deepseek-chat',
+            messages: [{ role: 'system', content: buildCopySystemPrompt(lang) }, { role: 'user', content: userMsg }],
+            temperature: 0.8,
+            max_tokens: 120
+          }),
+          signal: AbortSignal.timeout(20000)
+        });
+        if (r.ok) { resp = r; break; }
+      } catch (e) {}
+    }
+    if (!resp) throw new Error('DeepSeek 请求失败');
+    const data = await resp.json();
+    const content = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    if (!content) throw new Error('无返回');
+    const out = content.trim().replace(/^["']|["']$/g, '');
+    _lastCopyText = out;
+    const el = document.getElementById('copyOutput'); if (el) el.value = out;
+    setCopyStatus('✅ 已生成');
+  } catch (e) {
+    setCopyStatus('生成失败: ' + e.message);
+  }
+}
+function copyCopyText() {
+  const el = document.getElementById('copyOutput');
+  if (!el || !el.value) { setCopyStatus('暂无文案'); return; }
+  el.select(); el.setSelectionRange(0, 99999);
+  try { document.execCommand('copy'); setCopyStatus('✅ 已复制'); }
+  catch (e) { navigator.clipboard && navigator.clipboard.writeText(el.value).then(()=>setCopyStatus('✅ 已复制')); }
+}
+function appendCopyToPrompt() {
+  if (!_lastCopyText) { setCopyStatus('请先生成文案'); return; }
+  const extra = document.getElementById('extraNote');
+  if (extra) { extra.value = (extra.value ? extra.value + ' ' : '') + _lastCopyText; extra.dispatchEvent(new Event('input')); }
+  setCopyStatus('✅ 已追加到补充说明');
+}
+// 生成海报流程里"自动附带"勾选时：若已有文案，追加到提示词
+function maybeAutoIncludeCopy(prompt) {
+  const auto = document.getElementById('copyAutoInclude') && document.getElementById('copyAutoInclude').checked;
+  if (auto && _lastCopyText) return prompt + '\nInclude this short social copy as a small caption element: "' + _lastCopyText + '"';
+  return prompt;
+}
+
 // ============ V10.3: PROMO COLOR SCHEME ============
 function renderPromoColorSchemes() {
   const container = document.getElementById('promoColorSchemeChips');
@@ -4966,4 +5086,4 @@ function init() {
 init();
 </script>
 </body>
-</html>
+</html>\
