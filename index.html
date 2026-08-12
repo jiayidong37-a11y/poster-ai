@@ -498,8 +498,9 @@ header .actions span{font-size:11px;color:var(--text2)}
           <div class="ai-title">🔍 AI 产品分析结果</div>
           <div id="aiAnalysisContent"></div>
           <div class="ai-actions">
-            <button class="btn btn-primary btn-sm" onclick="applyAiAnalysis()">✅ 应用分析结果</button>
-            <button class="btn btn-outline btn-sm" onclick="dismissAiAnalysis()">✕ 关闭</button>
+            <button class="btn btn-sm" onclick="applyAiAnalysis()" style="background:#e0e7ff;color:#4338ca;border:1px solid #c7d2fe">✅ 应用分析结果</button>
+            <button class="btn btn-primary btn-sm" onclick="applyAndGenerate()" style="margin-left:8px">🚀 直接生成（含文案）</button>
+            <button class="btn btn-outline btn-sm" onclick="dismissAiAnalysis()" style="margin-left:8px">✕ 关闭</button>
           </div>
         </div>
         <!-- V11.1 Fix #3: 搭配单品选择 -->
@@ -5421,55 +5422,69 @@ function renderAiAnalysisPanel(result) {
 
   var html = '';
 
-  html += '<div class="ai-row"><span class="ai-label">品类：</span><span class="ai-value">' +
+  // 品类
+  html += '<div class="ai-row"><input type="checkbox" checked data-field="category" class="ai-check"> <span class="ai-label">品类：</span><span class="ai-value">' +
     (result.category || '') + ' / ' + (result.subCategory || '') + '</span></div>';
 
+  // 主色调 - 每个颜色一个 checkbox
   if (result.mainColors && result.mainColors.length) {
     html += '<div class="ai-row"><span class="ai-label">主色调：</span><div class="ai-chips">';
     result.mainColors.forEach(function(c) {
-      html += '<span class="ai-chip">' + c + '</span>';
+      html += '<span class="ai-chip"><input type="checkbox" checked data-field="mainColor" data-value="' + c + '" class="ai-check" style="margin-right:4px"> ' + c + '</span>';
     });
     html += '</div></div>';
   }
 
+  // 风格
   if (result.style) {
-    html += '<div class="ai-row"><span class="ai-label">风格：</span><span class="ai-value">' + result.style + '</span></div>';
+    html += '<div class="ai-row"><input type="checkbox" checked data-field="style" class="ai-check"> <span class="ai-label">风格：</span><span class="ai-value">' + result.style + '</span></div>';
   }
 
+  // 卖点 - 每个一个 checkbox
   if (result.sellingPoints && result.sellingPoints.length) {
     html += '<div class="ai-row"><span class="ai-label">卖点：</span><div class="ai-chips">';
     result.sellingPoints.forEach(function(p) {
-      html += '<span class="ai-chip">' + p + '</span>';
+      html += '<span class="ai-chip"><input type="checkbox" checked data-field="sellingPoint" data-value="' + p + '" class="ai-check" style="margin-right:4px"> ' + p + '</span>';
     });
     html += '</div></div>';
   }
 
+  // 痛点 - 每个一个 checkbox
   if (result.painPoints && result.painPoints.length) {
     html += '<div class="ai-row"><span class="ai-label">痛点：</span><div class="ai-chips">';
     result.painPoints.forEach(function(p) {
-      html += '<span class="ai-chip">' + p + '</span>';
+      html += '<span class="ai-chip"><input type="checkbox" checked data-field="painPoint" data-value="' + p + '" class="ai-check" style="margin-right:4px"> ' + p + '</span>';
     });
     html += '</div></div>';
   }
 
+  // 推荐场景 - 每个一个 checkbox
   if (result.recommendedScenes && result.recommendedScenes.length) {
     html += '<div class="ai-row"><span class="ai-label">推荐场景：</span><div class="ai-chips">';
     result.recommendedScenes.forEach(function(s) {
-      html += '<span class="ai-chip">' + s + '</span>';
+      html += '<span class="ai-chip"><input type="checkbox" checked data-field="scene" data-value="' + s + '" class="ai-check" style="margin-right:4px"> ' + s + '</span>';
     });
     html += '</div></div>';
   }
 
+  // 目标人群
   if (result.recommendedAudience) {
-    html += '<div class="ai-row"><span class="ai-label">目标人群：</span><span class="ai-value">' + result.recommendedAudience + '</span></div>';
+    html += '<div class="ai-row"><input type="checkbox" checked data-field="audience" class="ai-check"> <span class="ai-label">目标人群：</span><span class="ai-value">' + result.recommendedAudience + '</span></div>';
   }
 
+  // 氛围
   if (result.atmosphere) {
-    html += '<div class="ai-row"><span class="ai-label">氛围：</span><span class="ai-value">' + result.atmosphere + '</span></div>';
+    html += '<div class="ai-row"><input type="checkbox" checked data-field="atmosphere" class="ai-check"> <span class="ai-label">氛围：</span><span class="ai-value">' + result.atmosphere + '</span></div>';
   }
 
+  // 品牌调性
+  if (result.brandTone) {
+    html += '<div class="ai-row"><input type="checkbox" checked data-field="brandTone" class="ai-check"> <span class="ai-label">品牌调性：</span><span class="ai-value">' + result.brandTone + '</span></div>';
+  }
+
+  // 建议促销
   if (result.suggestedPromo) {
-    html += '<div class="ai-row"><span class="ai-label">建议促销：</span><span class="ai-value">' + result.suggestedPromo + '</span></div>';
+    html += '<div class="ai-row"><input type="checkbox" checked data-field="suggestedPromo" class="ai-check"> <span class="ai-label">建议促销：</span><span class="ai-value">' + result.suggestedPromo + '</span></div>';
   }
 
   content.innerHTML = html;
@@ -5480,43 +5495,66 @@ function applyAiAnalysis() {
   if (!aiAnalysisResult) { alert('没有可应用的分析结果'); return; }
   var r = aiAnalysisResult;
 
-  if (r.category) {
-    selectCategory(r.category);
+  // 品类：检查 data-field="category" 的 checkbox
+  var catCb = document.querySelector('.ai-check[data-field="category"]');
+  if (catCb && catCb.checked) {
+    if (r.category) { selectCategory(r.category); }
+    if (r.subCategory && selectedTags.category === '服装') { selectClothingType(r.subCategory); }
   }
 
-  if (r.subCategory && selectedTags.category === '服装') {
-    selectClothingType(r.subCategory);
+  // 主色调：收集勾选的颜色
+  var checkedColors = [];
+  document.querySelectorAll('.ai-check[data-field="mainColor"]').forEach(function(cb) {
+    if (cb.checked) { checkedColors.push(cb.getAttribute('data-value')); }
+  });
+  if (checkedColors.length) { selectedTags.mainColors = checkedColors; }
+
+  // 风格
+  var styleCb = document.querySelector('.ai-check[data-field="style"]');
+  if (styleCb && styleCb.checked && r.style) { selectedTags.style = r.style; }
+
+  // 卖点：只应用勾选的
+  var checkedSelling = [];
+  document.querySelectorAll('.ai-check[data-field="sellingPoint"]').forEach(function(cb) {
+    if (cb.checked) { checkedSelling.push(cb.getAttribute('data-value')); }
+  });
+  if (checkedSelling.length) {
+    selectedTags.sellingPoints = checkedSelling.slice(0, 5);
   }
 
-  if (r.sellingPoints && r.sellingPoints.length) {
-    selectedTags.sellingPoints = [];
-    r.sellingPoints.slice(0, 5).forEach(function(p) {
-      if (selectedTags.sellingPoints.length < 5) {
-        selectedTags.sellingPoints.push(p);
-      }
-    });
+  // 痛点：只应用勾选的
+  var checkedPain = [];
+  document.querySelectorAll('.ai-check[data-field="painPoint"]').forEach(function(cb) {
+    if (cb.checked) { checkedPain.push(cb.getAttribute('data-value')); }
+  });
+  if (checkedPain.length) {
+    selectedTags.painPoints = checkedPain.slice(0, 3);
   }
 
-  if (r.painPoints && r.painPoints.length) {
-    selectedTags.painPoints = [];
-    r.painPoints.slice(0, 3).forEach(function(p) {
-      if (selectedTags.painPoints.length < 3) {
-        selectedTags.painPoints.push(p);
-      }
-    });
+  // 场景：取第一个勾选的
+  var checkedScenes = [];
+  document.querySelectorAll('.ai-check[data-field="scene"]').forEach(function(cb) {
+    if (cb.checked) { checkedScenes.push(cb.getAttribute('data-value')); }
+  });
+  if (checkedScenes.length) {
+    selectedTags.scene = checkedScenes[0];
   }
 
-  if (r.recommendedScenes && r.recommendedScenes.length) {
-    selectedTags.scene = r.recommendedScenes[0];
-  }
+  // 目标人群
+  var audCb = document.querySelector('.ai-check[data-field="audience"]');
+  if (audCb && audCb.checked && r.recommendedAudience) { selectedTags.recommendedAudience = r.recommendedAudience; }
 
-  if (r.atmosphere) {
-    selectedTags.atmosphere = r.atmosphere;
-  }
+  // 氛围
+  var atmCb = document.querySelector('.ai-check[data-field="atmosphere"]');
+  if (atmCb && atmCb.checked && r.atmosphere) { selectedTags.atmosphere = r.atmosphere; }
 
-  if (r.brandTone) {
-    selectedTags.brandTone = r.brandTone;
-  }
+  // 品牌调性
+  var btCb = document.querySelector('.ai-check[data-field="brandTone"]');
+  if (btCb && btCb.checked && r.brandTone) { selectedTags.brandTone = r.brandTone; }
+
+  // 建议促销
+  var promoCb = document.querySelector('.ai-check[data-field="suggestedPromo"]');
+  if (promoCb && promoCb.checked && r.suggestedPromo) { selectedTags.suggestedPromo = r.suggestedPromo; }
 
   autoDetectIndustryMode();
 
@@ -5531,6 +5569,26 @@ function applyAiAnalysis() {
 function dismissAiAnalysis() {
   var panel = document.getElementById('aiAnalysisPanel');
   panel.classList.remove('visible');
+}
+
+async function applyAndGenerate() {
+  // 1. 应用勾选的分析项
+  applyAiAnalysis();
+  // 2. 等 DOM 更新
+  await new Promise(function(resolve) { setTimeout(resolve, 500); });
+  // 3. 生图
+  try {
+    await doGenerate();
+  } catch(e) {
+    console.error('生成失败:', e);
+    return;
+  }
+  // 4. 等生图完成后生成文案
+  setTimeout(function() {
+    if (typeof generateSeedingCopyV2 === 'function') {
+      generateSeedingCopyV2();
+    }
+  }, 3000);
 }
 
 </script>
