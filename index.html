@@ -410,7 +410,7 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- V11.0: Category Selection Page (Page 0) -->
 <div class="category-page" id="categoryPage">
   <div class="category-page-header">
-    <h2>🎨 FB评论种草工作台</h2>
+    <h2>🎨 FB评论种草工作台 V11.2</h2>
     <p>选择您的商品品类，我们将为您匹配最适合的标签维度与生成策略</p>
   </div>
   
@@ -432,7 +432,7 @@ header .actions span{font-size:11px;color:var(--text2)}
 <!-- Main App -->
 <div class="container" id="mainApp" style="display:block">
   <header>
-    <h1>🎨 FB评论种草工作台 V11.0</h1>
+    <h1>🎨 FB评论种草工作台 V11.2</h1>
     <div class="actions">
       <span id="userInfo"></span>
       <span id="roleInfo" class="tag" style="margin-right:4px"></span>
@@ -5002,7 +5002,7 @@ async function callDeepSeek(messages, options) {
   var key = getDeepseekKey();
   if (!key) throw new Error('未配置 DeepSeek API Key，请在 API 配置面板中添加');
   var model = options.model || 'deepseek-chat';
-  var body = { model: model, messages: messages };
+  var body = { model: model, messages: messages, stream: false };
   if (options.temperature !== undefined) body.temperature = options.temperature;
   if (options.max_tokens !== undefined) body.max_tokens = options.max_tokens;
   var resp = await fetch('https://api.deepseek.com/v1/chat/completions', {
@@ -5383,7 +5383,8 @@ async function analyzeProductImage() {
           ]
         }],
         max_tokens: 600,
-        temperature: 0.3
+        temperature: 0.3,
+        stream: false
       })
     }, proxies);
 
